@@ -351,7 +351,8 @@ async function goEnviar(){
   btn.disabled=true;
   setStatus('status-enviar','loading','Enviando lista...');
   try{
-    await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(payload)});
+    const encoded = encodeURIComponent(JSON.stringify(payload));
+    await fetch(SCRIPT_URL + '?action=save&data=' + encoded, {method:'GET', mode:'no-cors'});
     setStatus('status-enviar','ok','Lista enviada correctamente ✓');
     setTimeout(()=>showStep('enviado'),800);
   }catch(e){
