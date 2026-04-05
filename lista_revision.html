@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Lista de Revisión</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
+<style>*{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh}
 .app{padding:1rem;max-width:680px;margin:0 auto}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
@@ -15,6 +14,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #ddd;background:#fff;color:#666;-webkit-tap-highlight-color:transparent}
 .tab.active{background:#e8f0fd;color:#1a56db;border-color:#a4c0f8}
 .tab.tab-d.active{background:#f0e8fd;color:#6b21a8;border-color:#c4a8f8}
+.tab.done-tab{border-color:#a3d9be;color:#1d9e75}
 .steps{display:flex;align-items:center;margin-bottom:1rem}
 .step{display:flex;align-items:center;gap:5px;font-size:12px;color:#aaa;font-weight:500}
 .step.active{color:#1a56db}.step.done-step{color:#1d9e75}
@@ -100,29 +100,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .status-bar.loading{background:#f0f4ff;border-color:#a4c0f8;color:#1a56db}
 .spinner{width:14px;height:14px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-</style>
+.resumen-card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.resumen-card-title{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:6px;display:flex;justify-content:space-between}
+.resumen-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:8px;background:#eaf7f0;color:#1d9e75}
+.resumen-badge.empty{background:#f5f5f3;color:#aaa}
+.resumen-badge.pending{background:#e8f0fd;color:#1a56db}</style>
 </head>
 <body>
 <div class="app">
   <div class="topbar">
-    <div><div class="title">Lista de revisión</div><div class="subtitle" id="sub">Selecciona un área</div></div>
+    <div><div class="title">Lista de revisión</div><div class="subtitle" id="sub">Revisa las 3 áreas antes de enviar</div></div>
     <button class="small-btn" onclick="resetArea()">Resetear</button>
   </div>
   <div class="progress"><div class="progress-bar" id="pbar" style="width:0%"></div></div>
+
+  <!-- TABS con indicador de listo -->
   <div class="tabs" id="tabs-bar">
     <div class="tab active" id="tab-barra" onclick="switchArea('barra')">Barra</div>
     <div class="tab" id="tab-cocina" onclick="switchArea('cocina')">Cocina</div>
     <div class="tab tab-d" id="tab-desechables" onclick="switchArea('desechables')">Desechables</div>
   </div>
-  <div class="steps" id="steps-bar">
-    <div class="step active" id="step1"><div class="step-num">1</div><span>Revisando</span></div>
-    <div class="step-line"></div>
-    <div class="step" id="step2"><div class="step-num">2</div><span>Confirmar</span></div>
-    <div class="step-line"></div>
-    <div class="step" id="step3"><div class="step-num">3</div><span>Enviar</span></div>
+
+  <!-- RESUMEN ESTADO DE LAS 3 ÁREAS -->
+  <div id="resumen-areas" style="margin-bottom:1rem;display:flex;gap:8px">
+    <div class="resumen-card" style="flex:1;padding:.75rem 1rem">
+      <div class="resumen-card-title">Barra <span class="resumen-badge" id="badge-barra">0 items</span></div>
+    </div>
+    <div class="resumen-card" style="flex:1;padding:.75rem 1rem">
+      <div class="resumen-card-title">Cocina <span class="resumen-badge" id="badge-cocina">0 items</span></div>
+    </div>
+    <div class="resumen-card" style="flex:1;padding:.75rem 1rem">
+      <div class="resumen-card-title">Desech. <span class="resumen-badge" id="badge-desech">0 items</span></div>
+    </div>
   </div>
 
-  <!-- PASO 1 -->
+  <!-- PASO 1: REVISANDO -->
   <div id="s-revisar">
     <div class="stats">
       <div class="stat"><div class="stat-n" id="s-total">0</div><div class="stat-l">Total insumos</div></div>
@@ -134,7 +146,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
 
-  <!-- PASO 2 -->
+  <!-- PASO 2: CONFIRMAR -->
   <div id="s-confirmar" style="display:none">
     <div class="conf-hdr">
       <div class="conf-ttl" id="conf-ttl">Confirma tu selección</div>
@@ -159,36 +171,49 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
     </div>
     <div class="wrap-bottom">
-      <div id="status-enviar" class="status-bar" style="display:none"></div>
-      <button class="btn-main" id="btn-enviar" onclick="goEnviar()">Enviar lista al comprador →</button>
+      <button class="btn-blue" onclick="guardarYSiguiente()">Guardar área y continuar →</button>
       <button class="btn-out" onclick="goBack()">← Regresar a revisión</button>
     </div>
   </div>
 
-  <!-- PASO 3: ENVIADO -->
+  <!-- PASO 3: ENVIAR TODO -->
+  <div id="s-enviar" style="display:none">
+    <div style="text-align:center;padding:1.5rem 0 1rem">
+      <div style="font-size:42px;margin-bottom:.5rem">📋</div>
+      <div style="font-size:17px;font-weight:600;margin-bottom:6px">Resumen de todas las áreas</div>
+      <div style="font-size:13px;color:#888;line-height:1.6">Verifica el total antes de enviar al comprador.</div>
+    </div>
+    <div id="resumen-final" style="margin-bottom:1rem"></div>
+    <div id="status-enviar" class="status-bar" style="display:none"></div>
+    <button class="btn-main" id="btn-enviar" onclick="enviarTodo()">Enviar todo al comprador →</button>
+    <button class="btn-out" onclick="seguirRevisando()">← Seguir revisando</button>
+  </div>
+
+  <!-- ENVIADO -->
   <div id="s-enviado" style="display:none">
-    <div style="text-align:center;padding:2rem 0 1.5rem">
-      <div style="font-size:48px;margin-bottom:.75rem">✅</div>
+    <div style="text-align:center;padding:2.5rem 0 1.5rem">
+      <div style="font-size:52px;margin-bottom:.75rem">✅</div>
       <div style="font-size:17px;font-weight:600;margin-bottom:8px">Lista enviada</div>
-      <div style="font-size:13px;color:#888;line-height:1.6">El comprador ya puede cargar la lista<br>en su app automáticamente.</div>
+      <div style="font-size:13px;color:#888;line-height:1.7">El comprador ya puede cargar la lista<br>en su app automáticamente.</div>
     </div>
     <div style="background:#eaf7f0;border:1px solid #a3d9be;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem">
       <div style="font-size:13px;font-weight:600;color:#1d6e4e;margin-bottom:4px">¿Qué sigue?</div>
-      <div style="font-size:13px;color:#2d7a5a;line-height:1.7">
+      <div style="font-size:13px;color:#2d7a5a;line-height:1.8">
         1. Avísale al comprador que ya está lista<br>
         2. Él abre su app y presiona "Actualizar lista"<br>
-        3. La lista aparece automáticamente
+        3. La lista aparece automáticamente con las 3 áreas
       </div>
     </div>
     <div class="wrap-bottom">
-      <button class="btn-out" onclick="resetAfterSend()">Hacer nueva revisión</button>
+      <button class="btn-out" onclick="resetTodo()">Hacer nueva revisión</button>
     </div>
   </div>
 </div>
 
 <script>
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwGiW69PZdySXRomvXU9d-emrQ2UgWfwPyWEbcHHk4eWcLtMSkrzz589ED4IeJMF8Fj/exec';
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwGiW69PZdySXRomvXU9d-emrQ2UgWfwPyWEbcHHk4eWcLtMSkrzz589ED4IeJMF8Fj/exec';
+const PROXY='https://api.allorigins.win/get?url=';
 const TAG_LABELS={1:"1 día anticip.",2:"2 días anticip.",3:"3 días anticip.",7:"1 semana anticip."};
 const TAG_CLASS={1:"d1",2:"d2",3:"d3",7:"d7"};
 const DATA={
@@ -220,20 +245,18 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 function catDisplay(c){return c.replace(/^(BARRA|COCINA)__/,'');}
 function catPfx(c){const m=c.match(/^(BARRA|COCINA)__/);return m?m[1]:null;}
 function areaLabel(a){return a==='barra'?'Barra':a==='cocina'?'Cocina':'Desechables';}
-function setStatus(id,type,msg){
-  const el=document.getElementById(id);if(!el)return;
-  el.className='status-bar '+type;
-  el.style.display='flex';
-  el.innerHTML=type==='loading'?`<div class="spinner"></div><span>${msg}</span>`:`<span>${msg}</span>`;
-}
+function setStatus(id,type,msg){const el=document.getElementById(id);if(!el)return;el.className='status-bar '+type;el.style.display='flex';el.innerHTML=type==='loading'?`<div class="spinner"></div><span>${msg}</span>`:`<span>${msg}</span>`;}
 function hideStatus(id){const el=document.getElementById(id);if(el)el.style.display='none';}
 
-let area='barra', state={}, extras={}, notas={};
-function key(a){return'rev2_'+a;}
+
+const AREAS = ['barra','cocina','desechables'];
+let area='barra', state={}, extras={}, notas={}, confirmados={};
+
+function key(a){return'rev3_'+a;}
 function load(){
-  ['barra','cocina','desechables'].forEach(a=>{
-    try{const s=localStorage.getItem(key(a));if(s){const d=JSON.parse(s);state[a]=d.items;extras[a]=d.extras||[];notas[a]=d.notas||'';return;}}catch(e){}
-    state[a]=buildDef(a);extras[a]=[];notas[a]='';
+  AREAS.forEach(a=>{
+    try{const s=localStorage.getItem(key(a));if(s){const d=JSON.parse(s);state[a]=d.items;extras[a]=d.extras||[];notas[a]=d.notas||'';confirmados[a]=d.confirmado||false;return;}}catch(e){}
+    state[a]=buildDef(a);extras[a]=[];notas[a]='';confirmados[a]=false;
   });
 }
 function buildDef(a){
@@ -243,27 +266,42 @@ function buildDef(a){
   });
   return o;
 }
-function save(){try{localStorage.setItem(key(area),JSON.stringify({items:state[area],extras:extras[area],notas:notas[area]}));}catch(e){}}
-function showStep(s){
-  ['revisar','confirmar','enviado'].forEach(id=>document.getElementById('s-'+id).style.display=s===id?'':'none');
-  document.getElementById('tabs-bar').style.display=s==='revisar'?'':'none';
-  document.getElementById('steps-bar').style.display=s==='enviado'?'none':'';
-  const map={revisar:1,confirmar:2,enviado:3};
-  [1,2,3].forEach(n=>{
-    const el=document.getElementById('step'+n);const sn=map[s];
-    el.className='step'+(n===sn?' active':n<sn?' done-step':'');
+function save(){
+  try{localStorage.setItem(key(area),JSON.stringify({items:state[area],extras:extras[area],notas:notas[area],confirmado:confirmados[area]}));}catch(e){}
+}
+function updateBadges(){
+  AREAS.forEach(a=>{
+    const all=[];Object.values(state[a]).forEach(x=>all.push(...x));
+    const n=all.filter(i=>i.need).length;
+    const id='badge-'+( a==='desechables'?'desech':a);
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(confirmados[a]){el.textContent='✓ Listo';el.className='resumen-badge';}
+    else if(n>0){el.textContent=n+' items';el.className='resumen-badge pending';}
+    else{el.textContent='Sin marcar';el.className='resumen-badge empty';}
   });
+  // show enviar button if at least one area has items
+  const anyItems=AREAS.some(a=>{const all=[];Object.values(state[a]).forEach(x=>all.push(...x));return all.some(i=>i.need);});
 }
 function switchArea(a){
   area=a;
-  ['barra','cocina','desechables'].forEach(id=>document.getElementById('tab-'+id).classList.toggle('active',id===a));
+  AREAS.forEach(id=>{
+    const el=document.getElementById('tab-'+id);
+    el.classList.toggle('active',id===a);
+    if(confirmados[id])el.classList.add('done-tab');else el.classList.remove('done-tab');
+  });
   showStep('revisar');render();
+}
+function showStep(s){
+  ['revisar','confirmar','enviar','enviado'].forEach(id=>document.getElementById('s-'+id).style.display=s===id?'':'none');
+  document.getElementById('tabs-bar').style.display=['enviado','enviar'].includes(s)?'none':'';
+  document.getElementById('resumen-areas').style.display=['enviado'].includes(s)?'none':'flex';
 }
 function render(){
   const cur=state[area];
   let all=[];Object.values(cur).forEach(a=>all=all.concat(a));
   const nc=all.filter(i=>i.need).length;
-  document.getElementById('sub').textContent=areaLabel(area)+' · Marca lo que está por debajo del mínimo';
+  document.getElementById('sub').textContent=areaLabel(area)+(confirmados[area]?' ✓ confirmada':' · Marca lo que falta');
   document.getElementById('s-total').textContent=all.length;
   document.getElementById('s-need').textContent=nc;
   document.getElementById('pbar').style.width='0%';
@@ -287,8 +325,9 @@ function render(){
     html+=`<div class="section"><div class="sec-hdr"><span>${esc(catDisplay(cat))}</span>${nc2>0?`<span>${nc2} a pedir</span>`:'<span></span>'}</div>${rows}</div>`;
   });
   document.getElementById('c-revisar').innerHTML=html;
+  updateBadges();
 }
-function toggleNeed(cat,checked,idx){state[area][cat][idx].need=checked;save();render();}
+function toggleNeed(cat,checked,idx){state[area][cat][idx].need=checked;confirmados[area]=false;save();render();}
 function goConfirm(){
   let c=0;Object.values(state[area]).forEach(items=>items.forEach(it=>{if(it.need)c++;}));
   if(!c)return;
@@ -338,21 +377,68 @@ function renderExtraList(){
       <button class="extra-del" onclick="delExtra(${e.id})">×</button>
     </div>`).join(''):'';
 }
-async function goEnviar(){
-  notas[area]=document.getElementById('notas-ta').value;save();
-  const cur=state[area];
-  const cats=[];
-  Object.entries(cur).forEach(([cat,items])=>{
-    const ni=items.filter(i=>i.need);if(!ni.length)return;
-    cats.push({cat:catDisplay(cat),pfx:catPfx(cat),items:ni.map(it=>{return{name:it.name,pres:it.pres,min:it.min,dias:it.dias,done:false,qty:'',nota:''}})}); 
+function guardarYSiguiente(){
+  notas[area]=document.getElementById('notas-ta').value;
+  confirmados[area]=true;
+  save();
+  updateBadges();
+  // check if all areas done or go to next
+  const pending=AREAS.filter(a=>!confirmados[a]);
+  if(pending.length>0){
+    // suggest next area
+    switchArea(pending[0]);
+    const nombres={barra:'Barra',cocina:'Cocina',desechables:'Desechables'};
+    document.getElementById('sub').textContent=areaLabel(area)+' · Siguiente área a revisar';
+  } else {
+    // all confirmed, show send screen
+    mostrarEnviar();
+  }
+}
+function mostrarEnviar(){
+  showStep('enviar');
+  // build summary
+  let html='';
+  AREAS.forEach(a=>{
+    const all=[];Object.values(state[a]).forEach(x=>all.push(...x));
+    const n=all.filter(i=>i.need).length;
+    const ex=extras[a]?extras[a].length:0;
+    html+=`<div class="resumen-card">
+      <div class="resumen-card-title">${areaLabel(a)} <span class="resumen-badge">${n} insumos${ex>0?' + '+ex+' extras':''}</span></div>
+      ${notas[a]?`<div style="font-size:12px;color:#888;margin-top:4px">${esc(notas[a])}</div>`:''}
+    </div>`;
   });
-  const payload={area,cats,extras:extras[area],notas:notas[area],ts:Date.now()};
+  document.getElementById('resumen-final').innerHTML=html;
+  hideStatus('status-enviar');
+  document.getElementById('btn-enviar').disabled=false;
+}
+function seguirRevisando(){
+  const pending=AREAS.filter(a=>!confirmados[a]);
+  switchArea(pending.length>0?pending[0]:'barra');
+}
+async function enviarTodo(){
   const btn=document.getElementById('btn-enviar');
   btn.disabled=true;
   setStatus('status-enviar','loading','Enviando lista...');
+  // Build consolidated payload
+  const allCats=[];
+  AREAS.forEach(a=>{
+    Object.entries(state[a]).forEach(([cat,items])=>{
+      const ni=items.filter(i=>i.need);if(!ni.length)return;
+      allCats.push({
+        area:a,
+        cat:catDisplay(cat),
+        pfx:catPfx(cat),
+        items:ni.map(it=>{return{name:it.name,pres:it.pres,min:it.min,dias:it.dias,done:false,qty:'',nota:''}})
+      });
+    });
+  });
+  const allExtras=[];
+  AREAS.forEach(a=>{if(extras[a])extras[a].forEach(e=>allExtras.push({...e,area:a,done:false}));});
+  const notasGen=AREAS.map(a=>notas[a]?areaLabel(a)+': '+notas[a]:'').filter(Boolean).join(' | ');
+  const payload={tipo:'consolidado',cats:allCats,extras:allExtras,notas:notasGen,ts:Date.now()};
   try{
-    const encoded = encodeURIComponent(JSON.stringify(payload));
-    await fetch(SCRIPT_URL + '?action=save&data=' + encoded, {method:'GET', mode:'no-cors'});
+    const encoded=encodeURIComponent(JSON.stringify(payload));
+    await fetch(SCRIPT_URL+'?action=save&data='+encoded,{method:'GET',mode:'no-cors'});
     setStatus('status-enviar','ok','Lista enviada correctamente ✓');
     setTimeout(()=>showStep('enviado'),800);
   }catch(e){
@@ -360,14 +446,17 @@ async function goEnviar(){
     btn.disabled=false;
   }
 }
-function resetAfterSend(){
-  state[area]=buildDef(area);extras[area]=[];notas[area]='';save();showStep('revisar');render();
+function resetTodo(){
+  AREAS.forEach(a=>{state[a]=buildDef(a);extras[a]=[];notas[a]='';confirmados[a]=false;try{localStorage.removeItem(key(a));}catch(e){}});
+  switchArea('barra');
+  showStep('revisar');
+  render();
 }
 function resetArea(){
   if(!confirm('¿Resetear la lista de '+areaLabel(area)+'?'))return;
-  state[area]=buildDef(area);extras[area]=[];notas[area]='';save();showStep('revisar');render();
+  state[area]=buildDef(area);extras[area]=[];notas[area]='';confirmados[area]=false;save();showStep('revisar');render();
 }
-load();render();
+load();render();updateBadges();
 </script>
 </body>
 </html>
