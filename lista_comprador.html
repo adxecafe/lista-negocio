@@ -187,32 +187,18 @@ function hideStatus(id){const el=document.getElementById(id);if(el)el.style.disp
 
 let BL=null;
 
-async function fetchConProxy(targetUrl){
-  const proxies=[
-    u=>'https://api.allorigins.win/get?url='+encodeURIComponent(u),
-    u=>'https://corsproxy.io/?'+encodeURIComponent(u),
-    u=>'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u),
-  ];
-  for(const proxy of proxies){
-    try{
-      const r=await fetch(proxy(targetUrl),{signal:AbortSignal.timeout(8000)});
-      if(!r.ok)continue;
-      const ct=r.headers.get('content-type')||'';
-      if(ct.includes('json')){
-        const j=await r.json();
-        return j.contents||j.data||JSON.stringify(j);
-      }
-      return await r.text();
-    }catch(e){continue;}
-  }
-  throw new Error('Todos los proxies fallaron');
-}
+const SHEETS_CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vSlcB867v-otSm_cg1Ulsg3SWCIIRo8jcMy-2yCCA6ixSpGj1ORfyX8h6kT4yyAwnZLTiJavxEUpjxC/pub?gid=0&single=true&output=csv&t=';
 async function cargarLista(){
   setStatus('status-load','loading','Buscando lista...');
   try{
-    const txt=await fetchConProxy(SCRIPT_URL+'?t='+Date.now());
-    if(!txt||txt.trim()===''){setStatus('status-load','err','No hay lista disponible todavía.');return;}
-    const data=JSON.parse(txt);
+    const r=await fetch(SHEETS_CSV+Date.now(),{cache:'no-store'});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const csv=await r.text();
+    if(!csv||csv.trim()===''){setStatus('status-load','err','No hay lista disponible todavía.');return;}
+    // Data is in first cell of CSV
+    const firstCell=csv.split('\n')[0].replace(/^"|"$/g,'').replace(/""/g,'"');
+    if(!firstCell||firstCell.trim()===''){setStatus('status-load','err','No hay lista disponible todavía.');return;}
+    const data=JSON.parse(firstCell);
     if(!data.cats||!data.cats.length){setStatus('status-load','err','La lista está vacía.');return;}
     BL=data;
     BL.cats.forEach(c=>c.items.forEach(it=>{it.done=false;it.qty='';it.nota=''}));
