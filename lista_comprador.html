@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Lista del Comprador</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
+<style>*{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh}
 .app{padding:1rem;max-width:680px;margin:0 auto}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
@@ -15,6 +14,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #ddd;background:#fff;color:#666;-webkit-tap-highlight-color:transparent}
 .tab.active{background:#e8f0fd;color:#1a56db;border-color:#a4c0f8}
 .tab.tab-d.active{background:#f0e8fd;color:#6b21a8;border-color:#c4a8f8}
+.tab.done-tab{border-color:#a3d9be;color:#1d9e75}
 .steps{display:flex;align-items:center;margin-bottom:1rem}
 .step{display:flex;align-items:center;gap:5px;font-size:12px;color:#aaa;font-weight:500}
 .step.active{color:#1a56db}.step.done-step{color:#1d9e75}
@@ -100,17 +100,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .status-bar.loading{background:#f0f4ff;border-color:#a4c0f8;color:#1a56db}
 .spinner{width:14px;height:14px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-</style>
+.resumen-card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.resumen-card-title{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:6px;display:flex;justify-content:space-between}
+.resumen-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:8px;background:#eaf7f0;color:#1d9e75}
+.resumen-badge.empty{background:#f5f5f3;color:#aaa}
+.resumen-badge.pending{background:#e8f0fd;color:#1a56db}</style>
 </head>
 <body>
 <div class="app">
-
-  <!-- INICIO -->
   <div id="s-inicio">
     <div style="text-align:center;padding:2.5rem 0 2rem">
       <div style="font-size:52px;margin-bottom:.75rem">🛒</div>
       <div style="font-size:19px;font-weight:600;margin-bottom:8px;color:#1a1a1a">Modo Comprador</div>
-      <div style="font-size:13px;color:#888;line-height:1.7">Carga la lista que tu equipo preparó<br>y ve palomeando en el súper.</div>
+      <div style="font-size:13px;color:#888;line-height:1.7">Carga la lista que tu equipo preparó<br>con las 3 áreas consolidadas.</div>
     </div>
     <div id="status-load" class="status-bar" style="display:none"></div>
     <div class="wrap-bottom">
@@ -118,10 +120,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
 
-  <!-- COMPRANDO -->
   <div id="s-comprando" style="display:none">
     <div class="topbar">
-      <div><div class="title" id="comp-title">Comprando</div><div class="subtitle" id="comp-sub">—</div></div>
+      <div><div class="title">Comprando</div><div class="subtitle" id="comp-sub">—</div></div>
       <button class="small-btn" onclick="volverInicio()">← Nueva lista</button>
     </div>
     <div class="progress"><div class="progress-bar" id="pbar-c" style="width:0%"></div></div>
@@ -144,11 +145,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <button class="btn-out" onclick="clearAll()">Limpiar palomitas</button>
     </div>
   </div>
-
 </div>
+
 <script>
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwGiW69PZdySXRomvXU9d-emrQ2UgWfwPyWEbcHHk4eWcLtMSkrzz589ED4IeJMF8Fj/exec';
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwGiW69PZdySXRomvXU9d-emrQ2UgWfwPyWEbcHHk4eWcLtMSkrzz589ED4IeJMF8Fj/exec';
+const PROXY='https://api.allorigins.win/get?url=';
 const TAG_LABELS={1:"1 día anticip.",2:"2 días anticip.",3:"3 días anticip.",7:"1 semana anticip."};
 const TAG_CLASS={1:"d1",2:"d2",3:"d3",7:"d7"};
 const DATA={
@@ -180,12 +182,7 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 function catDisplay(c){return c.replace(/^(BARRA|COCINA)__/,'');}
 function catPfx(c){const m=c.match(/^(BARRA|COCINA)__/);return m?m[1]:null;}
 function areaLabel(a){return a==='barra'?'Barra':a==='cocina'?'Cocina':'Desechables';}
-function setStatus(id,type,msg){
-  const el=document.getElementById(id);if(!el)return;
-  el.className='status-bar '+type;
-  el.style.display='flex';
-  el.innerHTML=type==='loading'?`<div class="spinner"></div><span>${msg}</span>`:`<span>${msg}</span>`;
-}
+function setStatus(id,type,msg){const el=document.getElementById(id);if(!el)return;el.className='status-bar '+type;el.style.display='flex';el.innerHTML=type==='loading'?`<div class="spinner"></div><span>${msg}</span>`:`<span>${msg}</span>`;}
 function hideStatus(id){const el=document.getElementById(id);if(el)el.style.display='none';}
 
 let BL=null;
@@ -193,8 +190,10 @@ let BL=null;
 async function cargarLista(){
   setStatus('status-load','loading','Buscando lista...');
   try{
-    const r=await fetch(SCRIPT_URL+'?t='+Date.now());
-    const txt=await r.text();
+    const url=PROXY+encodeURIComponent(SCRIPT_URL+'?t='+Date.now());
+    const r=await fetch(url);
+    const json=await r.json();
+    const txt=json.contents;
     if(!txt||txt.trim()===''){setStatus('status-load','err','No hay lista disponible todavía.');return;}
     const data=JSON.parse(txt);
     if(!data.cats||!data.cats.length){setStatus('status-load','err','La lista está vacía.');return;}
@@ -219,14 +218,13 @@ function setQty(ci,ii,v){BL.cats[ci].items[ii].qty=v;}
 function setNota(ci,ii,v){BL.cats[ci].items[ii].nota=v;}
 function toggleExtra(id){const e=BL.extras.find(x=>x.id===id);if(e)e.done=!e.done;renderComprando();}
 function clearAll(){BL.cats.forEach(c=>c.items.forEach(it=>it.done=false));if(BL.extras)BL.extras.forEach(e=>e.done=false);renderComprando();}
+
 function renderComprando(){
-  const al=areaLabel(BL.area);
-  document.getElementById('comp-title').textContent='Comprando — '+al;
   let total=BL.cats.reduce((s,c)=>s+c.items.length,0)+(BL.extras?BL.extras.length:0);
   let done=BL.cats.reduce((s,c)=>s+c.items.filter(i=>i.done).length,0)+(BL.extras?BL.extras.filter(e=>e.done).length:0);
   const pct=total?Math.round(done/total*100):0;
   document.getElementById('pbar-c').style.width=pct+'%';
-  document.getElementById('comp-sub').textContent=pct+'% completado · '+areaLabel(BL.area);
+  document.getElementById('comp-sub').textContent=pct+'% completado — Barra + Cocina + Desechables';
   document.getElementById('sc-total').textContent=total;
   document.getElementById('sc-done').textContent=done;
   document.getElementById('sc-left').textContent=total-done;
@@ -246,23 +244,32 @@ function renderComprando(){
       eh+='</div>';document.getElementById('extras-wrap').innerHTML=eh;
     }else document.getElementById('extras-wrap').innerHTML='';
   }
-  let html='<div class="col-hdr"><span></span><span>Insumo</span><span>Presentación</span><span>Mínimo</span><span>Cant.</span></div>';
-  let lp=null;
-  BL.cats.forEach((c,ci)=>{
-    if(c.pfx&&c.pfx!==lp){html+=`<div class="area-lbl"><span>${c.pfx==='BARRA'?'Barra':'Cocina'}</span><div class="area-lbl-line"></div></div>`;lp=c.pfx;}
-    const dc=c.items.filter(i=>i.done).length;
-    const rows=c.items.map((it,ii)=>`
-      <div class="item${it.done?' done-item':''}${it.dias>0?' pedido':''}">
-        <input type="checkbox" ${it.done?'checked':''} onchange="toggleItem(${ci},${ii})"/>
-        <div class="iname-wrap"><span class="iname">${esc(it.name)}</span>${tagHTML(it.dias)}</div>
-        <span class="ipres">${esc(it.pres)}</span>
-        <span class="imin${it.min?'':' emp'}">${it.min?esc(it.min):'—'}</span>
-        <input class="iqty" type="text" placeholder="Cant." value="${esc(it.qty)}" onchange="setQty(${ci},${ii},this.value)"/>
-        <div class="nota-wrap"><input class="nota-inp" type="text" placeholder="Anotación: marca alternativa, tienda..." value="${esc(it.nota)}" onchange="setNota(${ci},${ii},this.value)"/></div>
-      </div>`).join('');
-    html+=`<div class="section"><div class="sec-hdr"><span>${esc(c.cat)}</span><span>${dc}/${c.items.length}</span></div>${rows}</div>`;
+  // Group by area for display
+  const areas=['barra','cocina','desechables'];
+  let html='';
+  areas.forEach(a=>{
+    const areaCats=BL.cats.filter(c=>c.area===a);
+    if(!areaCats.length)return;
+    const aTotal=areaCats.reduce((s,c)=>s+c.items.length,0);
+    const aDone=areaCats.reduce((s,c)=>s+c.items.filter(i=>i.done).length,0);
+    html+=`<div class="area-lbl"><span>${areaLabel(a)} — ${aDone}/${aTotal}</span><div class="area-lbl-line"></div></div>`;
+    html+='<div class="col-hdr"><span></span><span>Insumo</span><span>Presentación</span><span>Mínimo</span><span>Cant.</span></div>';
+    areaCats.forEach((c,ci)=>{
+      const realCi=BL.cats.indexOf(c);
+      const dc=c.items.filter(i=>i.done).length;
+      const rows=c.items.map((it,ii)=>`
+        <div class="item${it.done?' done-item':''}${it.dias>0?' pedido':''}">
+          <input type="checkbox" ${it.done?'checked':''} onchange="toggleItem(${realCi},${ii})"/>
+          <div class="iname-wrap"><span class="iname">${esc(it.name)}</span>${tagHTML(it.dias)}</div>
+          <span class="ipres">${esc(it.pres)}</span>
+          <span class="imin${it.min?'':' emp'}">${it.min?esc(it.min):'—'}</span>
+          <input class="iqty" type="text" placeholder="Cant." value="${esc(it.qty)}" onchange="setQty(${realCi},${ii},this.value)"/>
+          <div class="nota-wrap"><input class="nota-inp" type="text" placeholder="Anotación: marca alternativa, tienda..." value="${esc(it.nota)}" onchange="setNota(${realCi},${ii},this.value)"/></div>
+        </div>`).join('');
+      html+=`<div class="section"><div class="sec-hdr"><span>${esc(c.cat)}</span><span>${dc}/${c.items.length}</span></div>${rows}</div>`;
+    });
   });
-  document.getElementById('c-comprando').innerHTML=html;
+  document.getElementById('c-comprando').innerHTML=html||'<div class="empty-msg">No hay artículos seleccionados</div>';
 }
 </script>
 </body>
