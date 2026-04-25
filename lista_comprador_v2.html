@@ -78,27 +78,37 @@
 </div>
 
 <script>
+const FIREBASE_URL='https://adxe-cafe-9d085-default-rtdb.firebaseio.com';
 let BL=null;
 const comprados={};
 
 function cargarDesdeHash(){
-  const hash=location.hash.slice(1);
-  if(!hash){
-    document.getElementById('hdr-sub').textContent='Sin lista';
-    return;
-  }
+  // Ignorar hash, cargar siempre de Firebase
+  cargarDeFirebase();
+}
+
+async function cargarDeFirebase(){
+  document.getElementById('hdr-sub').textContent='Cargando lista...';
   try{
-    const json=decodeURIComponent(escape(atob(hash)));
-    BL=JSON.parse(json);
+    const r=await fetch(FIREBASE_URL+'/lista.json');
+    const data=await r.json();
+    if(!data||!data.items||!data.items.length){
+      document.getElementById('hdr-sub').textContent='Sin lista disponible';
+      document.getElementById('s-vacio').style.display='block';
+      return;
+    }
+    BL=data;
+    BL.items.forEach((it,i)=>{it._idx=i;comprados[i]=false;});
     const fecha=new Date(BL.fecha);
     document.getElementById('hdr-sub').textContent='Lista del '+fecha.toLocaleDateString('es-MX');
-    BL.items.forEach((it,i)=>{it._idx=i;comprados[i]=false;});
     document.getElementById('s-vacio').style.display='none';
     document.getElementById('s-comprando').style.display='block';
     document.getElementById('footer-comp').style.display='flex';
     renderLista();
   }catch(e){
-    document.getElementById('hdr-sub').textContent='Error al cargar';
+    document.getElementById('hdr-sub').textContent='Error de conexión';
+    document.getElementById('s-vacio').querySelector('p').textContent='No se pudo cargar la lista. Verifica tu internet e intenta de nuevo.';
+    document.getElementById('s-vacio').style.display='block';
   }
 }
 
