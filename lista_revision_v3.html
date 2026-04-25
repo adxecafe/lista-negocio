@@ -130,11 +130,6 @@
     <div class="env-icon">✅</div>
     <div class="env-title">Lista completa</div>
     <p class="env-sub">Toda la selección está lista. Comparte el enlace con el comprador.</p>
-    <div class="share-box">
-      <p>Compartir por</p>
-      <button class="btn-share btn-wa" onclick="compartirWA()">WhatsApp</button>
-      <button class="btn-share btn-copy" onclick="copiarEnlace()">Copiar enlace</button>
-    </div>
     <button class="btn btn-sec" style="width:100%;margin-top:8px" onclick="nuevaLista()">Nueva revisión</button>
   </div>
 </div>
@@ -388,7 +383,7 @@ function esUltimo(){
 
 function actualizarHeader(){
   document.getElementById('hdr-titulo').textContent=nombreAreaActual();
-  document.getElementById('hdr-sub').textContent=`${DIAS[HOY.getDay()]} ${HOY.getDate()} de ${MESES[HOY.getMonth()]}`;
+  document.getElementById('hdr-sub').textContent=DIAS[HOY.getDay()]+" "+HOY.getDate()+" de "+MESES[HOY.getMonth()];
   // indicador de pasos
   const ind=document.getElementById('paso-ind');
   ind.innerHTML='';
@@ -399,7 +394,7 @@ function actualizarHeader(){
   });
   const lbl=document.createElement('div');
   lbl.className='paso-lbl';
-  lbl.textContent=`Paso ${pasoActual+1} de ${ORDEN_AREAS.length}`;
+  lbl.textContent="Paso "+(pasoActual+1)+" de "+ORDEN_AREAS.length;
   ind.appendChild(lbl);
 }
 
@@ -495,7 +490,7 @@ function irAResumen(){
   // resumen header
   const total=rows.length;
   document.getElementById('res-titulo').textContent='Resumen — '+nombreAreaActual();
-  document.getElementById('res-sub').textContent=total>0?`${total} artículo${total>1?'s':''} seleccionado${total>1?'s':''}`:' Sin artículos seleccionados';
+  document.getElementById('res-sub').textContent=total>0?(total)+" artículo"+(total>1?"s":"")+" seleccionado"+(total>1?"s":""):' Sin artículos seleccionados';
 
   // guardar referencia para poder quitar
   confirmados[area.id]=rows;
@@ -550,15 +545,15 @@ function renderResumen(areaId){
         renderResumen(areaId);
         // actualizar subtitulo
         const activos=confirmados[areaId].filter(r=>!r.quitado).length;
-        document.getElementById('res-sub').textContent=`${activos} artículo${activos!==1?'s':''} confirmado${activos!==1?'s':''}`;
+        document.getElementById('res-sub').textContent=activos+" artículo"+(activos!==1?"s":"")+" confirmado"+(activos!==1?"s":"");
       };
       const chk=document.createElement('div');chk.className='r-chk';
       const info=document.createElement('div');info.className='r-info';
       const nombre=document.createElement('div');nombre.className='r-nombre';nombre.textContent=row.it.nombre;
       info.appendChild(nombre);
       let det='';
-      if(row.it.tipo==='pieza')det=`${E[row.it.id].qty} pz`;
-      else if(row.it.tipo==='peso'&&E[row.it.id].cant)det=`${E[row.it.id].cant} ${row.it.unidad||''}`;
+      if(row.it.tipo==='pieza')det=E[row.it.id].qty+" pz";
+      else if(row.it.tipo==='peso'&&E[row.it.id].cant)det=E[row.it.id].cant+" "+(row.it.unidad||"");
       if(det){const d=document.createElement('div');d.className='r-det';d.textContent=det;info.appendChild(d);}
       if(row.it.ant){const a=document.createElement('div');a.className='r-ant';a.textContent='🕐 '+row.it.ant;info.appendChild(a);}
       div.appendChild(chk);div.appendChild(info);cont.appendChild(div);
@@ -578,9 +573,9 @@ function volverSeleccion(){
 }
 
 function confirmarPaso(){
-  const areaId=ORDEN_AREAS[pasoActual];
+  var areaId=ORDEN_AREAS[pasoActual];
   // aplicar quitados al estado
-  (confirmados[areaId]||[]).forEach(row=>{
+  (confirmados[areaId]||[]).forEach(function(row){
     if(row.quitado){
       E[row.it.id].checked=false;
       E[row.it.id].qty=1;
@@ -589,10 +584,18 @@ function confirmarPaso(){
   });
 
   if(esUltimo()){
-    // generar y mostrar opciones de envío
-    document.getElementById('paso-resumen').style.display='none';
-    document.getElementById('paso-enviado').style.display='block';
-    document.getElementById('paso-ind').style.display='none';
+    // Guardar en Firebase y mostrar pantalla de enviado
+    var btn=document.getElementById('btn-confirmar-paso');
+    btn.disabled=true;btn.textContent='Guardando...';
+    guardarEnFirebase().then(function(){
+      btn.disabled=false;
+      document.getElementById('paso-resumen').style.display='none';
+      document.getElementById('paso-enviado').style.display='block';
+      document.getElementById('paso-ind').style.display='none';
+    }).catch(function(){
+      btn.disabled=false;btn.textContent='Confirmar y enviar';
+      alert('Error al guardar la lista. Verifica tu conexión.');
+    });
   } else {
     pasoActual++;
     document.getElementById('paso-resumen').style.display='none';
@@ -650,21 +653,30 @@ async function compartirWA(){
 }
 
 async function copiarEnlace(){
-  const btn=document.querySelector('.btn-copy');
+  var btn=document.querySelector('.btn-copy');
   btn.textContent='Guardando...';btn.disabled=true;
   try{
     await guardarEnFirebase();
     btn.textContent='Copiar enlace';btn.disabled=false;
-    const enlace='https://adxecafe.github.io/lista-negocio/lista_comprador_v2.html';
-    if(navigator.clipboard){
-      await navigator.clipboard.writeText(enlace);
-    } else {
-      const ta=document.createElement('textarea');ta.value=enlace;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
-    }
+    var enlace='https://adxecafe.github.io/lista-negocio/lista_comprador_v2.html';
+    // Método compatible con Safari iOS
+    var inp=document.createElement('input');
+    inp.setAttribute('type','text');
+    inp.setAttribute('value',enlace);
+    inp.style.position='fixed';
+    inp.style.top='0';
+    inp.style.left='0';
+    inp.style.opacity='0';
+    document.body.appendChild(inp);
+    inp.focus();
+    inp.select();
+    inp.setSelectionRange(0,999);
+    document.execCommand('copy');
+    document.body.removeChild(inp);
     alert('Enlace copiado ✓\nEl comprador puede abrirlo ahora.');
   }catch(e){
     btn.textContent='Copiar enlace';btn.disabled=false;
-    alert('Error al guardar. Verifica tu conexión.');
+    alert('Error: '+e.message);
   }
 }
 
