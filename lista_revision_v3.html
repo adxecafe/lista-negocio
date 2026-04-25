@@ -142,6 +142,7 @@
 <script>
 const STORAGE_KEY='adxe_config_v1';
 const COMPRADOR_URL='https://adxecafe.github.io/lista-negocio/lista_comprador_v2.html';
+const FIREBASE_URL='https://adxe-cafe-9d085-default-rtdb.firebaseio.com';
 
 // Orden de encargados
 const ORDEN_AREAS = ['cocina','barra','desechables'];
@@ -622,35 +623,48 @@ function generarURL(){
   return COMPRADOR_URL+'#'+b64;
 }
 
-async function acortarURL(url){
-  try{
-    const r=await fetch('https://tinyurl.com/api-create.php?url='+encodeURIComponent(url));
-    if(r.ok){const t=await r.text();if(t.startsWith('https://'))return t.trim();}
-  }catch(e){}
-  return url; // si falla, usa URL larga
+async function guardarEnFirebase(){
+  const payload=construirPayload();
+  const r=await fetch(FIREBASE_URL+'/lista.json',{
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  });
+  if(!r.ok)throw new Error('Firebase error '+r.status);
+  return payload;
 }
 
 async function compartirWA(){
-  const btnWA=document.querySelector('.btn-wa');
-  const orig=btnWA.textContent;
-  btnWA.textContent='Acortando...';btnWA.disabled=true;
-  const url=await acortarURL(generarURL());
-  btnWA.textContent=orig;btnWA.disabled=false;
-  const msg='Lista de compras ADXé Café — '+HOY.toLocaleDateString('es-MX')+'\n\nAbre este enlace:\n'+url;
-  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+  const btn=document.querySelector('.btn-wa');
+  btn.textContent='Guardando...';btn.disabled=true;
+  try{
+    await guardarEnFirebase();
+    btn.textContent='WhatsApp';btn.disabled=false;
+    const enlace='https://adxecafe.github.io/lista-negocio/lista_comprador_v2.html';
+    const msg='🛒 Lista de compras ADXé Café — '+HOY.toLocaleDateString('es-MX')+'\n\nAbre este enlace para ver la lista:\n'+enlace;
+    window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+  }catch(e){
+    btn.textContent='WhatsApp';btn.disabled=false;
+    alert('Error al guardar. Verifica tu conexión.');
+  }
 }
 
 async function copiarEnlace(){
-  const btnCopy=document.querySelector('.btn-copy');
-  const orig=btnCopy.textContent;
-  btnCopy.textContent='Acortando...';btnCopy.disabled=true;
-  const url=await acortarURL(generarURL());
-  btnCopy.textContent=orig;btnCopy.disabled=false;
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(url).then(()=>alert('Enlace copiado ✓'));
-  } else {
-    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
-    alert('Enlace copiado ✓');
+  const btn=document.querySelector('.btn-copy');
+  btn.textContent='Guardando...';btn.disabled=true;
+  try{
+    await guardarEnFirebase();
+    btn.textContent='Copiar enlace';btn.disabled=false;
+    const enlace='https://adxecafe.github.io/lista-negocio/lista_comprador_v2.html';
+    if(navigator.clipboard){
+      await navigator.clipboard.writeText(enlace);
+    } else {
+      const ta=document.createElement('textarea');ta.value=enlace;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    }
+    alert('Enlace copiado ✓\nEl comprador puede abrirlo ahora.');
+  }catch(e){
+    btn.textContent='Copiar enlace';btn.disabled=false;
+    alert('Error al guardar. Verifica tu conexión.');
   }
 }
 
