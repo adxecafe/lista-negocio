@@ -622,14 +622,30 @@ function generarURL(){
   return COMPRADOR_URL+'#'+b64;
 }
 
-function compartirWA(){
-  const url=generarURL();
+async function acortarURL(url){
+  try{
+    const r=await fetch('https://tinyurl.com/api-create.php?url='+encodeURIComponent(url));
+    if(r.ok){const t=await r.text();if(t.startsWith('https://'))return t.trim();}
+  }catch(e){}
+  return url; // si falla, usa URL larga
+}
+
+async function compartirWA(){
+  const btnWA=document.querySelector('.btn-wa');
+  const orig=btnWA.textContent;
+  btnWA.textContent='Acortando...';btnWA.disabled=true;
+  const url=await acortarURL(generarURL());
+  btnWA.textContent=orig;btnWA.disabled=false;
   const msg='Lista de compras ADXé Café — '+HOY.toLocaleDateString('es-MX')+'\n\nAbre este enlace:\n'+url;
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
-function copiarEnlace(){
-  const url=generarURL();
+async function copiarEnlace(){
+  const btnCopy=document.querySelector('.btn-copy');
+  const orig=btnCopy.textContent;
+  btnCopy.textContent='Acortando...';btnCopy.disabled=true;
+  const url=await acortarURL(generarURL());
+  btnCopy.textContent=orig;btnCopy.disabled=false;
   if(navigator.clipboard){
     navigator.clipboard.writeText(url).then(()=>alert('Enlace copiado ✓'));
   } else {
