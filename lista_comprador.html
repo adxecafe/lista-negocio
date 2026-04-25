@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -106,9 +105,16 @@ async function cargarLista(){
   const el=document.getElementById('estado-load');
   el.className='';el.textContent='Buscando lista...';
   try{
-    const r=await fetch('https://api.allorigins.win/get?url='+encodeURIComponent(SCRIPT_URL+'?t='+Date.now()));
-    const json=await r.json();
-    const txt=json.contents;
+    // Intentar con corsproxy.io primero, si falla usar allorigins
+    let txt='';
+    try{
+      const r1=await fetch('https://corsproxy.io/?'+encodeURIComponent(SCRIPT_URL+'?t='+Date.now()));
+      txt=await r1.text();
+    }catch(e1){
+      const r2=await fetch('https://api.allorigins.win/get?url='+encodeURIComponent(SCRIPT_URL+'?t='+Date.now()));
+      const json=await r2.json();
+      txt=json.contents||'';
+    }
     if(!txt||txt.trim()===''){el.className='err';el.textContent='No hay lista disponible todavía.\nPide al equipo que envíe la revisión.';return;}
     const data=JSON.parse(txt);
     if(!data.items||!data.items.length){el.className='err';el.textContent='La lista está vacía.';return;}
