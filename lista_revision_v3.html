@@ -7,16 +7,20 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;color:#0f172a;font-size:15px;}
+
   .hdr{background:#0f172a;padding:18px 16px 14px;display:flex;align-items:flex-end;justify-content:space-between;position:sticky;top:0;z-index:100;}
   .hdr-left h1{font-size:22px;font-weight:500;color:#f1f5f9;letter-spacing:-0.5px;}
   .hdr-left p{font-size:11px;color:#64748b;margin-top:3px;}
   .hdr-badge{background:#1e3a5f;color:#93c5fd;font-size:10px;font-weight:500;padding:5px 10px;border-radius:20px;}
-  .tabs{background:#0f172a;padding:0 14px 14px;display:flex;gap:8px;overflow-x:auto;position:sticky;top:68px;z-index:90;}
-  .tab{font-size:12px;font-weight:500;padding:6px 14px;border-radius:20px;color:#64748b;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;}
-  .tab.on{background:#1e3a5f;color:#93c5fd;}
-  .tab .dot{display:inline-block;width:6px;height:6px;background:#ef4444;border-radius:50%;margin-left:5px;vertical-align:middle;}
-  .panel{display:none;padding-bottom:100px;}
-  .panel.on{display:block;}
+
+  /* PASO INDICATOR */
+  .paso-ind{background:#0f172a;padding:0 16px 14px;display:flex;gap:6px;align-items:center;}
+  .paso-dot{width:8px;height:8px;border-radius:50%;background:#1e3a5f;transition:all .3s;}
+  .paso-dot.on{background:#93c5fd;width:24px;border-radius:4px;}
+  .paso-dot.done{background:#34d399;}
+  .paso-lbl{font-size:11px;color:#64748b;margin-left:6px;}
+
+  /* SELECCIÓN */
   .sec-label{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;padding:14px 16px 6px;}
   .item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:white;border-bottom:0.5px solid #f1f5f9;transition:background .15s;}
   .item:first-of-type{border-top:0.5px solid #f1f5f9;}
@@ -31,7 +35,7 @@
   .imin{font-size:10px;color:#f59e0b;font-weight:500;margin-top:2px;}
   .iant{font-size:10px;color:#7c3aed;font-weight:500;margin-top:2px;}
   .cnt{display:flex;align-items:center;gap:6px;flex-shrink:0;}
-  .cb{width:28px;height:28px;border-radius:50%;background:#f1f5f9;color:#0f172a;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;transition:background .15s;}
+  .cb{width:28px;height:28px;border-radius:50%;background:#f1f5f9;color:#0f172a;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;}
   .cb:active{background:#e2e8f0;}
   .cn{font-size:14px;font-weight:500;min-width:22px;text-align:center;}
   .campo{display:flex;align-items:center;gap:5px;flex-shrink:0;}
@@ -41,75 +45,106 @@
   .extras-wrap{margin:8px 16px 0;}
   .extras-wrap label{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;display:block;margin-bottom:6px;}
   .extras-wrap textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 12px;font-size:13px;font-family:inherit;resize:none;min-height:72px;background:white;color:#0f172a;}
+
+  /* RESUMEN */
+  .resumen-header{padding:20px 16px 8px;}
+  .resumen-header h2{font-size:20px;font-weight:500;color:#0f172a;}
+  .resumen-header p{font-size:13px;color:#64748b;margin-top:4px;}
+  .resumen-nota{margin:0 16px 12px;background:#fffbeb;border:0.5px solid #fde68a;border-radius:10px;padding:10px 12px;font-size:12px;color:#92400e;}
+
+  .resumen-sec{margin:0 16px 4px;font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;padding-top:12px;}
+  .resumen-item{display:flex;align-items:center;gap:12px;padding:11px 16px;background:white;border-bottom:0.5px solid #f1f5f9;transition:background .15s;cursor:pointer;}
+  .resumen-item:first-of-type{border-top:0.5px solid #f1f5f9;}
+  .resumen-item.quitado{background:#fff1f2;}
+  .resumen-item.quitado .r-nombre{text-decoration:line-through;color:#94a3b8;}
+  .r-chk{width:22px;height:22px;border-radius:50%;border:1.5px solid #1e40af;background:#1e40af;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .r-chk::after{content:'✓';color:white;font-size:11px;font-weight:700;}
+  .resumen-item.quitado .r-chk{background:white;border-color:#fca5a5;}
+  .resumen-item.quitado .r-chk::after{content:'✕';color:#fca5a5;}
+  .r-info{flex:1;min-width:0;}
+  .r-nombre{font-size:14px;color:#0f172a;}
+  .r-det{font-size:11px;color:#1e40af;font-weight:500;margin-top:1px;}
+  .r-ant{font-size:10px;color:#7c3aed;font-weight:500;margin-top:1px;}
+  .resumen-vacio{padding:24px 16px;text-align:center;color:#94a3b8;font-size:13px;}
+
+  /* ENVIADO */
+  .enviado-wrap{text-align:center;padding:60px 24px;}
+  .env-icon{font-size:56px;margin-bottom:20px;}
+  .env-title{font-size:22px;font-weight:500;color:#0f172a;margin-bottom:8px;}
+  .env-sub{color:#64748b;font-size:14px;line-height:1.6;margin-bottom:24px;}
+  .share-box{background:white;border:0.5px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px;text-align:left;}
+  .share-box p{font-size:10px;color:#94a3b8;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:500;}
+  .btn-share{width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:8px;}
+  .btn-wa{background:#25d366;color:white;}
+  .btn-copy{background:#f1f5f9;color:#0f172a;}
+
+  /* FOOTER */
   .footer{position:fixed;bottom:0;left:0;right:0;background:white;border-top:0.5px solid #f1f5f9;padding:12px 16px;display:flex;gap:10px;z-index:200;}
   .btn{flex:1;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit;}
   .btn-sec{background:#f8fafc;color:#64748b;}
   .btn-prim{background:#1e40af;color:white;}
+  .btn-verde{background:#059669;color:white;}
   .btn:active{opacity:.85;transform:scale(.98);}
-  #paso-confirmar{display:none;padding:16px;padding-bottom:100px;}
-  .conf-title{font-size:18px;font-weight:500;color:#0f172a;margin-bottom:16px;}
-  .conf-area{margin-bottom:20px;}
-  .conf-area-title{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;padding-bottom:6px;border-bottom:0.5px solid #e2e8f0;margin-bottom:6px;}
-  .conf-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid #f8fafc;}
-  .conf-item:last-child{border-bottom:none;}
-  .conf-iname{font-size:14px;color:#0f172a;}
-  .conf-idet{font-size:12px;font-weight:500;color:#1e40af;}
-  .conf-iant{font-size:10px;color:#7c3aed;font-weight:500;margin-top:1px;}
-  #paso-enviado{display:none;text-align:center;padding:60px 24px;}
-  .env-icon{font-size:56px;margin-bottom:20px;}
-  .env-title{font-size:22px;font-weight:500;color:#0f172a;margin-bottom:8px;}
-  .env-sub{color:#64748b;font-size:14px;line-height:1.6;margin-bottom:24px;}
-  .share-box{background:white;border:0.5px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px;}
-  .share-box p{font-size:12px;color:#94a3b8;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:500;}
-  .btn-share{width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:8px;}
-  .btn-wa{background:#25d366;color:white;}
-  .btn-copy{background:#f1f5f9;color:#0f172a;}
-  .btn-nueva{background:#1e40af;color:white;border:none;padding:13px 32px;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-top:8px;width:100%;}
+
+  .pb{padding-bottom:100px;}
 </style>
 </head>
 <body>
 
 <div class="hdr">
   <div class="hdr-left">
-    <h1>Revisión</h1>
-    <p id="fecha-hoy"></p>
+    <h1 id="hdr-titulo">Revisión</h1>
+    <p id="hdr-sub"></p>
   </div>
   <div class="hdr-badge">ADXé Café</div>
 </div>
 
-<div id="paso-revision">
-  <div class="tabs" id="tabs"></div>
-  <div id="paneles"></div>
+<div class="paso-ind" id="paso-ind"></div>
+
+<!-- PASO: SELECCIÓN -->
+<div id="paso-seleccion" class="pb">
+  <div id="sec-items"></div>
   <div class="footer">
-    <button class="btn btn-sec" onclick="resetearTodo()">Limpiar</button>
-    <button class="btn btn-prim" onclick="irAConfirmar()">Revisar lista →</button>
+    <button class="btn btn-sec" id="btn-limpiar" onclick="limpiarActual()">Limpiar</button>
+    <button class="btn btn-prim" id="btn-revisar" onclick="irAResumen()">Ver resumen →</button>
   </div>
 </div>
 
-<div id="paso-confirmar">
-  <p class="conf-title">Confirma el pedido</p>
-  <div id="conf-contenido"></div>
+<!-- PASO: RESUMEN por encargado -->
+<div id="paso-resumen" style="display:none" class="pb">
+  <div class="resumen-header">
+    <h2 id="res-titulo">Resumen</h2>
+    <p id="res-sub"></p>
+  </div>
+  <div class="resumen-nota">Toca un artículo para quitarlo si fue seleccionado por error.</div>
+  <div id="res-items"></div>
   <div class="footer">
-    <button class="btn btn-sec" onclick="volverRevision()">← Corregir</button>
-    <button class="btn btn-prim" onclick="irAEnviado()">Generar lista ✓</button>
+    <button class="btn btn-sec" onclick="volverSeleccion()">← Corregir</button>
+    <button class="btn btn-verde" id="btn-confirmar-paso" onclick="confirmarPaso()">Confirmar y pasar →</button>
   </div>
 </div>
 
-<div id="paso-enviado">
-  <div class="env-icon">✅</div>
-  <div class="env-title">Lista lista</div>
-  <p class="env-sub">Comparte el enlace con el comprador. Al abrirlo verá la lista directamente.</p>
-  <div class="share-box">
-    <p>Compartir por</p>
-    <button class="btn-share btn-wa" onclick="compartirWA()">WhatsApp</button>
-    <button class="btn-share btn-copy" onclick="copiarEnlace()">Copiar enlace</button>
+<!-- PASO: ENVIADO (último encargado) -->
+<div id="paso-enviado" style="display:none">
+  <div class="enviado-wrap">
+    <div class="env-icon">✅</div>
+    <div class="env-title">Lista completa</div>
+    <p class="env-sub">Toda la selección está lista. Comparte el enlace con el comprador.</p>
+    <div class="share-box">
+      <p>Compartir por</p>
+      <button class="btn-share btn-wa" onclick="compartirWA()">WhatsApp</button>
+      <button class="btn-share btn-copy" onclick="copiarEnlace()">Copiar enlace</button>
+    </div>
+    <button class="btn btn-sec" style="width:100%;margin-top:8px" onclick="nuevaLista()">Nueva revisión</button>
   </div>
-  <button class="btn-nueva" onclick="nuevaLista()">Nueva revisión</button>
 </div>
 
 <script>
 const STORAGE_KEY='adxe_config_v1';
 const COMPRADOR_URL='https://adxecafe.github.io/lista-negocio/lista_comprador_v2.html';
+
+// Orden de encargados
+const ORDEN_AREAS = ['cocina','barra','desechables'];
 
 const AREAS=[
   {id:"barra",nombre:"Barra",categorias:[
@@ -311,121 +346,122 @@ const AREAS=[
       {id:"dc13",nombre:"Bote unicel y tapa salsa",pres:"Paquete 50",min:"menos de 15",tipo:"check"},
       {id:"dc14",nombre:"Botecito y tapa plástico condimentos",pres:"Paquete 50",min:"menos de 20",tipo:"check"},
       {id:"dc15",nombre:"Guantes",pres:"Caja",min:"1/4 caja",tipo:"check"},
-    ]}
+    ]},
+    {id:"de-extras",nombre:"Notas",items:[]}
   ]}
 ];
 
-// Leer config guardada
+// Aplicar config guardada
 let CFG={};
-try{const raw=localStorage.getItem(STORAGE_KEY);if(raw)CFG=JSON.parse(raw);}catch(e){}
+try{const r=localStorage.getItem(STORAGE_KEY);if(r)CFG=JSON.parse(r);}catch(e){}
 AREAS.forEach(a=>a.categorias.forEach(c=>c.items.forEach(it=>{
   if(CFG[it.id]){it.tipo=CFG[it.id].tipo||it.tipo;if(CFG[it.id].unidad)it.unidad=CFG[it.id].unidad;}
 })));
 
+// Estado global
 const E={};
 AREAS.forEach(a=>a.categorias.forEach(c=>c.items.forEach(it=>{
   E[it.id]={checked:false,qty:1,cant:""};
 })));
-let extrasTexto="";
-let areaActiva="barra";
-let payloadFinal=null;
 
+// Estado de flujo
+let pasoActual=0; // índice en ORDEN_AREAS
+let extrasTexto="";
+let confirmados={}; // areaId -> [{item, quitado}]
+
+const HOY=new Date();
 const DIAS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-const HOY=new Date();
-document.getElementById('fecha-hoy').textContent=`${DIAS[HOY.getDay()]} ${HOY.getDate()} de ${MESES[HOY.getMonth()]}`;
 
-function contarArea(aid){
-  return AREAS.find(a=>a.id===aid).categorias.reduce((n,c)=>n+c.items.filter(it=>E[it.id].checked).length,0);
+function areaActual(){
+  return AREAS.find(a=>a.id===ORDEN_AREAS[pasoActual]);
 }
 
-function renderTabs(){
-  const cont=document.getElementById('tabs');
-  cont.innerHTML='';
-  AREAS.forEach(a=>{
+function nombreAreaActual(){
+  return areaActual()?.nombre||'';
+}
+
+function esUltimo(){
+  return pasoActual===ORDEN_AREAS.length-1;
+}
+
+function actualizarHeader(){
+  document.getElementById('hdr-titulo').textContent=nombreAreaActual();
+  document.getElementById('hdr-sub').textContent=`${DIAS[HOY.getDay()]} ${HOY.getDate()} de ${MESES[HOY.getMonth()]}`;
+  // indicador de pasos
+  const ind=document.getElementById('paso-ind');
+  ind.innerHTML='';
+  ORDEN_AREAS.forEach((aid,i)=>{
     const d=document.createElement('div');
-    d.className='tab'+(a.id===areaActiva?' on':'');
-    d.id='tab-'+a.id;
-    const n=contarArea(a.id);
-    d.innerHTML=a.nombre+(n>0?'<span class="dot"></span>':'');
-    d.onclick=()=>cambiarArea(a.id);
-    cont.appendChild(d);
+    d.className='paso-dot'+(i===pasoActual?' on':i<pasoActual?' done':'');
+    ind.appendChild(d);
   });
+  const lbl=document.createElement('div');
+  lbl.className='paso-lbl';
+  lbl.textContent=`Paso ${pasoActual+1} de ${ORDEN_AREAS.length}`;
+  ind.appendChild(lbl);
 }
 
-function cambiarArea(id){
-  areaActiva=id;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  document.getElementById('tab-'+id).classList.add('on');
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
-  document.getElementById('panel-'+id).classList.add('on');
-}
-
-function actualizarTabs(){
-  AREAS.forEach(a=>{
-    const tab=document.getElementById('tab-'+a.id);
-    if(!tab)return;
-    const n=contarArea(a.id);
-    tab.innerHTML=a.nombre+(n>0?'<span class="dot"></span>':'');
-  });
-}
-
-function renderPaneles(){
-  const cont=document.getElementById('paneles');
+function renderSeleccion(){
+  actualizarHeader();
+  const area=areaActual();
+  const cont=document.getElementById('sec-items');
   cont.innerHTML='';
-  AREAS.forEach(a=>{
-    const panel=document.createElement('div');
-    panel.className='panel'+(a.id===areaActiva?' on':'');
-    panel.id='panel-'+a.id;
-    a.categorias.forEach(cat=>{
-      const sec=document.createElement('div');
-      sec.className='sec-label';sec.textContent=cat.nombre;
-      panel.appendChild(sec);
-      cat.items.forEach(it=>{
-        const e=E[it.id];
-        const div=document.createElement('div');
-        div.className='item'+(e.checked?' done':'');
-        div.id='item-'+it.id;
-        const chk=document.createElement('div');
-        chk.className='chk'+(e.checked?' on':'');
-        chk.id='chk-'+it.id;
-        chk.onclick=()=>toggleItem(it);
-        const info=document.createElement('div');
-        info.className='iinfo';
-        const nombre=document.createElement('div');nombre.className='iname';nombre.textContent=it.nombre;
-        info.appendChild(nombre);
-        if(it.pres){const p=document.createElement('div');p.className='ipres';p.textContent=it.pres;info.appendChild(p);}
-        if(it.min){const p=document.createElement('div');p.className='imin';p.textContent='⚠ Mín: '+it.min;info.appendChild(p);}
-        if(it.ant){const p=document.createElement('div');p.className='iant';p.textContent='🕐 '+it.ant;info.appendChild(p);}
-        div.appendChild(chk);div.appendChild(info);
-        if(it.tipo==='pieza'){
-          const cnt=document.createElement('div');cnt.className='cnt';cnt.id='cnt-'+it.id;cnt.style.display=e.checked?'flex':'none';
-          const bm=document.createElement('button');bm.className='cb';bm.textContent='−';
-          bm.onclick=(ev)=>{ev.stopPropagation();E[it.id].qty=Math.max(1,E[it.id].qty-1);document.getElementById('cn-'+it.id).textContent=E[it.id].qty;};
-          const cn=document.createElement('span');cn.className='cn';cn.id='cn-'+it.id;cn.textContent=e.qty;
-          const bp=document.createElement('button');bp.className='cb';bp.textContent='+';
-          bp.onclick=(ev)=>{ev.stopPropagation();E[it.id].qty++;document.getElementById('cn-'+it.id).textContent=E[it.id].qty;};
-          cnt.appendChild(bm);cnt.appendChild(cn);cnt.appendChild(bp);div.appendChild(cnt);
-        } else if(it.tipo==='peso'){
-          const campo=document.createElement('div');campo.className='campo';campo.id='campo-'+it.id;campo.style.display=e.checked?'flex':'none';
-          const inp=document.createElement('input');inp.type='number';inp.inputMode='decimal';inp.placeholder='0';inp.value=e.cant||'';
-          inp.oninput=(ev)=>{ev.stopPropagation();E[it.id].cant=ev.target.value;};
-          inp.onclick=(ev)=>ev.stopPropagation();
-          const un=document.createElement('span');un.className='cunit';un.textContent=it.unidad||'';
-          campo.appendChild(inp);campo.appendChild(un);div.appendChild(campo);
-        }
-        panel.appendChild(div);
-      });
-    });
-    if(a.id==='desechables'){
-      const wrap=document.createElement('div');wrap.className='extras-wrap';wrap.style.marginTop='8px';
+
+  area.categorias.forEach(cat=>{
+    if(cat.id==='de-extras'){
+      // textarea de notas para desechables
+      const wrap=document.createElement('div');wrap.className='extras-wrap';wrap.style.margin='8px 16px 0';
       const lbl=document.createElement('label');lbl.textContent='Notas / artículos extra';
       const ta=document.createElement('textarea');ta.placeholder='Agrega artículos adicionales o notas...';ta.value=extrasTexto;
       ta.oninput=(ev)=>{extrasTexto=ev.target.value;};
-      wrap.appendChild(lbl);wrap.appendChild(ta);panel.appendChild(wrap);
+      wrap.appendChild(lbl);wrap.appendChild(ta);cont.appendChild(wrap);
+      return;
     }
-    cont.appendChild(panel);
+    if(!cat.items.length)return;
+    const sec=document.createElement('div');sec.className='sec-label';sec.textContent=cat.nombre;cont.appendChild(sec);
+    cat.items.forEach(it=>{
+      const e=E[it.id];
+      const div=document.createElement('div');
+      div.className='item'+(e.checked?' done':'');div.id='item-'+it.id;
+      const chk=document.createElement('div');
+      chk.className='chk'+(e.checked?' on':'');chk.id='chk-'+it.id;
+      chk.onclick=()=>toggleItem(it);
+      const info=document.createElement('div');info.className='iinfo';
+      const nombre=document.createElement('div');nombre.className='iname';nombre.textContent=it.nombre;info.appendChild(nombre);
+      if(it.pres){const p=document.createElement('div');p.className='ipres';p.textContent=it.pres;info.appendChild(p);}
+      if(it.min){const p=document.createElement('div');p.className='imin';p.textContent='⚠ Mín: '+it.min;info.appendChild(p);}
+      if(it.ant){const p=document.createElement('div');p.className='iant';p.textContent='🕐 '+it.ant;info.appendChild(p);}
+      div.appendChild(chk);div.appendChild(info);
+      if(it.tipo==='pieza'){
+        const cnt=document.createElement('div');cnt.className='cnt';cnt.id='cnt-'+it.id;cnt.style.display=e.checked?'flex':'none';
+        const bm=document.createElement('button');bm.className='cb';bm.textContent='−';
+        bm.onclick=(ev)=>{ev.stopPropagation();E[it.id].qty=Math.max(1,E[it.id].qty-1);document.getElementById('cn-'+it.id).textContent=E[it.id].qty;};
+        const cn=document.createElement('span');cn.className='cn';cn.id='cn-'+it.id;cn.textContent=e.qty;
+        const bp=document.createElement('button');bp.className='cb';bp.textContent='+';
+        bp.onclick=(ev)=>{ev.stopPropagation();E[it.id].qty++;document.getElementById('cn-'+it.id).textContent=E[it.id].qty;};
+        cnt.appendChild(bm);cnt.appendChild(cn);cnt.appendChild(bp);div.appendChild(cnt);
+      } else if(it.tipo==='peso'){
+        const campo=document.createElement('div');campo.className='campo';campo.id='campo-'+it.id;campo.style.display=e.checked?'flex':'none';
+        const inp=document.createElement('input');inp.type='number';inp.inputMode='decimal';inp.placeholder='0';inp.value=e.cant||'';
+        inp.oninput=(ev)=>{ev.stopPropagation();E[it.id].cant=ev.target.value;};
+        inp.onclick=(ev)=>ev.stopPropagation();
+        const un=document.createElement('span');un.className='cunit';un.textContent=it.unidad||'';
+        campo.appendChild(inp);campo.appendChild(un);div.appendChild(campo);
+      }
+      cont.appendChild(div);
+    });
   });
+
+  // botón confirmar
+  const btnConf=document.getElementById('btn-confirmar-paso');
+  if(esUltimo()){
+    btnConf.textContent='Confirmar y enviar ✓';
+    btnConf.className='btn btn-prim';
+  } else {
+    btnConf.textContent='Confirmar y pasar →';
+    btnConf.className='btn btn-verde';
+  }
 }
 
 function toggleItem(it){
@@ -434,66 +470,161 @@ function toggleItem(it){
   document.getElementById('chk-'+it.id).classList.toggle('on',E[it.id].checked);
   if(it.tipo==='pieza'){const c=document.getElementById('cnt-'+it.id);if(c)c.style.display=E[it.id].checked?'flex':'none';}
   else if(it.tipo==='peso'){const c=document.getElementById('campo-'+it.id);if(c)c.style.display=E[it.id].checked?'flex':'none';}
-  actualizarTabs();
 }
 
-function resetearTodo(){
-  if(!confirm('¿Limpiar toda la selección?'))return;
-  Object.keys(E).forEach(k=>{E[k].checked=false;E[k].qty=1;E[k].cant='';});
-  extrasTexto='';renderPaneles();actualizarTabs();
+function limpiarActual(){
+  if(!confirm('¿Limpiar la selección de '+nombreAreaActual()+'?'))return;
+  const area=areaActual();
+  area.categorias.forEach(cat=>cat.items.forEach(it=>{
+    E[it.id].checked=false;E[it.id].qty=1;E[it.id].cant='';
+  }));
+  renderSeleccion();
 }
 
-function irAConfirmar(){
-  document.querySelectorAll('textarea').forEach(t=>{extrasTexto=t.value;});
-  const total=Object.values(E).filter(e=>e.checked).length;
-  if(total===0&&!extrasTexto.trim()){alert('No hay artículos seleccionados.');return;}
-  let html='';
-  AREAS.forEach(a=>{
-    const rows=[];
-    a.categorias.forEach(cat=>{
-      cat.items.filter(it=>E[it.id].checked).forEach(it=>{
-        let det='';
-        if(it.tipo==='pieza')det=`${E[it.id].qty} pz`;
-        else if(it.tipo==='peso'&&E[it.id].cant)det=`${E[it.id].cant} ${it.unidad||''}`;
-        rows.push({nombre:it.nombre,det,ant:it.ant||''});
-      });
+function irAResumen(){
+  const area=areaActual();
+  // recolectar items seleccionados
+  const rows=[];
+  area.categorias.forEach(cat=>{
+    cat.items.filter(it=>E[it.id].checked).forEach(it=>{
+      rows.push({it, quitado:false});
     });
-    if(!rows.length)return;
-    html+=`<div class="conf-area"><div class="conf-area-title">${a.nombre} · ${rows.length} artículo${rows.length>1?'s':''}</div>`;
-    rows.forEach(r=>{html+=`<div class="conf-item"><div><div class="conf-iname">${r.nombre}</div>${r.ant?`<div class="conf-iant">🕐 ${r.ant}</div>`:''}</div>${r.det?`<div class="conf-idet">${r.det}</div>`:''}</div>`;});
-    html+='</div>';
   });
-  if(extrasTexto.trim())html+=`<div class="conf-area"><div class="conf-area-title">Notas / extras</div><div style="font-size:13px;color:#0f172a;padding:6px 0;white-space:pre-wrap;line-height:1.5">${extrasTexto}</div></div>`;
-  document.getElementById('conf-contenido').innerHTML=html;
-  document.getElementById('paso-revision').style.display='none';
-  document.getElementById('paso-confirmar').style.display='block';
+
+  // resumen header
+  const total=rows.length;
+  document.getElementById('res-titulo').textContent='Resumen — '+nombreAreaActual();
+  document.getElementById('res-sub').textContent=total>0?`${total} artículo${total>1?'s':''} seleccionado${total>1?'s':''}`:' Sin artículos seleccionados';
+
+  // guardar referencia para poder quitar
+  confirmados[area.id]=rows;
+
+  renderResumen(area.id);
+  document.getElementById('paso-seleccion').style.display='none';
+  document.getElementById('paso-resumen').style.display='block';
 }
 
-function volverRevision(){
-  document.getElementById('paso-confirmar').style.display='none';
-  document.getElementById('paso-revision').style.display='block';
+function renderResumen(areaId){
+  const rows=confirmados[areaId];
+  const cont=document.getElementById('res-items');
+  cont.innerHTML='';
+
+  if(!rows.length){
+    const vacio=document.createElement('div');vacio.className='resumen-vacio';
+    vacio.textContent='No se seleccionó ningún artículo.';cont.appendChild(vacio);
+    // extras si hay
+    if(extrasTexto.trim()&&areaId==='desechables'){
+      const sec=document.createElement('div');sec.className='resumen-sec';sec.textContent='Notas / extras';cont.appendChild(sec);
+      const p=document.createElement('div');p.style.cssText='padding:10px 16px;font-size:13px;white-space:pre-wrap;line-height:1.5;background:white;';p.textContent=extrasTexto;cont.appendChild(p);
+    }
+    return;
+  }
+
+  // Agrupar por categoría
+  const porCat={};
+  rows.forEach(row=>{
+    const catNombre=row.it.catNombre||'General';
+    if(!porCat[catNombre])porCat[catNombre]=[];
+    porCat[catNombre].push(row);
+  });
+
+  // Buscar nombre de categoría
+  const area=AREAS.find(a=>a.id===areaId);
+  rows.forEach(row=>{
+    area.categorias.forEach(cat=>{
+      if(cat.items.find(i=>i.id===row.it.id))row.it.catNombre=cat.nombre;
+    });
+  });
+
+  // Renderizar por categoría
+  const cats={};
+  rows.forEach(row=>{cats[row.it.catNombre]=true;});
+  Object.keys(cats).forEach(catNombre=>{
+    const sec=document.createElement('div');sec.className='resumen-sec';sec.textContent=catNombre;cont.appendChild(sec);
+    rows.filter(r=>r.it.catNombre===catNombre).forEach((row,idx)=>{
+      const div=document.createElement('div');
+      div.className='resumen-item'+(row.quitado?' quitado':'');
+      div.onclick=()=>{
+        row.quitado=!row.quitado;
+        renderResumen(areaId);
+        // actualizar subtitulo
+        const activos=confirmados[areaId].filter(r=>!r.quitado).length;
+        document.getElementById('res-sub').textContent=`${activos} artículo${activos!==1?'s':''} confirmado${activos!==1?'s':''}`;
+      };
+      const chk=document.createElement('div');chk.className='r-chk';
+      const info=document.createElement('div');info.className='r-info';
+      const nombre=document.createElement('div');nombre.className='r-nombre';nombre.textContent=row.it.nombre;
+      info.appendChild(nombre);
+      let det='';
+      if(row.it.tipo==='pieza')det=`${E[row.it.id].qty} pz`;
+      else if(row.it.tipo==='peso'&&E[row.it.id].cant)det=`${E[row.it.id].cant} ${row.it.unidad||''}`;
+      if(det){const d=document.createElement('div');d.className='r-det';d.textContent=det;info.appendChild(d);}
+      if(row.it.ant){const a=document.createElement('div');a.className='r-ant';a.textContent='🕐 '+row.it.ant;info.appendChild(a);}
+      div.appendChild(chk);div.appendChild(info);cont.appendChild(div);
+    });
+  });
+
+  // Notas si es desechables
+  if(extrasTexto.trim()&&areaId==='desechables'){
+    const sec=document.createElement('div');sec.className='resumen-sec';sec.textContent='Notas / extras';cont.appendChild(sec);
+    const p=document.createElement('div');p.style.cssText='padding:10px 16px;font-size:13px;white-space:pre-wrap;line-height:1.5;background:white;border-top:0.5px solid #f1f5f9;';p.textContent=extrasTexto;cont.appendChild(p);
+  }
 }
 
-function irAEnviado(){
-  // Construir payload
-  payloadFinal={fecha:HOY.toISOString(),items:[],extras:extrasTexto};
+function volverSeleccion(){
+  document.getElementById('paso-resumen').style.display='none';
+  document.getElementById('paso-seleccion').style.display='block';
+}
+
+function confirmarPaso(){
+  const areaId=ORDEN_AREAS[pasoActual];
+  // aplicar quitados al estado
+  (confirmados[areaId]||[]).forEach(row=>{
+    if(row.quitado){
+      E[row.it.id].checked=false;
+      E[row.it.id].qty=1;
+      E[row.it.id].cant='';
+    }
+  });
+
+  if(esUltimo()){
+    // generar y mostrar opciones de envío
+    document.getElementById('paso-resumen').style.display='none';
+    document.getElementById('paso-enviado').style.display='block';
+    document.getElementById('paso-ind').style.display='none';
+  } else {
+    pasoActual++;
+    document.getElementById('paso-resumen').style.display='none';
+    document.getElementById('paso-seleccion').style.display='block';
+    renderSeleccion();
+    window.scrollTo(0,0);
+  }
+}
+
+function construirPayload(){
+  const payload={fecha:HOY.toISOString(),items:[],extras:extrasTexto};
   AREAS.forEach(a=>a.categorias.forEach(cat=>cat.items.forEach(it=>{
     if(!E[it.id].checked)return;
-    payloadFinal.items.push({area:a.nombre,categoria:cat.nombre,nombre:it.nombre,pres:it.pres||'',tipo:it.tipo,qty:it.tipo==='pieza'?E[it.id].qty:null,cant:it.tipo==='peso'?E[it.id].cant:null,unidad:it.unidad||null,ant:it.ant||null});
+    payload.items.push({
+      area:a.nombre,categoria:cat.nombre,nombre:it.nombre,
+      pres:it.pres||'',tipo:it.tipo,
+      qty:it.tipo==='pieza'?E[it.id].qty:null,
+      cant:it.tipo==='peso'?E[it.id].cant:null,
+      unidad:it.unidad||null,ant:it.ant||null
+    });
   })));
-  document.getElementById('paso-confirmar').style.display='none';
-  document.getElementById('paso-enviado').style.display='block';
+  return payload;
 }
 
 function generarURL(){
-  const json=JSON.stringify(payloadFinal);
+  const json=JSON.stringify(construirPayload());
   const b64=btoa(unescape(encodeURIComponent(json)));
   return COMPRADOR_URL+'#'+b64;
 }
 
 function compartirWA(){
   const url=generarURL();
-  const msg='Lista de compras ADXé Café — '+HOY.toLocaleDateString('es-MX')+'\n\nAbre este enlace para ver la lista:\n'+url;
+  const msg='Lista de compras ADXé Café — '+HOY.toLocaleDateString('es-MX')+'\n\nAbre este enlace:\n'+url;
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
@@ -509,13 +640,15 @@ function copiarEnlace(){
 
 function nuevaLista(){
   Object.keys(E).forEach(k=>{E[k].checked=false;E[k].qty=1;E[k].cant='';});
-  extrasTexto='';payloadFinal=null;
+  extrasTexto='';confirmados={};pasoActual=0;
   document.getElementById('paso-enviado').style.display='none';
-  document.getElementById('paso-revision').style.display='block';
-  renderTabs();renderPaneles();actualizarTabs();
+  document.getElementById('paso-ind').style.display='flex';
+  document.getElementById('paso-seleccion').style.display='block';
+  renderSeleccion();window.scrollTo(0,0);
 }
 
-renderTabs();renderPaneles();
+// Init
+renderSeleccion();
 </script>
 </body>
 </html>
