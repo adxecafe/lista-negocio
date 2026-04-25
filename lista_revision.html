@@ -7,68 +7,45 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;color:#0f172a;font-size:15px;}
-
-  /* HEADER */
   .hdr{background:#0f172a;padding:18px 16px 14px;display:flex;align-items:flex-end;justify-content:space-between;position:sticky;top:0;z-index:100;}
   .hdr-left h1{font-size:22px;font-weight:500;color:#f1f5f9;letter-spacing:-0.5px;}
   .hdr-left p{font-size:11px;color:#64748b;margin-top:3px;}
-  .hdr-badge{background:#1e3a5f;color:#93c5fd;font-size:10px;font-weight:500;padding:5px 10px;border-radius:20px;white-space:nowrap;}
-
-  /* TABS */
+  .hdr-badge{background:#1e3a5f;color:#93c5fd;font-size:10px;font-weight:500;padding:5px 10px;border-radius:20px;}
   .tabs{background:#0f172a;padding:0 14px 14px;display:flex;gap:8px;overflow-x:auto;position:sticky;top:68px;z-index:90;}
   .tab{font-size:12px;font-weight:500;padding:6px 14px;border-radius:20px;color:#64748b;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;}
   .tab.on{background:#1e3a5f;color:#93c5fd;}
   .tab .dot{display:inline-block;width:6px;height:6px;background:#ef4444;border-radius:50%;margin-left:5px;vertical-align:middle;}
-
-  /* PANELES */
   .panel{display:none;padding-bottom:100px;}
   .panel.on{display:block;}
-
-  /* SECCIÓN */
   .sec-label{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;padding:14px 16px 6px;}
-
-  /* ITEM */
   .item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:white;border-bottom:0.5px solid #f1f5f9;transition:background .15s;}
   .item:first-of-type{border-top:0.5px solid #f1f5f9;}
   .item.done{background:#f8fafc;}
   .item.done .iname{text-decoration:line-through;color:#94a3b8;}
-
   .chk{width:22px;height:22px;border-radius:50%;border:1.5px solid #cbd5e1;flex-shrink:0;cursor:pointer;transition:all .15s;background:white;display:flex;align-items:center;justify-content:center;}
   .chk.on{background:#1e40af;border-color:#1e40af;}
   .chk.on::after{content:'✓';color:white;font-size:11px;font-weight:700;}
-
   .iinfo{flex:1;min-width:0;}
   .iname{font-size:14px;color:#0f172a;}
   .ipres{font-size:11px;color:#94a3b8;margin-top:1px;}
   .imin{font-size:10px;color:#f59e0b;font-weight:500;margin-top:2px;}
   .iant{font-size:10px;color:#7c3aed;font-weight:500;margin-top:2px;}
-
-  /* CONTADOR */
   .cnt{display:flex;align-items:center;gap:6px;flex-shrink:0;}
-  .cb{width:28px;height:28px;border-radius:50%;background:#f1f5f9;color:#0f172a;font-size:16px;font-weight:400;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;transition:background .15s;}
+  .cb{width:28px;height:28px;border-radius:50%;background:#f1f5f9;color:#0f172a;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;transition:background .15s;}
   .cb:active{background:#e2e8f0;}
-  .cn{font-size:14px;font-weight:500;min-width:22px;text-align:center;color:#0f172a;}
-
-  /* CAMPO PESO */
+  .cn{font-size:14px;font-weight:500;min-width:22px;text-align:center;}
   .campo{display:flex;align-items:center;gap:5px;flex-shrink:0;}
   .campo input{width:56px;padding:5px 6px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:500;text-align:center;color:#0f172a;background:white;font-family:inherit;}
   .campo input:focus{outline:none;border-color:#1e40af;}
   .cunit{font-size:10px;color:#94a3b8;font-weight:500;}
-
-  /* EXTRAS */
   .extras-wrap{margin:8px 16px 0;}
   .extras-wrap label{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;display:block;margin-bottom:6px;}
   .extras-wrap textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 12px;font-size:13px;font-family:inherit;resize:none;min-height:72px;background:white;color:#0f172a;}
-  .extras-wrap textarea:focus{outline:none;border-color:#1e40af;}
-
-  /* FOOTER */
   .footer{position:fixed;bottom:0;left:0;right:0;background:white;border-top:0.5px solid #f1f5f9;padding:12px 16px;display:flex;gap:10px;z-index:200;}
   .btn{flex:1;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit;}
   .btn-sec{background:#f8fafc;color:#64748b;}
   .btn-prim{background:#1e40af;color:white;}
   .btn:active{opacity:.85;transform:scale(.98);}
-
-  /* CONFIRMAR */
   #paso-confirmar{display:none;padding:16px;padding-bottom:100px;}
   .conf-title{font-size:18px;font-weight:500;color:#0f172a;margin-bottom:16px;}
   .conf-area{margin-bottom:20px;}
@@ -78,13 +55,16 @@
   .conf-iname{font-size:14px;color:#0f172a;}
   .conf-idet{font-size:12px;font-weight:500;color:#1e40af;}
   .conf-iant{font-size:10px;color:#7c3aed;font-weight:500;margin-top:1px;}
-
-  /* ENVIADO */
-  #paso-enviado{display:none;text-align:center;padding:80px 24px;}
+  #paso-enviado{display:none;text-align:center;padding:60px 24px;}
   .env-icon{font-size:56px;margin-bottom:20px;}
   .env-title{font-size:22px;font-weight:500;color:#0f172a;margin-bottom:8px;}
-  .env-sub{color:#64748b;font-size:14px;line-height:1.6;}
-  .btn-nueva{margin-top:32px;background:#1e40af;color:white;border:none;padding:14px 32px;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
+  .env-sub{color:#64748b;font-size:14px;line-height:1.6;margin-bottom:24px;}
+  .share-box{background:white;border:0.5px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px;}
+  .share-box p{font-size:12px;color:#94a3b8;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:500;}
+  .btn-share{width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:8px;}
+  .btn-wa{background:#25d366;color:white;}
+  .btn-copy{background:#f1f5f9;color:#0f172a;}
+  .btn-nueva{background:#1e40af;color:white;border:none;padding:13px 32px;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-top:8px;width:100%;}
 </style>
 </head>
 <body>
@@ -111,19 +91,25 @@
   <div id="conf-contenido"></div>
   <div class="footer">
     <button class="btn btn-sec" onclick="volverRevision()">← Corregir</button>
-    <button class="btn btn-prim" id="btn-enviar" onclick="enviarLista()">Enviar al comprador</button>
+    <button class="btn btn-prim" onclick="irAEnviado()">Generar lista ✓</button>
   </div>
 </div>
 
 <div id="paso-enviado">
   <div class="env-icon">✅</div>
-  <div class="env-title">Lista enviada</div>
-  <p class="env-sub">El comprador ya puede ver la lista en su dispositivo.</p>
+  <div class="env-title">Lista lista</div>
+  <p class="env-sub">Comparte el enlace con el comprador. Al abrirlo verá la lista directamente.</p>
+  <div class="share-box">
+    <p>Compartir por</p>
+    <button class="btn-share btn-wa" onclick="compartirWA()">WhatsApp</button>
+    <button class="btn-share btn-copy" onclick="copiarEnlace()">Copiar enlace</button>
+  </div>
   <button class="btn-nueva" onclick="nuevaLista()">Nueva revisión</button>
 </div>
 
 <script>
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwGiW69PZdySXRomvXU9d-emrQ2UgWfwPyWEbcHHk4eWcLtMSkrzz589ED4IeJMF8Fj/exec";
+const STORAGE_KEY='adxe_config_v1';
+const COMPRADOR_URL='https://adxecafe.github.io/lista-negocio/lista_comprador_v2.html';
 
 const AREAS=[
   {id:"barra",nombre:"Barra",categorias:[
@@ -135,7 +121,7 @@ const AREAS=[
       {id:"bs05",nombre:"Leche de coco",pres:"Caja 6 pzas.",min:"3 pz",tipo:"check"},
       {id:"bs06",nombre:"Agua tónica",pres:"Caja 12 pzas.",min:"12 pz",tipo:"check"},
       {id:"bs07",nombre:"Agua mineral",pres:"Caja 12 pzas.",min:"12 pz",tipo:"check"},
-      {id:"bs08",nombre:"Matcha",pres:"1 kg",min:"250 gr",tipo:"peso",unidad:"gr"},
+      {id:"bs08",nombre:"Matcha",pres:"1 kg",min:"250 gr",tipo:"check"},
       {id:"bs09",nombre:"Cacao",pres:"Bolsa 1 kg",min:"1/4 frasco",tipo:"peso",unidad:"gr"},
       {id:"bs10",nombre:"Miel de agave",pres:"Paquete 2 pzas.",min:"1 pieza",tipo:"pieza"},
       {id:"bs11",nombre:"Miel de maple",pres:"Bote 1 lt.",min:"1/4 bote",tipo:"check"},
@@ -329,12 +315,20 @@ const AREAS=[
   ]}
 ];
 
+// Leer config guardada
+let CFG={};
+try{const raw=localStorage.getItem(STORAGE_KEY);if(raw)CFG=JSON.parse(raw);}catch(e){}
+AREAS.forEach(a=>a.categorias.forEach(c=>c.items.forEach(it=>{
+  if(CFG[it.id]){it.tipo=CFG[it.id].tipo||it.tipo;if(CFG[it.id].unidad)it.unidad=CFG[it.id].unidad;}
+})));
+
 const E={};
 AREAS.forEach(a=>a.categorias.forEach(c=>c.items.forEach(it=>{
   E[it.id]={checked:false,qty:1,cant:""};
 })));
 let extrasTexto="";
 let areaActiva="barra";
+let payloadFinal=null;
 
 const DIAS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -353,7 +347,7 @@ function renderTabs(){
     d.className='tab'+(a.id===areaActiva?' on':'');
     d.id='tab-'+a.id;
     const n=contarArea(a.id);
-    d.innerHTML=a.nombre+(n>0?`<span class="dot"></span>`:'');
+    d.innerHTML=a.nombre+(n>0?'<span class="dot"></span>':'');
     d.onclick=()=>cambiarArea(a.id);
     cont.appendChild(d);
   });
@@ -372,7 +366,7 @@ function actualizarTabs(){
     const tab=document.getElementById('tab-'+a.id);
     if(!tab)return;
     const n=contarArea(a.id);
-    tab.innerHTML=a.nombre+(n>0?`<span class="dot"></span>`:'');
+    tab.innerHTML=a.nombre+(n>0?'<span class="dot"></span>':'');
   });
 }
 
@@ -383,118 +377,76 @@ function renderPaneles(){
     const panel=document.createElement('div');
     panel.className='panel'+(a.id===areaActiva?' on':'');
     panel.id='panel-'+a.id;
-
     a.categorias.forEach(cat=>{
       const sec=document.createElement('div');
-      sec.className='sec-label';
-      sec.textContent=cat.nombre;
+      sec.className='sec-label';sec.textContent=cat.nombre;
       panel.appendChild(sec);
-
       cat.items.forEach(it=>{
         const e=E[it.id];
         const div=document.createElement('div');
         div.className='item'+(e.checked?' done':'');
         div.id='item-'+it.id;
-
-        // Checkbox circular
         const chk=document.createElement('div');
         chk.className='chk'+(e.checked?' on':'');
         chk.id='chk-'+it.id;
         chk.onclick=()=>toggleItem(it);
-
-        // Info
         const info=document.createElement('div');
         info.className='iinfo';
-        const nombre=document.createElement('div');
-        nombre.className='iname';
-        nombre.textContent=it.nombre;
+        const nombre=document.createElement('div');nombre.className='iname';nombre.textContent=it.nombre;
         info.appendChild(nombre);
         if(it.pres){const p=document.createElement('div');p.className='ipres';p.textContent=it.pres;info.appendChild(p);}
         if(it.min){const p=document.createElement('div');p.className='imin';p.textContent='⚠ Mín: '+it.min;info.appendChild(p);}
         if(it.ant){const p=document.createElement('div');p.className='iant';p.textContent='🕐 '+it.ant;info.appendChild(p);}
-
-        div.appendChild(chk);
-        div.appendChild(info);
-
-        // Control
+        div.appendChild(chk);div.appendChild(info);
         if(it.tipo==='pieza'){
-          const cnt=document.createElement('div');
-          cnt.className='cnt';
-          cnt.id='cnt-'+it.id;
-          cnt.style.display=e.checked?'flex':'none';
+          const cnt=document.createElement('div');cnt.className='cnt';cnt.id='cnt-'+it.id;cnt.style.display=e.checked?'flex':'none';
           const bm=document.createElement('button');bm.className='cb';bm.textContent='−';
           bm.onclick=(ev)=>{ev.stopPropagation();E[it.id].qty=Math.max(1,E[it.id].qty-1);document.getElementById('cn-'+it.id).textContent=E[it.id].qty;};
           const cn=document.createElement('span');cn.className='cn';cn.id='cn-'+it.id;cn.textContent=e.qty;
           const bp=document.createElement('button');bp.className='cb';bp.textContent='+';
           bp.onclick=(ev)=>{ev.stopPropagation();E[it.id].qty++;document.getElementById('cn-'+it.id).textContent=E[it.id].qty;};
-          cnt.appendChild(bm);cnt.appendChild(cn);cnt.appendChild(bp);
-          div.appendChild(cnt);
+          cnt.appendChild(bm);cnt.appendChild(cn);cnt.appendChild(bp);div.appendChild(cnt);
         } else if(it.tipo==='peso'){
-          const campo=document.createElement('div');
-          campo.className='campo';
-          campo.id='campo-'+it.id;
-          campo.style.display=e.checked?'flex':'none';
-          const inp=document.createElement('input');
-          inp.type='number';inp.inputMode='decimal';inp.placeholder='0';inp.value=e.cant||'';
+          const campo=document.createElement('div');campo.className='campo';campo.id='campo-'+it.id;campo.style.display=e.checked?'flex':'none';
+          const inp=document.createElement('input');inp.type='number';inp.inputMode='decimal';inp.placeholder='0';inp.value=e.cant||'';
           inp.oninput=(ev)=>{ev.stopPropagation();E[it.id].cant=ev.target.value;};
           inp.onclick=(ev)=>ev.stopPropagation();
           const un=document.createElement('span');un.className='cunit';un.textContent=it.unidad||'';
-          campo.appendChild(inp);campo.appendChild(un);
-          div.appendChild(campo);
+          campo.appendChild(inp);campo.appendChild(un);div.appendChild(campo);
         }
-
         panel.appendChild(div);
       });
     });
-
     if(a.id==='desechables'){
-      const wrap=document.createElement('div');
-      wrap.className='extras-wrap';
-      wrap.style.marginTop='8px';
+      const wrap=document.createElement('div');wrap.className='extras-wrap';wrap.style.marginTop='8px';
       const lbl=document.createElement('label');lbl.textContent='Notas / artículos extra';
-      const ta=document.createElement('textarea');
-      ta.placeholder='Agrega artículos adicionales o notas para el comprador...';
-      ta.value=extrasTexto;
+      const ta=document.createElement('textarea');ta.placeholder='Agrega artículos adicionales o notas...';ta.value=extrasTexto;
       ta.oninput=(ev)=>{extrasTexto=ev.target.value;};
-      wrap.appendChild(lbl);wrap.appendChild(ta);
-      panel.appendChild(wrap);
+      wrap.appendChild(lbl);wrap.appendChild(ta);panel.appendChild(wrap);
     }
-
     cont.appendChild(panel);
   });
 }
 
 function toggleItem(it){
   E[it.id].checked=!E[it.id].checked;
-  const div=document.getElementById('item-'+it.id);
-  const chk=document.getElementById('chk-'+it.id);
-  div.classList.toggle('done',E[it.id].checked);
-  chk.classList.toggle('on',E[it.id].checked);
-  if(it.tipo==='pieza'){
-    const cnt=document.getElementById('cnt-'+it.id);
-    if(cnt)cnt.style.display=E[it.id].checked?'flex':'none';
-  } else if(it.tipo==='peso'){
-    const campo=document.getElementById('campo-'+it.id);
-    if(campo)campo.style.display=E[it.id].checked?'flex':'none';
-  }
+  document.getElementById('item-'+it.id).classList.toggle('done',E[it.id].checked);
+  document.getElementById('chk-'+it.id).classList.toggle('on',E[it.id].checked);
+  if(it.tipo==='pieza'){const c=document.getElementById('cnt-'+it.id);if(c)c.style.display=E[it.id].checked?'flex':'none';}
+  else if(it.tipo==='peso'){const c=document.getElementById('campo-'+it.id);if(c)c.style.display=E[it.id].checked?'flex':'none';}
   actualizarTabs();
 }
 
 function resetearTodo(){
   if(!confirm('¿Limpiar toda la selección?'))return;
   Object.keys(E).forEach(k=>{E[k].checked=false;E[k].qty=1;E[k].cant='';});
-  extrasTexto='';
-  renderPaneles();
-  actualizarTabs();
+  extrasTexto='';renderPaneles();actualizarTabs();
 }
 
 function irAConfirmar(){
-  const ta=document.getElementById('extras-wrap textarea');
-  // recoger extras del textarea activo
   document.querySelectorAll('textarea').forEach(t=>{extrasTexto=t.value;});
   const total=Object.values(E).filter(e=>e.checked).length;
   if(total===0&&!extrasTexto.trim()){alert('No hay artículos seleccionados.');return;}
-
   let html='';
   AREAS.forEach(a=>{
     const rows=[];
@@ -508,9 +460,7 @@ function irAConfirmar(){
     });
     if(!rows.length)return;
     html+=`<div class="conf-area"><div class="conf-area-title">${a.nombre} · ${rows.length} artículo${rows.length>1?'s':''}</div>`;
-    rows.forEach(r=>{
-      html+=`<div class="conf-item"><div><div class="conf-iname">${r.nombre}</div>${r.ant?`<div class="conf-iant">🕐 ${r.ant}</div>`:''}</div>${r.det?`<div class="conf-idet">${r.det}</div>`:''}</div>`;
-    });
+    rows.forEach(r=>{html+=`<div class="conf-item"><div><div class="conf-iname">${r.nombre}</div>${r.ant?`<div class="conf-iant">🕐 ${r.ant}</div>`:''}</div>${r.det?`<div class="conf-idet">${r.det}</div>`:''}</div>`;});
     html+='</div>';
   });
   if(extrasTexto.trim())html+=`<div class="conf-area"><div class="conf-area-title">Notas / extras</div><div style="font-size:13px;color:#0f172a;padding:6px 0;white-space:pre-wrap;line-height:1.5">${extrasTexto}</div></div>`;
@@ -524,27 +474,42 @@ function volverRevision(){
   document.getElementById('paso-revision').style.display='block';
 }
 
-async function enviarLista(){
-  const payload={fecha:HOY.toISOString(),items:[],extras:extrasTexto};
+function irAEnviado(){
+  // Construir payload
+  payloadFinal={fecha:HOY.toISOString(),items:[],extras:extrasTexto};
   AREAS.forEach(a=>a.categorias.forEach(cat=>cat.items.forEach(it=>{
     if(!E[it.id].checked)return;
-    payload.items.push({area:a.nombre,categoria:cat.nombre,nombre:it.nombre,pres:it.pres||'',tipo:it.tipo,qty:it.tipo==='pieza'?E[it.id].qty:null,cant:it.tipo==='peso'?E[it.id].cant:null,unidad:it.unidad||null,ant:it.ant||null});
+    payloadFinal.items.push({area:a.nombre,categoria:cat.nombre,nombre:it.nombre,pres:it.pres||'',tipo:it.tipo,qty:it.tipo==='pieza'?E[it.id].qty:null,cant:it.tipo==='peso'?E[it.id].cant:null,unidad:it.unidad||null,ant:it.ant||null});
   })));
-  const btn=document.getElementById('btn-enviar');
-  btn.disabled=true;btn.textContent='Enviando...';
-  try{
-    await fetch(SCRIPT_URL+'?data='+encodeURIComponent(JSON.stringify(payload)),{method:'GET',mode:'no-cors'});
-    document.getElementById('paso-confirmar').style.display='none';
-    document.getElementById('paso-enviado').style.display='block';
-  }catch(e){
-    btn.disabled=false;btn.textContent='Enviar al comprador';
-    alert('Error al enviar. Verifica tu conexión.');
+  document.getElementById('paso-confirmar').style.display='none';
+  document.getElementById('paso-enviado').style.display='block';
+}
+
+function generarURL(){
+  const json=JSON.stringify(payloadFinal);
+  const b64=btoa(unescape(encodeURIComponent(json)));
+  return COMPRADOR_URL+'#'+b64;
+}
+
+function compartirWA(){
+  const url=generarURL();
+  const msg='Lista de compras ADXé Café — '+HOY.toLocaleDateString('es-MX')+'\n\nAbre este enlace para ver la lista:\n'+url;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+function copiarEnlace(){
+  const url=generarURL();
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(()=>alert('Enlace copiado ✓'));
+  } else {
+    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    alert('Enlace copiado ✓');
   }
 }
 
 function nuevaLista(){
   Object.keys(E).forEach(k=>{E[k].checked=false;E[k].qty=1;E[k].cant='';});
-  extrasTexto='';
+  extrasTexto='';payloadFinal=null;
   document.getElementById('paso-enviado').style.display='none';
   document.getElementById('paso-revision').style.display='block';
   renderTabs();renderPaneles();actualizarTabs();
