@@ -2,461 +2,555 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Lista de Revisión</title>
-<style>*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh}
-.app{padding:1rem;max-width:680px;margin:0 auto}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
-.title{font-size:18px;font-weight:600;color:#1a1a1a}
-.subtitle{font-size:13px;color:#888;margin-top:2px}
-.tabs{display:flex;gap:6px;margin-bottom:.75rem}
-.tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #ddd;background:#fff;color:#666;-webkit-tap-highlight-color:transparent}
-.tab.active{background:#e8f0fd;color:#1a56db;border-color:#a4c0f8}
-.tab.tab-d.active{background:#f0e8fd;color:#6b21a8;border-color:#c4a8f8}
-.tab.done-tab{border-color:#a3d9be;color:#1d9e75}
-.steps{display:flex;align-items:center;margin-bottom:1rem}
-.step{display:flex;align-items:center;gap:5px;font-size:12px;color:#aaa;font-weight:500}
-.step.active{color:#1a56db}.step.done-step{color:#1d9e75}
-.step-num{width:22px;height:22px;border-radius:50%;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;background:#f5f5f3;flex-shrink:0}
-.step.active .step-num{background:#e8f0fd;color:#1a56db;border-color:#a4c0f8}
-.step.done-step .step-num{background:#eaf7f0;color:#1d9e75;border-color:#a3d9be}
-.step-line{flex:1;height:1px;background:#e0e0e0;margin:0 6px}
-.progress{height:5px;background:#e0e0e0;border-radius:3px;margin-bottom:.75rem;overflow:hidden}
-.progress-bar{height:100%;background:#1d9e75;border-radius:3px;transition:width .3s}
-.stats{display:flex;gap:8px;margin-bottom:.75rem}
-.stat{flex:1;background:#fff;border-radius:8px;padding:10px;text-align:center;border:1px solid #e8e8e8}
-.stat-n{font-size:22px;font-weight:600;color:#1a1a1a}
-.stat-l{font-size:11px;color:#888;margin-top:2px}
-.section{margin-bottom:1rem}
-.sec-hdr{font-size:11px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:.06em;padding:4px 0 5px;border-bottom:1px solid #e8e8e8;margin-bottom:4px;display:flex;justify-content:space-between}
-.item{display:grid;grid-template-columns:24px 1fr auto auto auto;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;border:1px solid #e8e8e8;background:#fff;margin-bottom:5px}
-.item.pedido{border-color:#e8a020}
-.item.done-item{opacity:.4}
-.item.done-item .iname{text-decoration:line-through;color:#aaa}
-.item input[type=checkbox]{width:20px;height:20px;accent-color:#1d9e75;cursor:pointer}
-.iname-wrap{display:flex;flex-direction:column;gap:3px;min-width:0}
-.iname{font-size:14px;color:#1a1a1a;line-height:1.3}
-.itag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;width:fit-content}
-.itag.d1{background:#fef3e2;color:#92400e}.itag.d2{background:#fde68a;color:#78350f}
-.itag.d3{background:#fb923c;color:#431407}.itag.d7{background:#dc2626;color:#fff}
-.itag-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.7;flex-shrink:0}
-.ipres{font-size:11px;color:#bbb;text-align:right;min-width:80px}
-.imin{font-size:11px;color:#666;background:#f5f5f3;border-radius:4px;padding:2px 7px;min-width:60px;text-align:center;white-space:nowrap}
-.imin.emp{opacity:.3}
-.iqty{width:54px;padding:5px 6px;border-radius:7px;border:1px solid #ddd;background:#f9f9f9;color:#1a1a1a;font-size:13px;text-align:center}
-.col-hdr{display:grid;grid-template-columns:24px 1fr auto auto auto;gap:8px;padding:3px 12px 5px;font-size:10px;color:#bbb;text-transform:uppercase;letter-spacing:.04em}
-.col-hdr span:nth-child(3){text-align:right;min-width:80px}
-.col-hdr span:nth-child(4){min-width:60px;text-align:center}
-.col-hdr span:nth-child(5){width:54px;text-align:center}
-.empty-msg{text-align:center;padding:2.5rem;color:#bbb;font-size:14px}
-.area-lbl{font-size:12px;font-weight:600;color:#888;padding:8px 0 4px;display:flex;align-items:center;gap:8px}
-.area-lbl-line{flex:1;height:1px;background:#e8e8e8}
-.alert-box{background:#fef3e2;border:1px solid #fb923c;border-radius:10px;padding:10px 14px;margin-bottom:.75rem;font-size:12px;color:#92400e;display:none}
-.alert-box strong{font-weight:600;display:block;margin-bottom:4px;font-size:13px}
-.alert-box ul{padding-left:14px;line-height:2}
-.small-btn{padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:none;color:#666;-webkit-tap-highlight-color:transparent}
-.small-btn:active{background:#f0f0f0}
-.btn-main{width:100%;padding:14px;border-radius:10px;border:none;background:#1d9e75;color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:.5rem;-webkit-tap-highlight-color:transparent}
-.btn-main:active{opacity:.85}
-.btn-main:disabled{opacity:.35;cursor:not-allowed}
-.btn-blue{width:100%;padding:14px;border-radius:10px;border:none;background:#1a56db;color:#fff;font-size:15px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.btn-blue:active{opacity:.85}
-.btn-blue:disabled{opacity:.35;cursor:not-allowed}
-.btn-out{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;background:#fff;color:#555;font-size:14px;cursor:pointer;margin-top:.5rem;-webkit-tap-highlight-color:transparent}
-.btn-out:active{background:#f5f5f3}
-.wrap-bottom{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #e8e8e8}
-.notas-box{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
-.notas-ttl{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
-.notas-sub{font-size:12px;color:#888;margin-bottom:.75rem;line-height:1.5}
-.notas-ta{width:100%;min-height:72px;padding:9px 11px;border-radius:8px;border:1px solid #ddd;background:#f9f9f9;color:#1a1a1a;font-size:13px;font-family:inherit;resize:vertical;line-height:1.6}
-.notas-ta:focus{outline:none;border-color:#1a56db}
-.extra-row{display:flex;gap:7px;margin-bottom:6px;align-items:center}
-.extra-row input{padding:8px 10px;border-radius:8px;border:1px solid #ddd;background:#f9f9f9;color:#1a1a1a;font-size:13px}
-.extra-row button{padding:8px 11px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#555;cursor:pointer;font-size:16px;flex-shrink:0}
-.extra-entry{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:#f9f9f9;border:1px solid #e8e8e8;margin-bottom:4px;font-size:13px}
-.extra-entry.done-e{opacity:.4;text-decoration:line-through}
-.extra-entry input[type=checkbox]{width:18px;height:18px;accent-color:#1d9e75;cursor:pointer;flex-shrink:0}
-.extra-txt{flex:1;color:#1a1a1a}
-.extra-cant{font-size:12px;color:#666;background:#e8e8e8;padding:2px 7px;border-radius:4px}
-.extra-marca{font-size:11px;color:#aaa;font-style:italic}
-.extra-del{background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;padding:0 2px}
-.conf-hdr{background:#f9f9f9;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;border:1px solid #e8e8e8}
-.conf-ttl{font-size:15px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
-.conf-sub{font-size:13px;color:#888}
-.conf-hint{font-size:12px;color:#aaa;margin-bottom:.75rem;padding:0 2px}
-.conf-item{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;border:1px solid #e8e8e8;background:#fff;margin-bottom:5px}
-.conf-item.pedido{border-color:#e8a020}
-.conf-item input[type=checkbox]{width:20px;height:20px;accent-color:#dc2626;cursor:pointer}
-.conf-item-name{flex:1;font-size:14px;color:#1a1a1a}
-.conf-item-pres{font-size:12px;color:#bbb}
-.nota-wrap{grid-column:2/-1;margin-top:3px}
-.nota-inp{width:100%;padding:6px 9px;border-radius:7px;border:1px solid #e8e8e8;background:#f9f9f9;color:#888;font-size:12px;font-family:inherit}
-.nota-inp:focus{outline:none;border-color:#1a56db;color:#1a1a1a}
-.nota-inp::placeholder{color:#ccc}
-.status-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:.75rem;border:1px solid}
-.status-bar.ok{background:#eaf7f0;border-color:#a3d9be;color:#1d6e4e}
-.status-bar.err{background:#fef2f2;border-color:#fca5a5;color:#991b1b}
-.status-bar.loading{background:#f0f4ff;border-color:#a4c0f8;color:#1a56db}
-.spinner{width:14px;height:14px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
-@keyframes spin{to{transform:rotate(360deg)}}
-.resumen-card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
-.resumen-card-title{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:6px;display:flex;justify-content:space-between}
-.resumen-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:8px;background:#eaf7f0;color:#1d9e75}
-.resumen-badge.empty{background:#f5f5f3;color:#aaa}
-.resumen-badge.pending{background:#e8f0fd;color:#1a56db}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ADXé Café — Revisión</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;color:#0f172a;font-size:15px;}
+
+  /* HEADER */
+  .hdr{background:#0f172a;padding:18px 16px 14px;display:flex;align-items:flex-end;justify-content:space-between;position:sticky;top:0;z-index:100;}
+  .hdr-left h1{font-size:22px;font-weight:500;color:#f1f5f9;letter-spacing:-0.5px;}
+  .hdr-left p{font-size:11px;color:#64748b;margin-top:3px;}
+  .hdr-badge{background:#1e3a5f;color:#93c5fd;font-size:10px;font-weight:500;padding:5px 10px;border-radius:20px;white-space:nowrap;}
+
+  /* TABS */
+  .tabs{background:#0f172a;padding:0 14px 14px;display:flex;gap:8px;overflow-x:auto;position:sticky;top:68px;z-index:90;}
+  .tab{font-size:12px;font-weight:500;padding:6px 14px;border-radius:20px;color:#64748b;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;}
+  .tab.on{background:#1e3a5f;color:#93c5fd;}
+  .tab .dot{display:inline-block;width:6px;height:6px;background:#ef4444;border-radius:50%;margin-left:5px;vertical-align:middle;}
+
+  /* PANELES */
+  .panel{display:none;padding-bottom:100px;}
+  .panel.on{display:block;}
+
+  /* SECCIÓN */
+  .sec-label{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;padding:14px 16px 6px;}
+
+  /* ITEM */
+  .item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:white;border-bottom:0.5px solid #f1f5f9;transition:background .15s;}
+  .item:first-of-type{border-top:0.5px solid #f1f5f9;}
+  .item.done{background:#f8fafc;}
+  .item.done .iname{text-decoration:line-through;color:#94a3b8;}
+
+  .chk{width:22px;height:22px;border-radius:50%;border:1.5px solid #cbd5e1;flex-shrink:0;cursor:pointer;transition:all .15s;background:white;display:flex;align-items:center;justify-content:center;}
+  .chk.on{background:#1e40af;border-color:#1e40af;}
+  .chk.on::after{content:'✓';color:white;font-size:11px;font-weight:700;}
+
+  .iinfo{flex:1;min-width:0;}
+  .iname{font-size:14px;color:#0f172a;}
+  .ipres{font-size:11px;color:#94a3b8;margin-top:1px;}
+  .imin{font-size:10px;color:#f59e0b;font-weight:500;margin-top:2px;}
+  .iant{font-size:10px;color:#7c3aed;font-weight:500;margin-top:2px;}
+
+  /* CONTADOR */
+  .cnt{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+  .cb{width:28px;height:28px;border-radius:50%;background:#f1f5f9;color:#0f172a;font-size:16px;font-weight:400;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;transition:background .15s;}
+  .cb:active{background:#e2e8f0;}
+  .cn{font-size:14px;font-weight:500;min-width:22px;text-align:center;color:#0f172a;}
+
+  /* CAMPO PESO */
+  .campo{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+  .campo input{width:56px;padding:5px 6px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:500;text-align:center;color:#0f172a;background:white;font-family:inherit;}
+  .campo input:focus{outline:none;border-color:#1e40af;}
+  .cunit{font-size:10px;color:#94a3b8;font-weight:500;}
+
+  /* EXTRAS */
+  .extras-wrap{margin:8px 16px 0;}
+  .extras-wrap label{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;display:block;margin-bottom:6px;}
+  .extras-wrap textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 12px;font-size:13px;font-family:inherit;resize:none;min-height:72px;background:white;color:#0f172a;}
+  .extras-wrap textarea:focus{outline:none;border-color:#1e40af;}
+
+  /* FOOTER */
+  .footer{position:fixed;bottom:0;left:0;right:0;background:white;border-top:0.5px solid #f1f5f9;padding:12px 16px;display:flex;gap:10px;z-index:200;}
+  .btn{flex:1;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit;}
+  .btn-sec{background:#f8fafc;color:#64748b;}
+  .btn-prim{background:#1e40af;color:white;}
+  .btn:active{opacity:.85;transform:scale(.98);}
+
+  /* CONFIRMAR */
+  #paso-confirmar{display:none;padding:16px;padding-bottom:100px;}
+  .conf-title{font-size:18px;font-weight:500;color:#0f172a;margin-bottom:16px;}
+  .conf-area{margin-bottom:20px;}
+  .conf-area-title{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;padding-bottom:6px;border-bottom:0.5px solid #e2e8f0;margin-bottom:6px;}
+  .conf-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid #f8fafc;}
+  .conf-item:last-child{border-bottom:none;}
+  .conf-iname{font-size:14px;color:#0f172a;}
+  .conf-idet{font-size:12px;font-weight:500;color:#1e40af;}
+  .conf-iant{font-size:10px;color:#7c3aed;font-weight:500;margin-top:1px;}
+
+  /* ENVIADO */
+  #paso-enviado{display:none;text-align:center;padding:80px 24px;}
+  .env-icon{font-size:56px;margin-bottom:20px;}
+  .env-title{font-size:22px;font-weight:500;color:#0f172a;margin-bottom:8px;}
+  .env-sub{color:#64748b;font-size:14px;line-height:1.6;}
+  .btn-nueva{margin-top:32px;background:#1e40af;color:white;border:none;padding:14px 32px;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
+</style>
 </head>
 <body>
-<div class="app">
-  <div class="topbar">
-    <div><div class="title">Lista de revisión</div><div class="subtitle" id="sub">Revisa las 3 áreas antes de enviar</div></div>
-    <button class="small-btn" onclick="resetArea()">Resetear</button>
-  </div>
-  <div class="progress"><div class="progress-bar" id="pbar" style="width:0%"></div></div>
 
-  <!-- TABS con indicador de listo -->
-  <div class="tabs" id="tabs-bar">
-    <div class="tab active" id="tab-barra" onclick="switchArea('barra')">Barra</div>
-    <div class="tab" id="tab-cocina" onclick="switchArea('cocina')">Cocina</div>
-    <div class="tab tab-d" id="tab-desechables" onclick="switchArea('desechables')">Desechables</div>
+<div class="hdr">
+  <div class="hdr-left">
+    <h1>Revisión</h1>
+    <p id="fecha-hoy"></p>
   </div>
+  <div class="hdr-badge">ADXé Café</div>
+</div>
 
-  <!-- RESUMEN ESTADO DE LAS 3 ÁREAS -->
-  <div id="resumen-areas" style="margin-bottom:1rem;display:flex;gap:8px">
-    <div class="resumen-card" style="flex:1;padding:.75rem 1rem">
-      <div class="resumen-card-title">Barra <span class="resumen-badge" id="badge-barra">0 items</span></div>
-    </div>
-    <div class="resumen-card" style="flex:1;padding:.75rem 1rem">
-      <div class="resumen-card-title">Cocina <span class="resumen-badge" id="badge-cocina">0 items</span></div>
-    </div>
-    <div class="resumen-card" style="flex:1;padding:.75rem 1rem">
-      <div class="resumen-card-title">Desech. <span class="resumen-badge" id="badge-desech">0 items</span></div>
-    </div>
-  </div>
-
-  <!-- PASO 1: REVISANDO -->
-  <div id="s-revisar">
-    <div class="stats">
-      <div class="stat"><div class="stat-n" id="s-total">0</div><div class="stat-l">Total insumos</div></div>
-      <div class="stat"><div class="stat-n" id="s-need">0</div><div class="stat-l">Marcados a pedir</div></div>
-    </div>
-    <div id="c-revisar"></div>
-    <div class="wrap-bottom">
-      <button class="btn-blue" id="btn-conf" onclick="goConfirm()" disabled>Ver selección y confirmar →</button>
-    </div>
-  </div>
-
-  <!-- PASO 2: CONFIRMAR -->
-  <div id="s-confirmar" style="display:none">
-    <div class="conf-hdr">
-      <div class="conf-ttl" id="conf-ttl">Confirma tu selección</div>
-      <div class="conf-sub" id="conf-sub"></div>
-    </div>
-    <p class="conf-hint">Desmarca cualquier artículo seleccionado por error:</p>
-    <div id="c-confirmar"></div>
-    <div class="notas-box" style="margin-top:1rem">
-      <div class="notas-ttl">Artículos extra o de temporada</div>
-      <div class="notas-sub">¿Falta algo fuera de la lista? Agrégalo con cantidad y marca.</div>
-      <div class="extra-row">
-        <input id="en" placeholder="Nombre del artículo" style="flex:1.5" onkeydown="if(event.key==='Enter')addExtra()"/>
-        <input id="ec" placeholder="Cant." style="flex:0 0 62px" onkeydown="if(event.key==='Enter')addExtra()"/>
-        <input id="em" placeholder="Marca o genérico" style="flex:1" onkeydown="if(event.key==='Enter')addExtra()"/>
-        <button onclick="addExtra()">+</button>
-      </div>
-      <div id="extra-list"></div>
-      <div style="margin-top:.75rem;border-top:1px solid #e8e8e8;padding-top:.75rem">
-        <div class="notas-ttl" style="margin-bottom:4px">Indicaciones generales</div>
-        <div class="notas-sub" style="margin-bottom:.5rem">Tiendas preferidas, prioridades, restricciones...</div>
-        <textarea class="notas-ta" id="notas-ta" placeholder="Ej: Si no hay en Costco buscar en Sam's..."></textarea>
-      </div>
-    </div>
-    <div class="wrap-bottom">
-      <button class="btn-blue" onclick="guardarYSiguiente()">Guardar área y continuar →</button>
-      <button class="btn-out" onclick="goBack()">← Regresar a revisión</button>
-    </div>
-  </div>
-
-  <!-- PASO 3: ENVIAR TODO -->
-  <div id="s-enviar" style="display:none">
-    <div style="text-align:center;padding:1.5rem 0 1rem">
-      <div style="font-size:42px;margin-bottom:.5rem">📋</div>
-      <div style="font-size:17px;font-weight:600;margin-bottom:6px">Resumen de todas las áreas</div>
-      <div style="font-size:13px;color:#888;line-height:1.6">Verifica el total antes de enviar al comprador.</div>
-    </div>
-    <div id="resumen-final" style="margin-bottom:1rem"></div>
-    <div id="status-enviar" class="status-bar" style="display:none"></div>
-    <button class="btn-main" id="btn-enviar" onclick="enviarTodo()">Enviar todo al comprador →</button>
-    <button class="btn-out" onclick="seguirRevisando()">← Seguir revisando</button>
-  </div>
-
-  <!-- ENVIADO -->
-  <div id="s-enviado" style="display:none">
-    <div style="text-align:center;padding:2.5rem 0 1.5rem">
-      <div style="font-size:52px;margin-bottom:.75rem">✅</div>
-      <div style="font-size:17px;font-weight:600;margin-bottom:8px">Lista enviada</div>
-      <div style="font-size:13px;color:#888;line-height:1.7">El comprador ya puede cargar la lista<br>en su app automáticamente.</div>
-    </div>
-    <div style="background:#eaf7f0;border:1px solid #a3d9be;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem">
-      <div style="font-size:13px;font-weight:600;color:#1d6e4e;margin-bottom:4px">¿Qué sigue?</div>
-      <div style="font-size:13px;color:#2d7a5a;line-height:1.8">
-        1. Avísale al comprador que ya está lista<br>
-        2. Él abre su app y presiona "Actualizar lista"<br>
-        3. La lista aparece automáticamente con las 3 áreas
-      </div>
-    </div>
-    <div class="wrap-bottom">
-      <button class="btn-out" onclick="resetTodo()">Hacer nueva revisión</button>
-    </div>
+<div id="paso-revision">
+  <div class="tabs" id="tabs"></div>
+  <div id="paneles"></div>
+  <div class="footer">
+    <button class="btn btn-sec" onclick="resetearTodo()">Limpiar</button>
+    <button class="btn btn-prim" onclick="irAConfirmar()">Revisar lista →</button>
   </div>
 </div>
 
+<div id="paso-confirmar">
+  <p class="conf-title">Confirma el pedido</p>
+  <div id="conf-contenido"></div>
+  <div class="footer">
+    <button class="btn btn-sec" onclick="volverRevision()">← Corregir</button>
+    <button class="btn btn-prim" id="btn-enviar" onclick="enviarLista()">Enviar al comprador</button>
+  </div>
+</div>
+
+<div id="paso-enviado">
+  <div class="env-icon">✅</div>
+  <div class="env-title">Lista enviada</div>
+  <p class="env-sub">El comprador ya puede ver la lista en su dispositivo.</p>
+  <button class="btn-nueva" onclick="nuevaLista()">Nueva revisión</button>
+</div>
+
 <script>
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwGiW69PZdySXRomvXU9d-emrQ2UgWfwPyWEbcHHk4eWcLtMSkrzz589ED4IeJMF8Fj/exec";
 
-const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwGiW69PZdySXRomvXU9d-emrQ2UgWfwPyWEbcHHk4eWcLtMSkrzz589ED4IeJMF8Fj/exec';
-const PROXY='https://api.allorigins.win/get?url=';
-const TAG_LABELS={1:"1 día anticip.",2:"2 días anticip.",3:"3 días anticip.",7:"1 semana anticip."};
-const TAG_CLASS={1:"d1",2:"d2",3:"d3",7:"d7"};
-const DATA={
-barra:{
-  "Lácteos barra":[["Crema Lyncott","Paquete 3 pzas.","",0],["Leche deslactosada","Caja 12 pzas.","1 caja",0],["Leche de soya","Caja 12 pzas.","6 piezas",0],["Leche de avena OATLY","Caja 6 pzas.","1 caja",0],["Leche de almendra","Caja 6 pzas.","3pz",0],["Leche de coco","Caja 6 pzas.","3pz",0]],
-  "Servicio":[["Agua tónica","Caja 12 pzas.","",0],["Agua mineral","Caja 12 pzas.","",0],["Matcha","1kg","250 gramos",0],["Cacao","Bolsa 1 kg.","1/4 frasco vidrio",0],["Miel de agave","Paquete 2 pzas.","1 pieza",0],["Miel de maple","Bote 1 Lt.","1/4 bote en uso",0],["Splenda sobres","caja 200 sobres","1/4 caja",0],["Stevia sobres","caja 400 sobres","1/4 caja",0],["Azúcar mascabada sobres","caja 200 sobres","1/4 caja",0]],
-  "Elaboraciones":[["Azúcar","1 Kg.","2kg",0],["Vaina de vainilla","Pza.","3 piezas",0],["Limón","Pza.","",0],["Jengibre","Pza.","",0],["Naranja","Pza.","",0],["Romero","Bolsa 30 gr.","",0],["Piloncillo","Bolsa 4 pzas.","",0],["Canela en vara","Pza.","",0],["Canela en polvo","Gr.","",0],["Té Chai","Caja 18 pzas.","",0],["Pimienta entera","Gr.","",0],["Anís de estrella","Gr.","",0],["Nuez moscada en polvo","Gr.","",0],["Jengibre en polvo","Gr.","",0],["Clavo en polvo","Gr.","",0],["Cardamomo en polvo","Gr.","",0],["Alulosa","","1/4 bolsa",0],["Manzanas","","",0],["Jamaica","","",0],["Arándanos","","",0],["Blue berries deshidratados","","",0],["Sal de grano","","",0],["Golden Milk","","1/4 frasco",0],["Miel de abeja","1 litro","1/4 frasco",0],["Té puerh","","",0]],
-  "Limpieza barra":[["Toalla interdoblada","","3 paquetes sueltos",0],["Jabón para trastes","","",0],["Esponja","","",0],["Windex","","",0],["Cafiza","","",0],["Grindz","","",0],["Bolsas de basura","","",0],["Ajax","","",0],["Papel de baño","","",0],["Gel antibacterial","","",0]]
-},
-cocina:{
-  "Básicos":[["Azúcar morena","Paquete 10 kg.","",0],["Azúcar mascabada","Bolsa 1 kg.","",0],["Azúcar glass","Bolsa 500 gr.","",0],["Harina","Costal 25 kg.","",0],["Levadura","","",0],["Maicena","","",0],["Polvo para hornear","","",0],["Huevos","Caja","",0],["Bicarbonato","","",0],["Sal","","",0],["Canela en polvo","","",0],["Cocoa","Bolsa 1 kg.","",0],["Aceite Nutrioli","Paquete 3 pzas.","",0],["Extracto de vainilla","Bote 500 ml.","",0]],
-  "Lácteos y cremosos":[["Crema ácida","Bote 1 lt.","",0],["Queso crema","Barra","",0],["Mantequilla Loma Linda","Kg.","",0],["Leche evaporada","Lt.","",0],["Yogurt sin azúcar","","",0],["Queso cheddar","","",0],["Queso mozzarella","Bolsa","",0]],
-  "Chocolates y dulces":[["Chispas de chocolate semi amargo","1 a 2kg","",0],["Chocolate de leche","900gr","",0],["Chocolate blanco","900gr","",0],["Malvavisco","Bolsa","",0],["Galleta Gamesa","Paquete","",0],["Galletas Ritz","Paquete","",0],["Galleta Oreo","","",0]],
-  "Frutas y verduras":[["Zanahoria","Bolsa","",0],["Plátano","Mazo","",0],["Manzana roja","Unidad","",0],["Manzana verde","Unidad","",0],["Limón amarillo","Unidad","",0],["Naranja","Pza.","",0],["Aguacate","Pza.","",0],["Cebolla morada","Pza.","",0],["Rábano","Mazo","",0],["Papa","Pza.","",0],["Cebollín","Mazo","",0],["Repollo morado","Pza.","",0],["Calabacita verde","","",0],["Zucchini","Paquete","",0],["Tomate","Kg.","",0],["Lechuga romana / orejona","Paquete","",0],["Alfalfa","Caja","",0],["Frutos rojos congelados","Bolsa 1 kg.","",0]],
-  "Frutos secos y semillas":[["Nuez de castilla","Bolsa","",0],["Pistache pelado","Bolsa","",0],["Almendras","Paquete","",0],["Cacahuate","Bolsa","",0],["Arándanos deshidratados","","",0],["Coco en ojuelas","Bolsa","",0],["Pretzel","Bolsa","",0],["Chips","Bolsa","",0]],
-  "Proteínas":[["Pechuga de pavo","Kg.","",0],["Jamón","","",0],["Tocino","","",0],["Proteína","Paquete","",0]],
-  "Condimentos y salsas":[["Crema de cacahuate","","",0],["Mostaza Dijon","","",0],["Mayonesa","","",0],["Chipotle","","",0],["Chiles güeros curtidos","Bote","",0],["Agave","","",0],["Maple","Bote 1 lt.","",0],["Puré de manzana / calabaza","","",0],["Orégano","Gr.","",0],["Pimienta","Gr.","",0],["Albahaca seca","Gr.","",0],["Ajo en polvo","Gr.","",0]],
-  "Panadería y snacks":[["Avena en ojuelas","Bolsa","",0],["Bagels","","",0],["Pan poligrano","Barra","",0],["Cuernitos","Caja","",0]],
-  "Limpieza cocina":[["Jabón trastes","","",0],["Desengrasante","","",0],["Cloro","","",0],["Pinol","","",0],["Trapos","","",0],["Esponjas","","",0]],
-  "Pedidos a terceros":[["Salsa Roja","","",3],["Chimichurri","","",2],["Salsa Macha","","",7],["Pan Brioche","","",3],["Totopo","","",2]]
-},
-desechables:{
-  "BARRA__Desechables barra":[["Vaso y tapa plástico 16 oz.","caja 1000","200pz",0],["Popote","Caja 500","media caja",0],["Vaso y tapa térmico 12 oz.","paquete 50pz","100 pz",0],["Vaso y tapa térmico 8 oz.","paquete 25pz","50pz",0],["Contenedor concha alimentos","suelto","",0],["Manga de cartón","paquete 25pz","25pz",0],["Servilletas","paquete 400pz","250pz",0],["Bolsas papel galletas","paquete de 100pz","30 pz",0],["Bolsas papel kraft","paquete 100pz","20pz",0],["Caja transparente postres 5x5","suelto","25pz",0],["Tenedores","caja costco","30pz",0],["Cucharas","caja costco","30pz",0],["Cuchillo","caja costco","30pz",0],["Plástico filmico","Caja","1/4 de rollo",0],["Porta vasos","paquete 50 pz","15pz",0],["Bolsa plástico cubiertos","1kg","1/4 paquete",0],["Caja y tapa para cuernitos","suelto","12 pz",0],["Trapos a lavar","","2 días anticipación",0]],
-  "COCINA__Desechables cocina":[["Caja de cartón","Paquete","",0],["Papel encerado cuadrado","","",0],["Bolsas de papel grande","","",0],["Plástico filmico","","",0],["Papel aluminio","","",0],["Papel encerado","","",0],["Bolsas para porcionar","","",0],["Rollo de servilletas","","",0],["Palillos","","",0],["Caja para pastel 8''","","",0],["Base para pastel 8''","","",0],["Caja plástico mediana","","",0],["Bote unicel salsa","","",0],["Tapa bote unicel","","",0],["Botecito plástico condimentos","","",0],["Tapa botecito condimentos","","",0],["Guantes","","",0]]
+const AREAS=[
+  {id:"barra",nombre:"Barra",categorias:[
+    {id:"br-serv",nombre:"Servicio",items:[
+      {id:"bs01",nombre:"Leche deslactosada",pres:"Caja 12 pzas.",min:"1 caja",tipo:"check"},
+      {id:"bs02",nombre:"Leche de soya",pres:"Caja 12 pzas.",min:"6 piezas",tipo:"check"},
+      {id:"bs03",nombre:"Leche de avena OATLY",pres:"Caja 6 pzas.",min:"1 caja",tipo:"check"},
+      {id:"bs04",nombre:"Leche de almendra",pres:"Caja 6 pzas.",min:"3 pz",tipo:"check"},
+      {id:"bs05",nombre:"Leche de coco",pres:"Caja 6 pzas.",min:"3 pz",tipo:"check"},
+      {id:"bs06",nombre:"Agua tónica",pres:"Caja 12 pzas.",min:"12 pz",tipo:"check"},
+      {id:"bs07",nombre:"Agua mineral",pres:"Caja 12 pzas.",min:"12 pz",tipo:"check"},
+      {id:"bs08",nombre:"Matcha",pres:"1 kg",min:"250 gr",tipo:"peso",unidad:"gr"},
+      {id:"bs09",nombre:"Cacao",pres:"Bolsa 1 kg",min:"1/4 frasco",tipo:"peso",unidad:"gr"},
+      {id:"bs10",nombre:"Miel de agave",pres:"Paquete 2 pzas.",min:"1 pieza",tipo:"pieza"},
+      {id:"bs11",nombre:"Miel de maple",pres:"Bote 1 lt.",min:"1/4 bote",tipo:"check"},
+      {id:"bs12",nombre:"Splenda sobres",pres:"Caja 200 sobres",min:"1/4 caja",tipo:"check"},
+      {id:"bs13",nombre:"Stevia sobres",pres:"Caja 400 sobres",min:"1/4 caja",tipo:"check"},
+      {id:"bs14",nombre:"Azúcar mascabada sobres",pres:"Caja 200 sobres",min:"1/4 caja",tipo:"check"},
+    ]},
+    {id:"br-elab",nombre:"Elaboraciones",items:[
+      {id:"be01",nombre:"Azúcar",pres:"1 kg",min:"2 kg",tipo:"peso",unidad:"kg"},
+      {id:"be02",nombre:"Vaina de vainilla",pres:"Pza.",min:"3 piezas",tipo:"pieza"},
+      {id:"be03",nombre:"Limón",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"be04",nombre:"Jengibre",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"be05",nombre:"Naranja",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"be06",nombre:"Romero",pres:"Bolsa 30 gr.",min:"",tipo:"check"},
+      {id:"be07",nombre:"Piloncillo",pres:"Bolsa 4 pzas.",min:"",tipo:"check"},
+      {id:"be08",nombre:"Canela en vara",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"be09",nombre:"Canela en polvo",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be10",nombre:"Té Chai",pres:"Caja 18 pzas.",min:"",tipo:"check"},
+      {id:"be11",nombre:"Pimienta entera",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be12",nombre:"Anís de estrella",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be13",nombre:"Nuez moscada en polvo",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be14",nombre:"Jengibre en polvo",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be15",nombre:"Clavo en polvo",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be16",nombre:"Cardamomo en polvo",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be17",nombre:"Alulosa",pres:"1 kg",min:"1/4 bolsa",tipo:"peso",unidad:"gr"},
+      {id:"be18",nombre:"Manzanas",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"be19",nombre:"Jamaica",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be20",nombre:"Arándanos",pres:"",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be21",nombre:"Blue berries deshidratados",pres:"",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be22",nombre:"Sal de grano",pres:"",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be23",nombre:"Golden Milk",pres:"250 gr",min:"1/4 frasco",tipo:"peso",unidad:"gr"},
+      {id:"be24",nombre:"Miel de abeja",pres:"1 litro",min:"1/4 frasco",tipo:"peso",unidad:"ml"},
+      {id:"be25",nombre:"Erlgray",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+    ]},
+    {id:"br-limp",nombre:"Limpieza",items:[
+      {id:"bl01",nombre:"Toalla interdoblada",pres:"",min:"3 paquetes",tipo:"check"},
+      {id:"bl02",nombre:"Jabón para trastes",pres:"",min:"",tipo:"check"},
+      {id:"bl03",nombre:"Esponja",pres:"",min:"",tipo:"pieza"},
+      {id:"bl04",nombre:"Windex",pres:"",min:"",tipo:"check"},
+      {id:"bl05",nombre:"Cafiza",pres:"",min:"",tipo:"check"},
+      {id:"bl06",nombre:"Grindz",pres:"",min:"",tipo:"check"},
+      {id:"bl07",nombre:"Bolsas de basura",pres:"",min:"",tipo:"check"},
+      {id:"bl08",nombre:"Ajax",pres:"",min:"",tipo:"check"},
+      {id:"bl09",nombre:"Papel de baño",pres:"Paquete",min:"10 rollos",tipo:"check"},
+      {id:"bl10",nombre:"Jabón para manos",pres:"2 litros",min:"1/4 botella",tipo:"check"},
+    ]}
+  ]},
+  {id:"cocina",nombre:"Cocina",categorias:[
+    {id:"co-bas",nombre:"Básicos",items:[
+      {id:"cb01",nombre:"Azúcar morena",pres:"Paquete 10 kg.",min:"5 kg",tipo:"peso",unidad:"kg"},
+      {id:"cb02",nombre:"Azúcar mascabada",pres:"Bolsa 1 kg.",min:"1 kg",tipo:"peso",unidad:"kg"},
+      {id:"cb03",nombre:"Azúcar glass",pres:"Bolsa 500 gr.",min:"250 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb04",nombre:"Harina",pres:"Costal 25 kg.",min:"5 kg",tipo:"peso",unidad:"kg"},
+      {id:"cb05",nombre:"Levadura",pres:"Caja",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb06",nombre:"Maicena",pres:"Caja",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb07",nombre:"Polvo para hornear",pres:"Bote",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb08",nombre:"Huevos",pres:"60 pz",min:"30 pz",tipo:"pieza"},
+      {id:"cb09",nombre:"Bicarbonato",pres:"Caja 486 gr",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb10",nombre:"Sal",pres:"1 kg",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb11",nombre:"Canela en polvo",pres:"Bote",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb12",nombre:"Cocoa",pres:"Bolsa 1 kg.",min:"500 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb13",nombre:"Aceite Nutrioli",pres:"Paquete 3 pzas.",min:"1 lt",tipo:"check"},
+      {id:"cb14",nombre:"Extracto de vainilla",pres:"Bote 500 ml.",min:"100 ml",tipo:"peso",unidad:"ml"},
+    ]},
+    {id:"co-lact",nombre:"Lácteos y cremosos",items:[
+      {id:"cl01",nombre:"Crema Lyncott",pres:"Paquete 3 pzas.",min:"1 pieza",tipo:"pieza"},
+      {id:"cl02",nombre:"Crema ácida",pres:"Bote 1 lt.",min:"1 lt",tipo:"check"},
+      {id:"cl03",nombre:"Queso crema",pres:"Barra",min:"1 pieza",tipo:"pieza"},
+      {id:"cl04",nombre:"Mantequilla Loma Linda",pres:"1 kg.",min:"1 pieza",tipo:"pieza"},
+      {id:"cl05",nombre:"Leche evaporada",pres:"Lata 360 g",min:"1 pieza",tipo:"pieza"},
+      {id:"cl06",nombre:"Queso parmesano",pres:"453 gr",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cl07",nombre:"Queso cheddar",pres:"900 gr",min:"mitad inserto",tipo:"check"},
+      {id:"cl08",nombre:"Queso mozzarella",pres:"Bolsa 2 kg",min:"10 porciones",tipo:"check"},
+    ]},
+    {id:"co-choc",nombre:"Chocolates y dulces",items:[
+      {id:"cc01",nombre:"Chispas chocolate semi amargo",pres:"2 kg",min:"1 kg",tipo:"peso",unidad:"kg"},
+      {id:"cc02",nombre:"Chocolate de leche",pres:"900 gr",min:"500 gr",tipo:"peso",unidad:"gr"},
+      {id:"cc03",nombre:"Chocolate blanco",pres:"900 gr",min:"500 gr",tipo:"peso",unidad:"gr"},
+      {id:"cc04",nombre:"Malvavisco",pres:"Bolsa",min:"mitad bolsa",tipo:"check"},
+      {id:"cc05",nombre:"Galleta ricanela",pres:"Caja 486 gr",min:"200 gr",tipo:"check"},
+      {id:"cc06",nombre:"Galletas Ritz",pres:"Caja 1.6 kg",min:"200 gr",tipo:"check"},
+      {id:"cc07",nombre:"Galleta Oreo",pres:"Caja 1.5 kg",min:"200 gr",tipo:"check"},
+    ]},
+    {id:"co-fv",nombre:"Frutas y verduras",items:[
+      {id:"cfv01",nombre:"Zanahoria",pres:"Bolsa",min:"1 bolsa",tipo:"check"},
+      {id:"cfv02",nombre:"Plátano",pres:"Mazo",min:"2 pz",tipo:"pieza"},
+      {id:"cfv03",nombre:"Manzana roja",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"cfv04",nombre:"Manzana verde",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"cfv05",nombre:"Limón amarillo",pres:"Pza.",min:"3 pz",tipo:"pieza"},
+      {id:"cfv06",nombre:"Naranja",pres:"Pza.",min:"1 pz",tipo:"pieza"},
+      {id:"cfv07",nombre:"Aguacate",pres:"Pza.",min:"5 pz",tipo:"pieza"},
+      {id:"cfv08",nombre:"Cebolla morada",pres:"Pza.",min:"1/4 curtidas",tipo:"pieza"},
+      {id:"cfv09",nombre:"Rábano",pres:"Mazo",min:"1/4 curtidas",tipo:"pieza"},
+      {id:"cfv10",nombre:"Papa",pres:"Pza.",min:"5 porciones",tipo:"pieza"},
+      {id:"cfv11",nombre:"Cebollín",pres:"Mazo",min:"2 pzas.",tipo:"pieza"},
+      {id:"cfv12",nombre:"Repollo morado",pres:"Pza.",min:"1/4 curtidas",tipo:"pieza"},
+      {id:"cfv13",nombre:"Cebolla amarilla",pres:"Pza.",min:"1 pz",tipo:"pieza"},
+      {id:"cfv14",nombre:"Zucchini",pres:"Pza.",min:"1 pza.",tipo:"pieza"},
+      {id:"cfv15",nombre:"Tomate",pres:"Kg.",min:"1/4 inserto",tipo:"peso",unidad:"kg"},
+      {id:"cfv16",nombre:"Lechuga romana / orejona",pres:"Pza.",min:"1 pza",tipo:"pieza"},
+      {id:"cfv17",nombre:"Alfalfa",pres:"Caja",min:"1/4 caja",tipo:"check"},
+      {id:"cfv18",nombre:"Frutos rojos congelados",pres:"Bolsa 18 kg.",min:"mitad bolsa",tipo:"check"},
+    ]},
+    {id:"co-fs",nombre:"Frutos secos y semillas",items:[
+      {id:"cfs01",nombre:"Nuez de castilla",pres:"Bolsa",min:"250 gr",tipo:"peso",unidad:"gr"},
+      {id:"cfs02",nombre:"Ajo entero",pres:"Cabeza",min:"1 cabeza",tipo:"pieza"},
+      {id:"cfs03",nombre:"Almendras",pres:"Bolsa",min:"200 gr",tipo:"peso",unidad:"gr"},
+      {id:"cfs04",nombre:"Cacahuate",pres:"Bolsa",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cfs05",nombre:"Arándanos deshidratados",pres:"Bolsa",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cfs06",nombre:"Pretzel",pres:"Bolsa",min:"200 gr",tipo:"check"},
+      {id:"cfs07",nombre:"Chips",pres:"Bolsa",min:"1/2 bolsa",tipo:"check"},
+    ]},
+    {id:"co-prot",nombre:"Proteínas",items:[
+      {id:"cp01",nombre:"Pechuga de pavo",pres:"Unidad",min:"7 porciones",tipo:"pieza"},
+      {id:"cp02",nombre:"Jamón",pres:"1 kg",min:"500 gr",tipo:"peso",unidad:"gr"},
+      {id:"cp03",nombre:"Tocino",pres:"Paquete 4",min:"7 porciones",tipo:"check"},
+    ]},
+    {id:"co-cond",nombre:"Condimentos y salsas",items:[
+      {id:"ccs01",nombre:"Crema de cacahuate",pres:"Bote 1 lt.",min:"1/2 bote",tipo:"check"},
+      {id:"ccs02",nombre:"Mostaza",pres:"Bote 2.9 kg",min:"1/4 bote",tipo:"check"},
+      {id:"ccs03",nombre:"Mayonesa",pres:"Bote 1.6 kg",min:"1/4 bote",tipo:"check"},
+      {id:"ccs04",nombre:"Chipotle",pres:"Lata",min:"1 lata",tipo:"pieza"},
+      {id:"ccs05",nombre:"Chiles güeros curtidos",pres:"Bote",min:"1/4 bote",tipo:"check"},
+      {id:"ccs06",nombre:"Agave",pres:"1 lt",min:"200 ml",tipo:"peso",unidad:"ml"},
+      {id:"ccs07",nombre:"Maple",pres:"Bote 1 lt.",min:"500 ml",tipo:"check"},
+      {id:"ccs08",nombre:"Puré de calabaza",pres:"Lata",min:"3 latas",tipo:"pieza"},
+      {id:"ccs09",nombre:"Orégano",pres:"Bote",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"ccs10",nombre:"Pimienta",pres:"Bote",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"ccs11",nombre:"Albahaca seca",pres:"Bote",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"ccs12",nombre:"Ajo en polvo",pres:"Bote",min:"100 gr",tipo:"peso",unidad:"gr"},
+    ]},
+    {id:"co-pan",nombre:"Panadería y snacks",items:[
+      {id:"cpa01",nombre:"Avena en ojuelas",pres:"Caja 2.5 kg",min:"500 gr",tipo:"peso",unidad:"gr"},
+      {id:"cpa02",nombre:"Bagels",pres:"Bolsa 12 pz",min:"6 pz",tipo:"pieza"},
+      {id:"cpa03",nombre:"Pan poligrano",pres:"Barra",min:"1/2 barra",tipo:"pieza"},
+      {id:"cpa04",nombre:"Cuernitos",pres:"Caja 12 pz",min:"10 pz",tipo:"check"},
+    ]},
+    {id:"co-ped",nombre:"Pedidos",items:[
+      {id:"ped01",nombre:"Salsa Roja",pres:"",min:"",tipo:"check",ant:"3 días de anticipación"},
+      {id:"ped02",nombre:"Chimichurri",pres:"",min:"",tipo:"check",ant:"1 día de anticipación"},
+      {id:"ped03",nombre:"Salsa Macha",pres:"",min:"",tipo:"check",ant:"1 semana de anticipación"},
+      {id:"ped04",nombre:"Pan Brioche",pres:"",min:"",tipo:"check",ant:"4 días de anticipación"},
+      {id:"ped05",nombre:"Totopo",pres:"5 bolsas 500 gr",min:"",tipo:"pieza",ant:"2 días de anticipación"},
+    ]},
+    {id:"co-limp",nombre:"Limpieza",items:[
+      {id:"clk01",nombre:"Jabón trastes",pres:"2.6 lt",min:"1/4 bote",tipo:"check"},
+      {id:"clk02",nombre:"Desengrasante",pres:"1 lt",min:"1/4 litro",tipo:"check"},
+      {id:"clk03",nombre:"Cloro",pres:"10 lt",min:"1/4 bote",tipo:"check"},
+      {id:"clk04",nombre:"Pinol",pres:"20 lt",min:"1/4 bote",tipo:"check"},
+      {id:"clk05",nombre:"Trapos",pres:"Pza.",min:"2 pzas",tipo:"pieza"},
+      {id:"clk06",nombre:"Esponjas",pres:"Pza.",min:"por pedido",tipo:"pieza"},
+    ]}
+  ]},
+  {id:"desechables",nombre:"Desechables",categorias:[
+    {id:"de-bar",nombre:"Barra",items:[
+      {id:"db01",nombre:"Vaso y tapa plástico 16 oz.",pres:"Caja 1000",min:"200 pz",tipo:"check"},
+      {id:"db02",nombre:"Popote",pres:"Caja 500",min:"media caja",tipo:"check"},
+      {id:"db03",nombre:"Vaso y tapa térmico 12 oz.",pres:"Paquete 50 pz",min:"100 pz",tipo:"check"},
+      {id:"db04",nombre:"Vaso y tapa térmico 8 oz.",pres:"Paquete 25 pz",min:"50 pz",tipo:"check"},
+      {id:"db05",nombre:"Manga de cartón",pres:"Paquete 25 pz",min:"25 pz",tipo:"check"},
+      {id:"db06",nombre:"Servilletas",pres:"Paquete 400 pz",min:"250 pz",tipo:"check"},
+      {id:"db07",nombre:"Bolsas papel galletas",pres:"Paquete 100 pz",min:"30 pz",tipo:"check"},
+      {id:"db08",nombre:"Bolsas papel kraft",pres:"Paquete 100 pz",min:"20 pz",tipo:"check"},
+      {id:"db09",nombre:"Caja transparente postres 5x5",pres:"Suelto",min:"25 pz",tipo:"check"},
+      {id:"db10",nombre:"Tenedores",pres:"Caja Costco",min:"30 pz",tipo:"check"},
+      {id:"db11",nombre:"Cucharas",pres:"Caja Costco",min:"30 pz",tipo:"check"},
+      {id:"db12",nombre:"Cuchillo",pres:"Caja Costco",min:"30 pz",tipo:"check"},
+      {id:"db13",nombre:"Plástico filmico",pres:"Caja",min:"1/4 rollo",tipo:"check"},
+      {id:"db14",nombre:"Porta vasos",pres:"Paquete 50 pz",min:"15 pz",tipo:"check"},
+      {id:"db15",nombre:"Bolsa plástico cubiertos",pres:"1 kg",min:"1/4 paquete",tipo:"check"},
+      {id:"db16",nombre:"Caja y tapa para cuernitos",pres:"Suelto",min:"12 pz",tipo:"check"},
+      {id:"db17",nombre:"Trapos a lavar",pres:"",min:"",tipo:"pieza",ant:"2 días de anticipación"},
+    ]},
+    {id:"de-coc",nombre:"Cocina",items:[
+      {id:"dc01",nombre:"Contenedor concha alimentos",pres:"Caja 200 pz",min:"25 pz",tipo:"check"},
+      {id:"dc02",nombre:"Papel encerado cuadrado",pres:"Caja",min:"50 pliegos",tipo:"check"},
+      {id:"dc03",nombre:"Bolsas de papel grande",pres:"Atado",min:"30 bolsas",tipo:"check"},
+      {id:"dc04",nombre:"Plástico filmico",pres:"Caja",min:"1/4 rollo",tipo:"check"},
+      {id:"dc05",nombre:"Papel aluminio",pres:"Paquete 2",min:"1/4 rollo",tipo:"check"},
+      {id:"dc06",nombre:"Papel encerado",pres:"Paquete 2",min:"1/4 rollo",tipo:"check"},
+      {id:"dc07",nombre:"Bolsas para porcionar",pres:"Caja 160 pz",min:"1/4 caja",tipo:"check"},
+      {id:"dc08",nombre:"Rollo de servilletas",pres:"Pza.",min:"1 pz",tipo:"pieza"},
+      {id:"dc09",nombre:"Palillos",pres:"Caja",min:"1/4 caja",tipo:"check"},
+      {id:"dc10",nombre:"Caja para pastel 8''",pres:"Pza.",min:"por pedido",tipo:"pieza"},
+      {id:"dc11",nombre:"Base para pastel 8''",pres:"Pza.",min:"por pedido",tipo:"pieza"},
+      {id:"dc12",nombre:"Caja plástico 5x5 panques",pres:"Pza.",min:"10 pz",tipo:"check"},
+      {id:"dc13",nombre:"Bote unicel y tapa salsa",pres:"Paquete 50",min:"menos de 15",tipo:"check"},
+      {id:"dc14",nombre:"Botecito y tapa plástico condimentos",pres:"Paquete 50",min:"menos de 20",tipo:"check"},
+      {id:"dc15",nombre:"Guantes",pres:"Caja",min:"1/4 caja",tipo:"check"},
+    ]}
+  ]}
+];
+
+const E={};
+AREAS.forEach(a=>a.categorias.forEach(c=>c.items.forEach(it=>{
+  E[it.id]={checked:false,qty:1,cant:""};
+})));
+let extrasTexto="";
+let areaActiva="barra";
+
+const DIAS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const HOY=new Date();
+document.getElementById('fecha-hoy').textContent=`${DIAS[HOY.getDay()]} ${HOY.getDate()} de ${MESES[HOY.getMonth()]}`;
+
+function contarArea(aid){
+  return AREAS.find(a=>a.id===aid).categorias.reduce((n,c)=>n+c.items.filter(it=>E[it.id].checked).length,0);
 }
-};
-function tagHTML(d){if(!d)return'';const c={1:'d1',2:'d2',3:'d3',7:'d7'};return`<span class="itag ${c[d]}"><span class="itag-dot"></span>${TAG_LABELS[d]}</span>`;}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&quot;');}
-function catDisplay(c){return c.replace(/^(BARRA|COCINA)__/,'');}
-function catPfx(c){const m=c.match(/^(BARRA|COCINA)__/);return m?m[1]:null;}
-function areaLabel(a){return a==='barra'?'Barra':a==='cocina'?'Cocina':'Desechables';}
-function setStatus(id,type,msg){const el=document.getElementById(id);if(!el)return;el.className='status-bar '+type;el.style.display='flex';el.innerHTML=type==='loading'?`<div class="spinner"></div><span>${msg}</span>`:`<span>${msg}</span>`;}
-function hideStatus(id){const el=document.getElementById(id);if(el)el.style.display='none';}
 
-
-const AREAS = ['barra','cocina','desechables'];
-let area='barra', state={}, extras={}, notas={}, confirmados={};
-
-function key(a){return'rev3_'+a;}
-function load(){
+function renderTabs(){
+  const cont=document.getElementById('tabs');
+  cont.innerHTML='';
   AREAS.forEach(a=>{
-    try{const s=localStorage.getItem(key(a));if(s){const d=JSON.parse(s);state[a]=d.items;extras[a]=d.extras||[];notas[a]=d.notas||'';confirmados[a]=d.confirmado||false;return;}}catch(e){}
-    state[a]=buildDef(a);extras[a]=[];notas[a]='';confirmados[a]=false;
+    const d=document.createElement('div');
+    d.className='tab'+(a.id===areaActiva?' on':'');
+    d.id='tab-'+a.id;
+    const n=contarArea(a.id);
+    d.innerHTML=a.nombre+(n>0?`<span class="dot"></span>`:'');
+    d.onclick=()=>cambiarArea(a.id);
+    cont.appendChild(d);
   });
 }
-function buildDef(a){
-  const o={};
-  Object.entries(DATA[a]).forEach(([cat,items])=>{
-    o[cat]=items.map(([name,pres,min,dias])=>{return{name,pres,min,dias:dias||0,need:false}});
-  });
-  return o;
+
+function cambiarArea(id){
+  areaActiva=id;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('panel-'+id).classList.add('on');
 }
-function save(){
-  try{localStorage.setItem(key(area),JSON.stringify({items:state[area],extras:extras[area],notas:notas[area],confirmado:confirmados[area]}));}catch(e){}
-}
-function updateBadges(){
+
+function actualizarTabs(){
   AREAS.forEach(a=>{
-    const all=[];Object.values(state[a]).forEach(x=>all.push(...x));
-    const n=all.filter(i=>i.need).length;
-    const id='badge-'+( a==='desechables'?'desech':a);
-    const el=document.getElementById(id);
-    if(!el)return;
-    if(confirmados[a]){el.textContent='✓ Listo';el.className='resumen-badge';}
-    else if(n>0){el.textContent=n+' items';el.className='resumen-badge pending';}
-    else{el.textContent='Sin marcar';el.className='resumen-badge empty';}
+    const tab=document.getElementById('tab-'+a.id);
+    if(!tab)return;
+    const n=contarArea(a.id);
+    tab.innerHTML=a.nombre+(n>0?`<span class="dot"></span>`:'');
   });
-  // show enviar button if at least one area has items
-  const anyItems=AREAS.some(a=>{const all=[];Object.values(state[a]).forEach(x=>all.push(...x));return all.some(i=>i.need);});
 }
-function switchArea(a){
-  area=a;
-  AREAS.forEach(id=>{
-    const el=document.getElementById('tab-'+id);
-    el.classList.toggle('active',id===a);
-    if(confirmados[id])el.classList.add('done-tab');else el.classList.remove('done-tab');
+
+function renderPaneles(){
+  const cont=document.getElementById('paneles');
+  cont.innerHTML='';
+  AREAS.forEach(a=>{
+    const panel=document.createElement('div');
+    panel.className='panel'+(a.id===areaActiva?' on':'');
+    panel.id='panel-'+a.id;
+
+    a.categorias.forEach(cat=>{
+      const sec=document.createElement('div');
+      sec.className='sec-label';
+      sec.textContent=cat.nombre;
+      panel.appendChild(sec);
+
+      cat.items.forEach(it=>{
+        const e=E[it.id];
+        const div=document.createElement('div');
+        div.className='item'+(e.checked?' done':'');
+        div.id='item-'+it.id;
+
+        // Checkbox circular
+        const chk=document.createElement('div');
+        chk.className='chk'+(e.checked?' on':'');
+        chk.id='chk-'+it.id;
+        chk.onclick=()=>toggleItem(it);
+
+        // Info
+        const info=document.createElement('div');
+        info.className='iinfo';
+        const nombre=document.createElement('div');
+        nombre.className='iname';
+        nombre.textContent=it.nombre;
+        info.appendChild(nombre);
+        if(it.pres){const p=document.createElement('div');p.className='ipres';p.textContent=it.pres;info.appendChild(p);}
+        if(it.min){const p=document.createElement('div');p.className='imin';p.textContent='⚠ Mín: '+it.min;info.appendChild(p);}
+        if(it.ant){const p=document.createElement('div');p.className='iant';p.textContent='🕐 '+it.ant;info.appendChild(p);}
+
+        div.appendChild(chk);
+        div.appendChild(info);
+
+        // Control
+        if(it.tipo==='pieza'){
+          const cnt=document.createElement('div');
+          cnt.className='cnt';
+          cnt.id='cnt-'+it.id;
+          cnt.style.display=e.checked?'flex':'none';
+          const bm=document.createElement('button');bm.className='cb';bm.textContent='−';
+          bm.onclick=(ev)=>{ev.stopPropagation();E[it.id].qty=Math.max(1,E[it.id].qty-1);document.getElementById('cn-'+it.id).textContent=E[it.id].qty;};
+          const cn=document.createElement('span');cn.className='cn';cn.id='cn-'+it.id;cn.textContent=e.qty;
+          const bp=document.createElement('button');bp.className='cb';bp.textContent='+';
+          bp.onclick=(ev)=>{ev.stopPropagation();E[it.id].qty++;document.getElementById('cn-'+it.id).textContent=E[it.id].qty;};
+          cnt.appendChild(bm);cnt.appendChild(cn);cnt.appendChild(bp);
+          div.appendChild(cnt);
+        } else if(it.tipo==='peso'){
+          const campo=document.createElement('div');
+          campo.className='campo';
+          campo.id='campo-'+it.id;
+          campo.style.display=e.checked?'flex':'none';
+          const inp=document.createElement('input');
+          inp.type='number';inp.inputMode='decimal';inp.placeholder='0';inp.value=e.cant||'';
+          inp.oninput=(ev)=>{ev.stopPropagation();E[it.id].cant=ev.target.value;};
+          inp.onclick=(ev)=>ev.stopPropagation();
+          const un=document.createElement('span');un.className='cunit';un.textContent=it.unidad||'';
+          campo.appendChild(inp);campo.appendChild(un);
+          div.appendChild(campo);
+        }
+
+        panel.appendChild(div);
+      });
+    });
+
+    if(a.id==='desechables'){
+      const wrap=document.createElement('div');
+      wrap.className='extras-wrap';
+      wrap.style.marginTop='8px';
+      const lbl=document.createElement('label');lbl.textContent='Notas / artículos extra';
+      const ta=document.createElement('textarea');
+      ta.placeholder='Agrega artículos adicionales o notas para el comprador...';
+      ta.value=extrasTexto;
+      ta.oninput=(ev)=>{extrasTexto=ev.target.value;};
+      wrap.appendChild(lbl);wrap.appendChild(ta);
+      panel.appendChild(wrap);
+    }
+
+    cont.appendChild(panel);
   });
-  showStep('revisar');render();
 }
-function showStep(s){
-  ['revisar','confirmar','enviar','enviado'].forEach(id=>document.getElementById('s-'+id).style.display=s===id?'':'none');
-  document.getElementById('tabs-bar').style.display=['enviado','enviar'].includes(s)?'none':'';
-  document.getElementById('resumen-areas').style.display=['enviado'].includes(s)?'none':'flex';
+
+function toggleItem(it){
+  E[it.id].checked=!E[it.id].checked;
+  const div=document.getElementById('item-'+it.id);
+  const chk=document.getElementById('chk-'+it.id);
+  div.classList.toggle('done',E[it.id].checked);
+  chk.classList.toggle('on',E[it.id].checked);
+  if(it.tipo==='pieza'){
+    const cnt=document.getElementById('cnt-'+it.id);
+    if(cnt)cnt.style.display=E[it.id].checked?'flex':'none';
+  } else if(it.tipo==='peso'){
+    const campo=document.getElementById('campo-'+it.id);
+    if(campo)campo.style.display=E[it.id].checked?'flex':'none';
+  }
+  actualizarTabs();
 }
-function render(){
-  const cur=state[area];
-  let all=[];Object.values(cur).forEach(a=>all=all.concat(a));
-  const nc=all.filter(i=>i.need).length;
-  document.getElementById('sub').textContent=areaLabel(area)+(confirmados[area]?' ✓ confirmada':' · Marca lo que falta');
-  document.getElementById('s-total').textContent=all.length;
-  document.getElementById('s-need').textContent=nc;
-  document.getElementById('pbar').style.width='0%';
-  const btn=document.getElementById('btn-conf');
-  btn.disabled=nc===0;
-  btn.textContent=nc>0?`Ver selección (${nc}) y confirmar →`:'Selecciona artículos para continuar';
-  let html='<div class="col-hdr"><span></span><span>Insumo</span><span>Presentación</span><span>Mínimo</span><span></span></div>';
-  let lp=null;
-  Object.entries(cur).forEach(([cat,items])=>{
-    const pfx=catPfx(cat);
-    if(pfx&&pfx!==lp){html+=`<div class="area-lbl"><span>${pfx==='BARRA'?'Barra':'Cocina'}</span><div class="area-lbl-line"></div></div>`;lp=pfx;}
-    const nc2=items.filter(i=>i.need).length;
-    const rows=items.map((it,i)=>`
-      <div class="item${it.need?' done-item':''}${it.dias>0?' pedido':''}">
-        <input type="checkbox" ${it.need?'checked':''} onchange="toggleNeed('${esc(cat)}',this.checked,${i})"/>
-        <div class="iname-wrap"><span class="iname">${esc(it.name)}</span>${tagHTML(it.dias)}</div>
-        <span class="ipres">${esc(it.pres)}</span>
-        <span class="imin${it.min?'':' emp'}">${it.min?esc(it.min):'—'}</span>
-        <span></span>
-      </div>`).join('');
-    html+=`<div class="section"><div class="sec-hdr"><span>${esc(catDisplay(cat))}</span>${nc2>0?`<span>${nc2} a pedir</span>`:'<span></span>'}</div>${rows}</div>`;
-  });
-  document.getElementById('c-revisar').innerHTML=html;
-  updateBadges();
+
+function resetearTodo(){
+  if(!confirm('¿Limpiar toda la selección?'))return;
+  Object.keys(E).forEach(k=>{E[k].checked=false;E[k].qty=1;E[k].cant='';});
+  extrasTexto='';
+  renderPaneles();
+  actualizarTabs();
 }
-function toggleNeed(cat,checked,idx){state[area][cat][idx].need=checked;confirmados[area]=false;save();render();}
-function goConfirm(){
-  let c=0;Object.values(state[area]).forEach(items=>items.forEach(it=>{if(it.need)c++;}));
-  if(!c)return;
-  document.getElementById('notas-ta').value=notas[area]||'';
-  renderConfirm();renderExtraList();showStep('confirmar');
-}
-function renderConfirm(){
-  const cur=state[area];
-  let c=0;Object.values(cur).forEach(items=>items.forEach(it=>{if(it.need)c++;}));
-  document.getElementById('conf-ttl').textContent='Confirma selección — '+areaLabel(area);
-  document.getElementById('conf-sub').textContent=c+' artículo'+(c===1?'':'s')+' marcado'+(c===1?'':'s')+'. Desmarca si fue por error.';
-  let html='';let lp=null;
-  Object.entries(cur).forEach(([cat,items])=>{
-    const ni=items.filter(i=>i.need);if(!ni.length)return;
-    const pfx=catPfx(cat);
-    if(pfx&&pfx!==lp){html+=`<div class="area-lbl"><span>${pfx==='BARRA'?'Barra':'Cocina'}</span><div class="area-lbl-line"></div></div>`;lp=pfx;}
-    html+=`<div class="section"><div class="sec-hdr"><span>${esc(catDisplay(cat))}</span><span>${ni.length}</span></div>`;
-    ni.forEach(it=>{
-      const ri=items.indexOf(it);
-      html+=`<div class="conf-item${it.dias>0?' pedido':''}">
-        <input type="checkbox" checked onchange="toggleConf('${esc(cat)}',${ri},this.checked)"/>
-        <div class="iname-wrap" style="flex:1"><span class="conf-item-name">${esc(it.name)}</span>${tagHTML(it.dias)}</div>
-        <span class="conf-item-pres">${esc(it.pres)}</span>
-      </div>`;
+
+function irAConfirmar(){
+  const ta=document.getElementById('extras-wrap textarea');
+  // recoger extras del textarea activo
+  document.querySelectorAll('textarea').forEach(t=>{extrasTexto=t.value;});
+  const total=Object.values(E).filter(e=>e.checked).length;
+  if(total===0&&!extrasTexto.trim()){alert('No hay artículos seleccionados.');return;}
+
+  let html='';
+  AREAS.forEach(a=>{
+    const rows=[];
+    a.categorias.forEach(cat=>{
+      cat.items.filter(it=>E[it.id].checked).forEach(it=>{
+        let det='';
+        if(it.tipo==='pieza')det=`${E[it.id].qty} pz`;
+        else if(it.tipo==='peso'&&E[it.id].cant)det=`${E[it.id].cant} ${it.unidad||''}`;
+        rows.push({nombre:it.nombre,det,ant:it.ant||''});
+      });
+    });
+    if(!rows.length)return;
+    html+=`<div class="conf-area"><div class="conf-area-title">${a.nombre} · ${rows.length} artículo${rows.length>1?'s':''}</div>`;
+    rows.forEach(r=>{
+      html+=`<div class="conf-item"><div><div class="conf-iname">${r.nombre}</div>${r.ant?`<div class="conf-iant">🕐 ${r.ant}</div>`:''}</div>${r.det?`<div class="conf-idet">${r.det}</div>`:''}</div>`;
     });
     html+='</div>';
   });
-  document.getElementById('c-confirmar').innerHTML=html;
+  if(extrasTexto.trim())html+=`<div class="conf-area"><div class="conf-area-title">Notas / extras</div><div style="font-size:13px;color:#0f172a;padding:6px 0;white-space:pre-wrap;line-height:1.5">${extrasTexto}</div></div>`;
+  document.getElementById('conf-contenido').innerHTML=html;
+  document.getElementById('paso-revision').style.display='none';
+  document.getElementById('paso-confirmar').style.display='block';
 }
-function toggleConf(cat,idx,checked){state[area][cat][idx].need=checked;save();renderConfirm();}
-function goBack(){showStep('revisar');render();}
-function addExtra(){
-  const n=document.getElementById('en').value.trim();if(!n)return;
-  const c=document.getElementById('ec').value.trim();
-  const m=document.getElementById('em').value.trim();
-  extras[area].push({id:Date.now(),name:n,cant:c,marca:m});
-  document.getElementById('en').value='';document.getElementById('ec').value='';document.getElementById('em').value='';
-  save();renderExtraList();
+
+function volverRevision(){
+  document.getElementById('paso-confirmar').style.display='none';
+  document.getElementById('paso-revision').style.display='block';
 }
-function delExtra(id){extras[area]=extras[area].filter(e=>e.id!==id);save();renderExtraList();}
-function renderExtraList(){
-  document.getElementById('extra-list').innerHTML=extras[area].length?extras[area].map(e=>`
-    <div class="extra-entry">
-      <span class="extra-txt">${esc(e.name)}</span>
-      ${e.cant?`<span class="extra-cant">${esc(e.cant)}</span>`:''}
-      ${e.marca?`<span class="extra-marca">${esc(e.marca)}</span>`:''}
-      <button class="extra-del" onclick="delExtra(${e.id})">×</button>
-    </div>`).join(''):'';
-}
-function guardarYSiguiente(){
-  notas[area]=document.getElementById('notas-ta').value;
-  confirmados[area]=true;
-  save();
-  updateBadges();
-  // check if all areas done or go to next
-  const pending=AREAS.filter(a=>!confirmados[a]);
-  if(pending.length>0){
-    // suggest next area
-    switchArea(pending[0]);
-    const nombres={barra:'Barra',cocina:'Cocina',desechables:'Desechables'};
-    document.getElementById('sub').textContent=areaLabel(area)+' · Siguiente área a revisar';
-  } else {
-    // all confirmed, show send screen
-    mostrarEnviar();
-  }
-}
-function mostrarEnviar(){
-  showStep('enviar');
-  // build summary
-  let html='';
-  AREAS.forEach(a=>{
-    const all=[];Object.values(state[a]).forEach(x=>all.push(...x));
-    const n=all.filter(i=>i.need).length;
-    const ex=extras[a]?extras[a].length:0;
-    html+=`<div class="resumen-card">
-      <div class="resumen-card-title">${areaLabel(a)} <span class="resumen-badge">${n} insumos${ex>0?' + '+ex+' extras':''}</span></div>
-      ${notas[a]?`<div style="font-size:12px;color:#888;margin-top:4px">${esc(notas[a])}</div>`:''}
-    </div>`;
-  });
-  document.getElementById('resumen-final').innerHTML=html;
-  hideStatus('status-enviar');
-  document.getElementById('btn-enviar').disabled=false;
-}
-function seguirRevisando(){
-  const pending=AREAS.filter(a=>!confirmados[a]);
-  switchArea(pending.length>0?pending[0]:'barra');
-}
-async function enviarTodo(){
+
+async function enviarLista(){
+  const payload={fecha:HOY.toISOString(),items:[],extras:extrasTexto};
+  AREAS.forEach(a=>a.categorias.forEach(cat=>cat.items.forEach(it=>{
+    if(!E[it.id].checked)return;
+    payload.items.push({area:a.nombre,categoria:cat.nombre,nombre:it.nombre,pres:it.pres||'',tipo:it.tipo,qty:it.tipo==='pieza'?E[it.id].qty:null,cant:it.tipo==='peso'?E[it.id].cant:null,unidad:it.unidad||null,ant:it.ant||null});
+  })));
   const btn=document.getElementById('btn-enviar');
-  btn.disabled=true;
-  setStatus('status-enviar','loading','Enviando lista...');
-  // Build consolidated payload
-  const allCats=[];
-  AREAS.forEach(a=>{
-    Object.entries(state[a]).forEach(([cat,items])=>{
-      const ni=items.filter(i=>i.need);if(!ni.length)return;
-      allCats.push({
-        area:a,
-        cat:catDisplay(cat),
-        pfx:catPfx(cat),
-        items:ni.map(it=>{return{name:it.name,pres:it.pres,min:it.min,dias:it.dias,done:false,qty:'',nota:''}})
-      });
-    });
-  });
-  const allExtras=[];
-  AREAS.forEach(a=>{if(extras[a])extras[a].forEach(e=>allExtras.push({...e,area:a,done:false}));});
-  const notasGen=AREAS.map(a=>notas[a]?areaLabel(a)+': '+notas[a]:'').filter(Boolean).join(' | ');
-  const payload={tipo:'consolidado',cats:allCats,extras:allExtras,notas:notasGen,ts:Date.now()};
+  btn.disabled=true;btn.textContent='Enviando...';
   try{
-    const encoded=encodeURIComponent(JSON.stringify(payload));
-    await fetch(SCRIPT_URL+'?action=save&data='+encoded,{method:'GET',mode:'no-cors'});
-    setStatus('status-enviar','ok','Lista enviada correctamente ✓');
-    setTimeout(()=>showStep('enviado'),800);
+    await fetch(SCRIPT_URL+'?data='+encodeURIComponent(JSON.stringify(payload)),{method:'GET',mode:'no-cors'});
+    document.getElementById('paso-confirmar').style.display='none';
+    document.getElementById('paso-enviado').style.display='block';
   }catch(e){
-    setStatus('status-enviar','err','Error al enviar. Verifica tu conexión.');
-    btn.disabled=false;
+    btn.disabled=false;btn.textContent='Enviar al comprador';
+    alert('Error al enviar. Verifica tu conexión.');
   }
 }
-function resetTodo(){
-  AREAS.forEach(a=>{state[a]=buildDef(a);extras[a]=[];notas[a]='';confirmados[a]=false;try{localStorage.removeItem(key(a));}catch(e){}});
-  switchArea('barra');
-  showStep('revisar');
-  render();
+
+function nuevaLista(){
+  Object.keys(E).forEach(k=>{E[k].checked=false;E[k].qty=1;E[k].cant='';});
+  extrasTexto='';
+  document.getElementById('paso-enviado').style.display='none';
+  document.getElementById('paso-revision').style.display='block';
+  renderTabs();renderPaneles();actualizarTabs();
 }
-function resetArea(){
-  if(!confirm('¿Resetear la lista de '+areaLabel(area)+'?'))return;
-  state[area]=buildDef(area);extras[area]=[];notas[area]='';confirmados[area]=false;save();showStep('revisar');render();
-}
-load();render();updateBadges();
+
+renderTabs();renderPaneles();
 </script>
 </body>
 </html>
