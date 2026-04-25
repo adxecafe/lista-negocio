@@ -7,54 +7,38 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;color:#0f172a;font-size:15px;}
-
   .hdr{background:#0f172a;padding:18px 16px 14px;display:flex;align-items:flex-end;justify-content:space-between;position:sticky;top:0;z-index:100;}
   .hdr-left h1{font-size:22px;font-weight:500;color:#f1f5f9;letter-spacing:-0.5px;}
   .hdr-left p{font-size:11px;color:#64748b;margin-top:3px;}
   .hdr-badge{background:#1e3a5f;color:#93c5fd;font-size:10px;font-weight:500;padding:5px 10px;border-radius:20px;}
-
-  /* INICIO */
-  #s-inicio{padding:60px 24px;text-align:center;}
-  #s-inicio h2{font-size:22px;font-weight:500;color:#0f172a;margin-bottom:10px;}
-  #s-inicio p{color:#64748b;font-size:14px;margin-bottom:32px;line-height:1.6;}
-  .btn-cargar{background:#1e40af;color:white;border:none;padding:14px 32px;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;width:100%;font-family:inherit;}
-  #estado-load{margin-top:14px;font-size:13px;line-height:1.6;color:#64748b;}
-  #estado-load.err{color:#dc2626;}
-
-  /* COMPRANDO */
+  #s-vacio{padding:60px 24px;text-align:center;}
+  #s-vacio h2{font-size:20px;font-weight:500;margin-bottom:10px;}
+  #s-vacio p{color:#64748b;font-size:14px;line-height:1.6;}
   #s-comprando{display:none;padding-bottom:100px;}
-
   .prog-bar{background:#e2e8f0;height:3px;}
   .prog-fill{background:#1e40af;height:3px;transition:width .4s;}
   .prog-txt{text-align:center;font-size:11px;color:#94a3b8;padding:8px 0 4px;font-weight:500;}
-
   .area-titulo{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;padding:14px 16px 6px;}
-
   .item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:white;border-bottom:0.5px solid #f1f5f9;transition:background .15s;}
   .item:first-of-type{border-top:0.5px solid #f1f5f9;}
   .item.done{background:#f8fafc;}
   .item.done .iname{text-decoration:line-through;color:#94a3b8;}
-
   .chk{width:22px;height:22px;border-radius:50%;border:1.5px solid #cbd5e1;flex-shrink:0;cursor:pointer;transition:all .15s;background:white;display:flex;align-items:center;justify-content:center;}
   .chk.on{background:#1e40af;border-color:#1e40af;}
   .chk.on::after{content:'✓';color:white;font-size:11px;font-weight:700;}
-
   .iinfo{flex:1;min-width:0;}
   .iname{font-size:14px;color:#0f172a;}
   .ipres{font-size:11px;color:#94a3b8;margin-top:1px;}
   .idet{font-size:12px;font-weight:500;color:#1e40af;margin-top:3px;}
   .iant{font-size:10px;color:#7c3aed;font-weight:500;margin-top:2px;}
-
   .extras-bloque{margin:8px 16px;padding:14px 16px;background:white;border-radius:12px;border:0.5px solid #e2e8f0;}
   .extras-bloque h3{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;margin-bottom:8px;}
   .extras-bloque p{font-size:14px;white-space:pre-wrap;line-height:1.6;color:#0f172a;}
-
   .footer{position:fixed;bottom:0;left:0;right:0;background:white;border-top:0.5px solid #f1f5f9;padding:12px 16px;display:flex;gap:10px;z-index:200;}
   .btn{flex:1;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
   .btn-sec{background:#f8fafc;color:#64748b;}
   .btn-prim{background:#1e40af;color:white;}
   .btn:active{opacity:.85;}
-
   #s-listo{display:none;text-align:center;padding:80px 24px;}
   .env-icon{font-size:56px;margin-bottom:20px;}
   .env-title{font-size:22px;font-weight:500;color:#0f172a;margin-bottom:8px;}
@@ -66,16 +50,14 @@
 <div class="hdr">
   <div class="hdr-left">
     <h1>Comprador</h1>
-    <p id="hdr-sub">Carga la lista para comenzar</p>
+    <p id="hdr-sub">Cargando lista...</p>
   </div>
   <div class="hdr-badge">ADXé Café</div>
 </div>
 
-<div id="s-inicio">
-  <h2>Lista de compras</h2>
-  <p>Presiona el botón para cargar la lista que preparó el equipo de revisión.</p>
-  <button class="btn-cargar" onclick="cargarLista()">Cargar lista</button>
-  <div id="estado-load"></div>
+<div id="s-vacio">
+  <h2>Sin lista</h2>
+  <p>Este enlace no contiene una lista válida.<br>Pide al equipo que genere y comparta una nueva.</p>
 </div>
 
 <div id="s-comprando">
@@ -88,46 +70,35 @@
   <div class="env-icon">✅</div>
   <div class="env-title">Compra completada</div>
   <p class="env-sub">Todos los artículos fueron palomeados.</p>
-  <button class="btn-cargar" style="margin-top:32px" onclick="location.reload()">Nueva carga</button>
 </div>
 
 <div class="footer" id="footer-comp" style="display:none">
-  <button class="btn btn-sec" onclick="cargarLista()">↺ Recargar</button>
+  <button class="btn btn-sec" onclick="desmarcarTodo()">↺ Reiniciar</button>
   <button class="btn btn-prim" onclick="marcarTodo()">Marcar todo ✓</button>
 </div>
 
 <script>
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwGiW69PZdySXRomvXU9d-emrQ2UgWfwPyWEbcHHk4eWcLtMSkrzz589ED4IeJMF8Fj/exec";
 let BL=null;
 const comprados={};
 
-async function cargarLista(){
-  const el=document.getElementById('estado-load');
-  el.className='';el.textContent='Buscando lista...';
+function cargarDesdeHash(){
+  const hash=location.hash.slice(1);
+  if(!hash){
+    document.getElementById('hdr-sub').textContent='Sin lista';
+    return;
+  }
   try{
-    // Intentar con corsproxy.io primero, si falla usar allorigins
-    let txt='';
-    try{
-      const r1=await fetch('https://corsproxy.io/?'+encodeURIComponent(SCRIPT_URL+'?t='+Date.now()));
-      txt=await r1.text();
-    }catch(e1){
-      const r2=await fetch('https://api.allorigins.win/get?url='+encodeURIComponent(SCRIPT_URL+'?t='+Date.now()));
-      const json=await r2.json();
-      txt=json.contents||'';
-    }
-    if(!txt||txt.trim()===''){el.className='err';el.textContent='No hay lista disponible todavía.\nPide al equipo que envíe la revisión.';return;}
-    const data=JSON.parse(txt);
-    if(!data.items||!data.items.length){el.className='err';el.textContent='La lista está vacía.';return;}
-    BL=data;
-    BL.items.forEach((it,i)=>{comprados[i]=false;it._idx=i;});
+    const json=decodeURIComponent(escape(atob(hash)));
+    BL=JSON.parse(json);
     const fecha=new Date(BL.fecha);
     document.getElementById('hdr-sub').textContent='Lista del '+fecha.toLocaleDateString('es-MX');
-    document.getElementById('s-inicio').style.display='none';
+    BL.items.forEach((it,i)=>{it._idx=i;comprados[i]=false;});
+    document.getElementById('s-vacio').style.display='none';
     document.getElementById('s-comprando').style.display='block';
     document.getElementById('footer-comp').style.display='flex';
     renderLista();
   }catch(e){
-    el.className='err';el.textContent='Error de conexión.\nVerifica tu internet e intenta de nuevo.';
+    document.getElementById('hdr-sub').textContent='Error al cargar';
   }
 }
 
@@ -150,8 +121,7 @@ function renderLista(){
       const chk=document.createElement('div');
       chk.className='chk'+(comprados[key]?' on':'');
       chk.onclick=()=>{comprados[key]=!comprados[key];renderLista();};
-      const info=document.createElement('div');
-      info.className='iinfo';
+      const info=document.createElement('div');info.className='iinfo';
       info.innerHTML=`<div class="iname">${it.nombre}</div>`;
       if(it.pres)info.innerHTML+=`<div class="ipres">${it.pres}</div>`;
       let det='';
@@ -164,8 +134,7 @@ function renderLista(){
     });
   });
   if(BL.extras&&BL.extras.trim()){
-    const ext=document.createElement('div');
-    ext.className='extras-bloque';
+    const ext=document.createElement('div');ext.className='extras-bloque';
     ext.innerHTML=`<h3>Notas / extras</h3><p>${BL.extras}</p>`;
     cont.appendChild(ext);
   }
@@ -192,6 +161,14 @@ function marcarTodo(){
   BL.items.forEach(it=>{comprados[it._idx]=true;});
   renderLista();
 }
+
+function desmarcarTodo(){
+  if(!BL)return;
+  BL.items.forEach(it=>{comprados[it._idx]=false;});
+  renderLista();
+}
+
+cargarDesdeHash();
 </script>
 </body>
 </html>
