@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ADXé Café — Revisión</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;color:#0f172a;font-size:15px;}
+
+  /* HEADER */
+  .hdr{background:#0f172a;padding:18px 16px 14px;display:flex;align-items:flex-end;justify-content:space-between;position:sticky;top:0;z-index:100;}
+  .hdr-left h1{font-size:22px;font-weight:500;color:#f1f5f9;letter-spacing:-0.5px;}
+  .hdr-left p{font-size:11px;color:#64748b;margin-top:3px;}
+  .hdr-badge{background:#1e3a5f;color:#93c5fd;font-size:10px;font-weight:500;padding:5px 10px;border-radius:20px;white-space:nowrap;}
+
+  /* TABS */
+  .tabs{background:#0f172a;padding:0 14px 14px;display:flex;gap:8px;overflow-x:auto;position:sticky;top:68px;z-index:90;}
+  .tab{font-size:12px;font-weight:500;padding:6px 14px;border-radius:20px;color:#64748b;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;}
+  .tab.on{background:#1e3a5f;color:#93c5fd;}
+  .tab .dot{display:inline-block;width:6px;height:6px;background:#ef4444;border-radius:50%;margin-left:5px;vertical-align:middle;}
+
+  /* PANELES */
+  .panel{display:none;padding-bottom:100px;}
+  .panel.on{display:block;}
+
+  /* SECCIÓN */
+  .sec-label{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;padding:14px 16px 6px;}
+
+  /* ITEM */
+  .item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:white;border-bottom:0.5px solid #f1f5f9;transition:background .15s;}
+  .item:first-of-type{border-top:0.5px solid #f1f5f9;}
+  .item.done{background:#f8fafc;}
+  .item.done .iname{text-decoration:line-through;color:#94a3b8;}
+
+  .chk{width:22px;height:22px;border-radius:50%;border:1.5px solid #cbd5e1;flex-shrink:0;cursor:pointer;transition:all .15s;background:white;display:flex;align-items:center;justify-content:center;}
+  .chk.on{background:#1e40af;border-color:#1e40af;}
+  .chk.on::after{content:'✓';color:white;font-size:11px;font-weight:700;}
+
+  .iinfo{flex:1;min-width:0;}
+  .iname{font-size:14px;color:#0f172a;}
+  .ipres{font-size:11px;color:#94a3b8;margin-top:1px;}
+  .imin{font-size:10px;color:#f59e0b;font-weight:500;margin-top:2px;}
+  .iant{font-size:10px;color:#7c3aed;font-weight:500;margin-top:2px;}
+
+  /* CONTADOR */
+  .cnt{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+  .cb{width:28px;height:28px;border-radius:50%;background:#f1f5f9;color:#0f172a;font-size:16px;font-weight:400;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;transition:background .15s;}
+  .cb:active{background:#e2e8f0;}
+  .cn{font-size:14px;font-weight:500;min-width:22px;text-align:center;color:#0f172a;}
+
+  /* CAMPO PESO */
+  .campo{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+  .campo input{width:56px;padding:5px 6px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:500;text-align:center;color:#0f172a;background:white;font-family:inherit;}
+  .campo input:focus{outline:none;border-color:#1e40af;}
+  .cunit{font-size:10px;color:#94a3b8;font-weight:500;}
+
+  /* EXTRAS */
+  .extras-wrap{margin:8px 16px 0;}
+  .extras-wrap label{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;display:block;margin-bottom:6px;}
+  .extras-wrap textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 12px;font-size:13px;font-family:inherit;resize:none;min-height:72px;background:white;color:#0f172a;}
+  .extras-wrap textarea:focus{outline:none;border-color:#1e40af;}
+
+  /* FOOTER */
+  .footer{position:fixed;bottom:0;left:0;right:0;background:white;border-top:0.5px solid #f1f5f9;padding:12px 16px;display:flex;gap:10px;z-index:200;}
+  .btn{flex:1;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit;}
+  .btn-sec{background:#f8fafc;color:#64748b;}
+  .btn-prim{background:#1e40af;color:white;}
+  .btn:active{opacity:.85;transform:scale(.98);}
+
+  /* CONFIRMAR */
+  #paso-confirmar{display:none;padding:16px;padding-bottom:100px;}
+  .conf-title{font-size:18px;font-weight:500;color:#0f172a;margin-bottom:16px;}
+  .conf-area{margin-bottom:20px;}
+  .conf-area-title{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;padding-bottom:6px;border-bottom:0.5px solid #e2e8f0;margin-bottom:6px;}
+  .conf-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid #f8fafc;}
+  .conf-item:last-child{border-bottom:none;}
+  .conf-iname{font-size:14px;color:#0f172a;}
+  .conf-idet{font-size:12px;font-weight:500;color:#1e40af;}
+  .conf-iant{font-size:10px;color:#7c3aed;font-weight:500;margin-top:1px;}
+
+  /* ENVIADO */
+  #paso-enviado{display:none;text-align:center;padding:80px 24px;}
+  .env-icon{font-size:56px;margin-bottom:20px;}
+  .env-title{font-size:22px;font-weight:500;color:#0f172a;margin-bottom:8px;}
+  .env-sub{color:#64748b;font-size:14px;line-height:1.6;}
+  .btn-nueva{margin-top:32px;background:#1e40af;color:white;border:none;padding:14px 32px;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <h1>Revisión</h1>
+    <p id="fecha-hoy"></p>
+  </div>
+  <div class="hdr-badge">ADXé Café</div>
+</div>
+
+<div id="paso-revision">
+  <div class="tabs" id="tabs"></div>
+  <div id="paneles"></div>
+  <div class="footer">
+    <button class="btn btn-sec" onclick="resetearTodo()">Limpiar</button>
+    <button class="btn btn-prim" onclick="irAConfirmar()">Revisar lista →</button>
+  </div>
+</div>
+
+<div id="paso-confirmar">
+  <p class="conf-title">Confirma el pedido</p>
+  <div id="conf-contenido"></div>
+  <div class="footer">
+    <button class="btn btn-sec" onclick="volverRevision()">← Corregir</button>
+    <button class="btn btn-prim" id="btn-enviar" onclick="enviarLista()">Enviar al comprador</button>
+  </div>
+</div>
+
+<div id="paso-enviado">
+  <div class="env-icon">✅</div>
+  <div class="env-title">Lista enviada</div>
+  <p class="env-sub">El comprador ya puede ver la lista en su dispositivo.</p>
+  <button class="btn-nueva" onclick="nuevaLista()">Nueva revisión</button>
+</div>
+
+<script>
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwGiW69PZdySXRomvXU9d-emrQ2UgWfwPyWEbcHHk4eWcLtMSkrzz589ED4IeJMF8Fj/exec";
+
+const AREAS=[
+  {id:"barra",nombre:"Barra",categorias:[
+    {id:"br-serv",nombre:"Servicio",items:[
+      {id:"bs01",nombre:"Leche deslactosada",pres:"Caja 12 pzas.",min:"1 caja",tipo:"check"},
+      {id:"bs02",nombre:"Leche de soya",pres:"Caja 12 pzas.",min:"6 piezas",tipo:"check"},
+      {id:"bs03",nombre:"Leche de avena OATLY",pres:"Caja 6 pzas.",min:"1 caja",tipo:"check"},
+      {id:"bs04",nombre:"Leche de almendra",pres:"Caja 6 pzas.",min:"3 pz",tipo:"check"},
+      {id:"bs05",nombre:"Leche de coco",pres:"Caja 6 pzas.",min:"3 pz",tipo:"check"},
+      {id:"bs06",nombre:"Agua tónica",pres:"Caja 12 pzas.",min:"12 pz",tipo:"check"},
+      {id:"bs07",nombre:"Agua mineral",pres:"Caja 12 pzas.",min:"12 pz",tipo:"check"},
+      {id:"bs08",nombre:"Matcha",pres:"1 kg",min:"250 gr",tipo:"peso",unidad:"gr"},
+      {id:"bs09",nombre:"Cacao",pres:"Bolsa 1 kg",min:"1/4 frasco",tipo:"peso",unidad:"gr"},
+      {id:"bs10",nombre:"Miel de agave",pres:"Paquete 2 pzas.",min:"1 pieza",tipo:"pieza"},
+      {id:"bs11",nombre:"Miel de maple",pres:"Bote 1 lt.",min:"1/4 bote",tipo:"check"},
+      {id:"bs12",nombre:"Splenda sobres",pres:"Caja 200 sobres",min:"1/4 caja",tipo:"check"},
+      {id:"bs13",nombre:"Stevia sobres",pres:"Caja 400 sobres",min:"1/4 caja",tipo:"check"},
+      {id:"bs14",nombre:"Azúcar mascabada sobres",pres:"Caja 200 sobres",min:"1/4 caja",tipo:"check"},
+    ]},
+    {id:"br-elab",nombre:"Elaboraciones",items:[
+      {id:"be01",nombre:"Azúcar",pres:"1 kg",min:"2 kg",tipo:"peso",unidad:"kg"},
+      {id:"be02",nombre:"Vaina de vainilla",pres:"Pza.",min:"3 piezas",tipo:"pieza"},
+      {id:"be03",nombre:"Limón",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"be04",nombre:"Jengibre",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"be05",nombre:"Naranja",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"be06",nombre:"Romero",pres:"Bolsa 30 gr.",min:"",tipo:"check"},
+      {id:"be07",nombre:"Piloncillo",pres:"Bolsa 4 pzas.",min:"",tipo:"check"},
+      {id:"be08",nombre:"Canela en vara",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"be09",nombre:"Canela en polvo",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be10",nombre:"Té Chai",pres:"Caja 18 pzas.",min:"",tipo:"check"},
+      {id:"be11",nombre:"Pimienta entera",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be12",nombre:"Anís de estrella",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be13",nombre:"Nuez moscada en polvo",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be14",nombre:"Jengibre en polvo",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be15",nombre:"Clavo en polvo",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be16",nombre:"Cardamomo en polvo",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be17",nombre:"Alulosa",pres:"1 kg",min:"1/4 bolsa",tipo:"peso",unidad:"gr"},
+      {id:"be18",nombre:"Manzanas",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"be19",nombre:"Jamaica",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be20",nombre:"Arándanos",pres:"",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be21",nombre:"Blue berries deshidratados",pres:"",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be22",nombre:"Sal de grano",pres:"",min:"",tipo:"peso",unidad:"gr"},
+      {id:"be23",nombre:"Golden Milk",pres:"250 gr",min:"1/4 frasco",tipo:"peso",unidad:"gr"},
+      {id:"be24",nombre:"Miel de abeja",pres:"1 litro",min:"1/4 frasco",tipo:"peso",unidad:"ml"},
+      {id:"be25",nombre:"Erlgray",pres:"100 gr",min:"",tipo:"peso",unidad:"gr"},
+    ]},
+    {id:"br-limp",nombre:"Limpieza",items:[
+      {id:"bl01",nombre:"Toalla interdoblada",pres:"",min:"3 paquetes",tipo:"check"},
+      {id:"bl02",nombre:"Jabón para trastes",pres:"",min:"",tipo:"check"},
+      {id:"bl03",nombre:"Esponja",pres:"",min:"",tipo:"pieza"},
+      {id:"bl04",nombre:"Windex",pres:"",min:"",tipo:"check"},
+      {id:"bl05",nombre:"Cafiza",pres:"",min:"",tipo:"check"},
+      {id:"bl06",nombre:"Grindz",pres:"",min:"",tipo:"check"},
+      {id:"bl07",nombre:"Bolsas de basura",pres:"",min:"",tipo:"check"},
+      {id:"bl08",nombre:"Ajax",pres:"",min:"",tipo:"check"},
+      {id:"bl09",nombre:"Papel de baño",pres:"Paquete",min:"10 rollos",tipo:"check"},
+      {id:"bl10",nombre:"Jabón para manos",pres:"2 litros",min:"1/4 botella",tipo:"check"},
+    ]}
+  ]},
+  {id:"cocina",nombre:"Cocina",categorias:[
+    {id:"co-bas",nombre:"Básicos",items:[
+      {id:"cb01",nombre:"Azúcar morena",pres:"Paquete 10 kg.",min:"5 kg",tipo:"peso",unidad:"kg"},
+      {id:"cb02",nombre:"Azúcar mascabada",pres:"Bolsa 1 kg.",min:"1 kg",tipo:"peso",unidad:"kg"},
+      {id:"cb03",nombre:"Azúcar glass",pres:"Bolsa 500 gr.",min:"250 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb04",nombre:"Harina",pres:"Costal 25 kg.",min:"5 kg",tipo:"peso",unidad:"kg"},
+      {id:"cb05",nombre:"Levadura",pres:"Caja",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb06",nombre:"Maicena",pres:"Caja",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb07",nombre:"Polvo para hornear",pres:"Bote",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb08",nombre:"Huevos",pres:"60 pz",min:"30 pz",tipo:"pieza"},
+      {id:"cb09",nombre:"Bicarbonato",pres:"Caja 486 gr",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb10",nombre:"Sal",pres:"1 kg",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb11",nombre:"Canela en polvo",pres:"Bote",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb12",nombre:"Cocoa",pres:"Bolsa 1 kg.",min:"500 gr",tipo:"peso",unidad:"gr"},
+      {id:"cb13",nombre:"Aceite Nutrioli",pres:"Paquete 3 pzas.",min:"1 lt",tipo:"check"},
+      {id:"cb14",nombre:"Extracto de vainilla",pres:"Bote 500 ml.",min:"100 ml",tipo:"peso",unidad:"ml"},
+    ]},
+    {id:"co-lact",nombre:"Lácteos y cremosos",items:[
+      {id:"cl01",nombre:"Crema Lyncott",pres:"Paquete 3 pzas.",min:"1 pieza",tipo:"pieza"},
+      {id:"cl02",nombre:"Crema ácida",pres:"Bote 1 lt.",min:"1 lt",tipo:"check"},
+      {id:"cl03",nombre:"Queso crema",pres:"Barra",min:"1 pieza",tipo:"pieza"},
+      {id:"cl04",nombre:"Mantequilla Loma Linda",pres:"1 kg.",min:"1 pieza",tipo:"pieza"},
+      {id:"cl05",nombre:"Leche evaporada",pres:"Lata 360 g",min:"1 pieza",tipo:"pieza"},
+      {id:"cl06",nombre:"Queso parmesano",pres:"453 gr",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cl07",nombre:"Queso cheddar",pres:"900 gr",min:"mitad inserto",tipo:"check"},
+      {id:"cl08",nombre:"Queso mozzarella",pres:"Bolsa 2 kg",min:"10 porciones",tipo:"check"},
+    ]},
+    {id:"co-choc",nombre:"Chocolates y dulces",items:[
+      {id:"cc01",nombre:"Chispas chocolate semi amargo",pres:"2 kg",min:"1 kg",tipo:"peso",unidad:"kg"},
+      {id:"cc02",nombre:"Chocolate de leche",pres:"900 gr",min:"500 gr",tipo:"peso",unidad:"gr"},
+      {id:"cc03",nombre:"Chocolate blanco",pres:"900 gr",min:"500 gr",tipo:"peso",unidad:"gr"},
+      {id:"cc04",nombre:"Malvavisco",pres:"Bolsa",min:"mitad bolsa",tipo:"check"},
+      {id:"cc05",nombre:"Galleta ricanela",pres:"Caja 486 gr",min:"200 gr",tipo:"check"},
+      {id:"cc06",nombre:"Galletas Ritz",pres:"Caja 1.6 kg",min:"200 gr",tipo:"check"},
+      {id:"cc07",nombre:"Galleta Oreo",pres:"Caja 1.5 kg",min:"200 gr",tipo:"check"},
+    ]},
+    {id:"co-fv",nombre:"Frutas y verduras",items:[
+      {id:"cfv01",nombre:"Zanahoria",pres:"Bolsa",min:"1 bolsa",tipo:"check"},
+      {id:"cfv02",nombre:"Plátano",pres:"Mazo",min:"2 pz",tipo:"pieza"},
+      {id:"cfv03",nombre:"Manzana roja",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"cfv04",nombre:"Manzana verde",pres:"Pza.",min:"",tipo:"pieza"},
+      {id:"cfv05",nombre:"Limón amarillo",pres:"Pza.",min:"3 pz",tipo:"pieza"},
+      {id:"cfv06",nombre:"Naranja",pres:"Pza.",min:"1 pz",tipo:"pieza"},
+      {id:"cfv07",nombre:"Aguacate",pres:"Pza.",min:"5 pz",tipo:"pieza"},
+      {id:"cfv08",nombre:"Cebolla morada",pres:"Pza.",min:"1/4 curtidas",tipo:"pieza"},
+      {id:"cfv09",nombre:"Rábano",pres:"Mazo",min:"1/4 curtidas",tipo:"pieza"},
+      {id:"cfv10",nombre:"Papa",pres:"Pza.",min:"5 porciones",tipo:"pieza"},
+      {id:"cfv11",nombre:"Cebollín",pres:"Mazo",min:"2 pzas.",tipo:"pieza"},
+      {id:"cfv12",nombre:"Repollo morado",pres:"Pza.",min:"1/4 curtidas",tipo:"pieza"},
+      {id:"cfv13",nombre:"Cebolla amarilla",pres:"Pza.",min:"1 pz",tipo:"pieza"},
+      {id:"cfv14",nombre:"Zucchini",pres:"Pza.",min:"1 pza.",tipo:"pieza"},
+      {id:"cfv15",nombre:"Tomate",pres:"Kg.",min:"1/4 inserto",tipo:"peso",unidad:"kg"},
+      {id:"cfv16",nombre:"Lechuga romana / orejona",pres:"Pza.",min:"1 pza",tipo:"pieza"},
+      {id:"cfv17",nombre:"Alfalfa",pres:"Caja",min:"1/4 caja",tipo:"check"},
+      {id:"cfv18",nombre:"Frutos rojos congelados",pres:"Bolsa 18 kg.",min:"mitad bolsa",tipo:"check"},
+    ]},
+    {id:"co-fs",nombre:"Frutos secos y semillas",items:[
+      {id:"cfs01",nombre:"Nuez de castilla",pres:"Bolsa",min:"250 gr",tipo:"peso",unidad:"gr"},
+      {id:"cfs02",nombre:"Ajo entero",pres:"Cabeza",min:"1 cabeza",tipo:"pieza"},
+      {id:"cfs03",nombre:"Almendras",pres:"Bolsa",min:"200 gr",tipo:"peso",unidad:"gr"},
+      {id:"cfs04",nombre:"Cacahuate",pres:"Bolsa",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cfs05",nombre:"Arándanos deshidratados",pres:"Bolsa",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"cfs06",nombre:"Pretzel",pres:"Bolsa",min:"200 gr",tipo:"check"},
+      {id:"cfs07",nombre:"Chips",pres:"Bolsa",min:"1/2 bolsa",tipo:"check"},
+    ]},
+    {id:"co-prot",nombre:"Proteínas",items:[
+      {id:"cp01",nombre:"Pechuga de pavo",pres:"Unidad",min:"7 porciones",tipo:"pieza"},
+      {id:"cp02",nombre:"Jamón",pres:"1 kg",min:"500 gr",tipo:"peso",unidad:"gr"},
+      {id:"cp03",nombre:"Tocino",pres:"Paquete 4",min:"7 porciones",tipo:"check"},
+    ]},
+    {id:"co-cond",nombre:"Condimentos y salsas",items:[
+      {id:"ccs01",nombre:"Crema de cacahuate",pres:"Bote 1 lt.",min:"1/2 bote",tipo:"check"},
+      {id:"ccs02",nombre:"Mostaza",pres:"Bote 2.9 kg",min:"1/4 bote",tipo:"check"},
+      {id:"ccs03",nombre:"Mayonesa",pres:"Bote 1.6 kg",min:"1/4 bote",tipo:"check"},
+      {id:"ccs04",nombre:"Chipotle",pres:"Lata",min:"1 lata",tipo:"pieza"},
+      {id:"ccs05",nombre:"Chiles güeros curtidos",pres:"Bote",min:"1/4 bote",tipo:"check"},
+      {id:"ccs06",nombre:"Agave",pres:"1 lt",min:"200 ml",tipo:"peso",unidad:"ml"},
+      {id:"ccs07",nombre:"Maple",pres:"Bote 1 lt.",min:"500 ml",tipo:"check"},
+      {id:"ccs08",nombre:"Puré de calabaza",pres:"Lata",min:"3 latas",tipo:"pieza"},
+      {id:"ccs09",nombre:"Orégano",pres:"Bote",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"ccs10",nombre:"Pimienta",pres:"Bote",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"ccs11",nombre:"Albahaca seca",pres:"Bote",min:"100 gr",tipo:"peso",unidad:"gr"},
+      {id:"ccs12",nombre:"Ajo en polvo",pres:"Bote",min:"100 gr",tipo:"peso",unidad:"gr"},
+    ]},
+    {id:"co-pan",nombre:"Panadería y snacks",items:[
+      {id:"cpa01",nombre:"Avena en ojuelas",pres:"Caja 2.5 kg",min:"500 gr",tipo:"peso",unidad:"gr"},
+      {id:"cpa02",nombre:"Bagels",pres:"Bolsa 12 pz",min:"6 pz",tipo:"pieza"},
+      {id:"cpa03",nombre:"Pan poligrano",pres:"Barra",min:"1/2 barra",tipo:"pieza"},
+      {id:"cpa04",nombre:"Cuernitos",pres:"Caja 12 pz",min:"10 pz",tipo:"check"},
+    ]},
+    {id:"co-ped",nombre:"Pedidos",items:[
+      {id:"ped01",nombre:"Salsa Roja",pres:"",min:"",tipo:"check",ant:"3 días de anticipación"},
+      {id:"ped02",nombre:"Chimichurri",pres:"",min:"",tipo:"check",ant:"1 día de anticipación"},
+      {id:"ped03",nombre:"Salsa Macha",pres:"",min:"",tipo:"check",ant:"1 semana de anticipación"},
+      {id:"ped04",nombre:"Pan Brioche",pres:"",min:"",tipo:"check",ant:"4 días de anticipación"},
+      {id:"ped05",nombre:"Totopo",pres:"5 bolsas 500 gr",min:"",tipo:"pieza",ant:"2 días de anticipación"},
+    ]},
+    {id:"co-limp",nombre:"Limpieza",items:[
+      {id:"clk01",nombre:"Jabón trastes",pres:"2.6 lt",min:"1/4 bote",tipo:"check"},
+      {id:"clk02",nombre:"Desengrasante",pres:"1 lt",min:"1/4 litro",tipo:"check"},
+      {id:"clk03",nombre:"Cloro",pres:"10 lt",min:"1/4 bote",tipo:"check"},
+      {id:"clk04",nombre:"Pinol",pres:"20 lt",min:"1/4 bote",tipo:"check"},
+      {id:"clk05",nombre:"Trapos",pres:"Pza.",min:"2 pzas",tipo:"pieza"},
+      {id:"clk06",nombre:"Esponjas",pres:"Pza.",min:"por pedido",tipo:"pieza"},
+    ]}
+  ]},
+  {id:"desechables",nombre:"Desechables",categorias:[
+    {id:"de-bar",nombre:"Barra",items:[
+      {id:"db01",nombre:"Vaso y tapa plástico 16 oz.",pres:"Caja 1000",min:"200 pz",tipo:"check"},
+      {id:"db02",nombre:"Popote",pres:"Caja 500",min:"media caja",tipo:"check"},
+      {id:"db03",nombre:"Vaso y tapa térmico 12 oz.",pres:"Paquete 50 pz",min:"100 pz",tipo:"check"},
+      {id:"db04",nombre:"Vaso y tapa térmico 8 oz.",pres:"Paquete 25 pz",min:"50 pz",tipo:"check"},
+      {id:"db05",nombre:"Manga de cartón",pres:"Paquete 25 pz",min:"25 pz",tipo:"check"},
+      {id:"db06",nombre:"Servilletas",pres:"Paquete 400 pz",min:"250 pz",tipo:"check"},
+      {id:"db07",nombre:"Bolsas papel galletas",pres:"Paquete 100 pz",min:"30 pz",tipo:"check"},
+      {id:"db08",nombre:"Bolsas papel kraft",pres:"Paquete 100 pz",min:"20 pz",tipo:"check"},
+      {id:"db09",nombre:"Caja transparente postres 5x5",pres:"Suelto",min:"25 pz",tipo:"check"},
+      {id:"db10",nombre:"Tenedores",pres:"Caja Costco",min:"30 pz",tipo:"check"},
+      {id:"db11",nombre:"Cucharas",pres:"Caja Costco",min:"30 pz",tipo:"check"},
+      {id:"db12",nombre:"Cuchillo",pres:"Caja Costco",min:"30 pz",tipo:"check"},
+      {id:"db13",nombre:"Plástico filmico",pres:"Caja",min:"1/4 rollo",tipo:"check"},
+      {id:"db14",nombre:"Porta vasos",pres:"Paquete 50 pz",min:"15 pz",tipo:"check"},
+      {id:"db15",nombre:"Bolsa plástico cubiertos",pres:"1 kg",min:"1/4 paquete",tipo:"check"},
+      {id:"db16",nombre:"Caja y tapa para cuernitos",pres:"Suelto",min:"12 pz",tipo:"check"},
+      {id:"db17",nombre:"Trapos a lavar",pres:"",min:"",tipo:"pieza",ant:"2 días de anticipación"},
+    ]},
+    {id:"de-coc",nombre:"Cocina",items:[
+      {id:"dc01",nombre:"Contenedor concha alimentos",pres:"Caja 200 pz",min:"25 pz",tipo:"check"},
+      {id:"dc02",nombre:"Papel encerado cuadrado",pres:"Caja",min:"50 pliegos",tipo:"check"},
+      {id:"dc03",nombre:"Bolsas de papel grande",pres:"Atado",min:"30 bolsas",tipo:"check"},
+      {id:"dc04",nombre:"Plástico filmico",pres:"Caja",min:"1/4 rollo",tipo:"check"},
+      {id:"dc05",nombre:"Papel aluminio",pres:"Paquete 2",min:"1/4 rollo",tipo:"check"},
+      {id:"dc06",nombre:"Papel encerado",pres:"Paquete 2",min:"1/4 rollo",tipo:"check"},
+      {id:"dc07",nombre:"Bolsas para porcionar",pres:"Caja 160 pz",min:"1/4 caja",tipo:"check"},
+      {id:"dc08",nombre:"Rollo de servilletas",pres:"Pza.",min:"1 pz",tipo:"pieza"},
+      {id:"dc09",nombre:"Palillos",pres:"Caja",min:"1/4 caja",tipo:"check"},
+      {id:"dc10",nombre:"Caja para pastel 8''",pres:"Pza.",min:"por pedido",tipo:"pieza"},
+      {id:"dc11",nombre:"Base para pastel 8''",pres:"Pza.",min:"por pedido",tipo:"pieza"},
+      {id:"dc12",nombre:"Caja plástico 5x5 panques",pres:"Pza.",min:"10 pz",tipo:"check"},
+      {id:"dc13",nombre:"Bote unicel y tapa salsa",pres:"Paquete 50",min:"menos de 15",tipo:"check"},
+      {id:"dc14",nombre:"Botecito y tapa plástico condimentos",pres:"Paquete 50",min:"menos de 20",tipo:"check"},
+      {id:"dc15",nombre:"Guantes",pres:"Caja",min:"1/4 caja",tipo:"check"},
+    ]}
+  ]}
+];
+
+const E={};
+AREAS.forEach(a=>a.categorias.forEach(c=>c.items.forEach(it=>{
+  E[it.id]={checked:false,qty:1,cant:""};
+})));
+let extrasTexto="";
+let areaActiva="barra";
+
+const DIAS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const HOY=new Date();
+document.getElementById('fecha-hoy').textContent=`${DIAS[HOY.getDay()]} ${HOY.getDate()} de ${MESES[HOY.getMonth()]}`;
+
+function contarArea(aid){
+  return AREAS.find(a=>a.id===aid).categorias.reduce((n,c)=>n+c.items.filter(it=>E[it.id].checked).length,0);
+}
+
+function renderTabs(){
+  const cont=document.getElementById('tabs');
+  cont.innerHTML='';
+  AREAS.forEach(a=>{
+    const d=document.createElement('div');
+    d.className='tab'+(a.id===areaActiva?' on':'');
+    d.id='tab-'+a.id;
+    const n=contarArea(a.id);
+    d.innerHTML=a.nombre+(n>0?`<span class="dot"></span>`:'');
+    d.onclick=()=>cambiarArea(a.id);
+    cont.appendChild(d);
+  });
+}
+
+function cambiarArea(id){
+  areaActiva=id;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('panel-'+id).classList.add('on');
+}
+
+function actualizarTabs(){
+  AREAS.forEach(a=>{
+    const tab=document.getElementById('tab-'+a.id);
+    if(!tab)return;
+    const n=contarArea(a.id);
+    tab.innerHTML=a.nombre+(n>0?`<span class="dot"></span>`:'');
+  });
+}
+
+function renderPaneles(){
+  const cont=document.getElementById('paneles');
+  cont.innerHTML='';
+  AREAS.forEach(a=>{
+    const panel=document.createElement('div');
+    panel.className='panel'+(a.id===areaActiva?' on':'');
+    panel.id='panel-'+a.id;
+
+    a.categorias.forEach(cat=>{
+      const sec=document.createElement('div');
+      sec.className='sec-label';
+      sec.textContent=cat.nombre;
+      panel.appendChild(sec);
+
+      cat.items.forEach(it=>{
+        const e=E[it.id];
+        const div=document.createElement('div');
+        div.className='item'+(e.checked?' done':'');
+        div.id='item-'+it.id;
+
+        // Checkbox circular
+        const chk=document.createElement('div');
+        chk.className='chk'+(e.checked?' on':'');
+        chk.id='chk-'+it.id;
+        chk.onclick=()=>toggleItem(it);
+
+        // Info
+        const info=document.createElement('div');
+        info.className='iinfo';
+        const nombre=document.createElement('div');
+        nombre.className='iname';
+        nombre.textContent=it.nombre;
+        info.appendChild(nombre);
+        if(it.pres){const p=document.createElement('div');p.className='ipres';p.textContent=it.pres;info.appendChild(p);}
+        if(it.min){const p=document.createElement('div');p.className='imin';p.textContent='⚠ Mín: '+it.min;info.appendChild(p);}
+        if(it.ant){const p=document.createElement('div');p.className='iant';p.textContent='🕐 '+it.ant;info.appendChild(p);}
+
+        div.appendChild(chk);
+        div.appendChild(info);
+
+        // Control
+        if(it.tipo==='pieza'){
+          const cnt=document.createElement('div');
+          cnt.className='cnt';
+          cnt.id='cnt-'+it.id;
+          cnt.style.display=e.checked?'flex':'none';
+          const bm=document.createElement('button');bm.className='cb';bm.textContent='−';
+          bm.onclick=(ev)=>{ev.stopPropagation();E[it.id].qty=Math.max(1,E[it.id].qty-1);document.getElementById('cn-'+it.id).textContent=E[it.id].qty;};
+          const cn=document.createElement('span');cn.className='cn';cn.id='cn-'+it.id;cn.textContent=e.qty;
+          const bp=document.createElement('button');bp.className='cb';bp.textContent='+';
+          bp.onclick=(ev)=>{ev.stopPropagation();E[it.id].qty++;document.getElementById('cn-'+it.id).textContent=E[it.id].qty;};
+          cnt.appendChild(bm);cnt.appendChild(cn);cnt.appendChild(bp);
+          div.appendChild(cnt);
+        } else if(it.tipo==='peso'){
+          const campo=document.createElement('div');
+          campo.className='campo';
+          campo.id='campo-'+it.id;
+          campo.style.display=e.checked?'flex':'none';
+          const inp=document.createElement('input');
+          inp.type='number';inp.inputMode='decimal';inp.placeholder='0';inp.value=e.cant||'';
+          inp.oninput=(ev)=>{ev.stopPropagation();E[it.id].cant=ev.target.value;};
+          inp.onclick=(ev)=>ev.stopPropagation();
+          const un=document.createElement('span');un.className='cunit';un.textContent=it.unidad||'';
+          campo.appendChild(inp);campo.appendChild(un);
+          div.appendChild(campo);
+        }
+
+        panel.appendChild(div);
+      });
+    });
+
+    if(a.id==='desechables'){
+      const wrap=document.createElement('div');
+      wrap.className='extras-wrap';
+      wrap.style.marginTop='8px';
+      const lbl=document.createElement('label');lbl.textContent='Notas / artículos extra';
+      const ta=document.createElement('textarea');
+      ta.placeholder='Agrega artículos adicionales o notas para el comprador...';
+      ta.value=extrasTexto;
+      ta.oninput=(ev)=>{extrasTexto=ev.target.value;};
+      wrap.appendChild(lbl);wrap.appendChild(ta);
+      panel.appendChild(wrap);
+    }
+
+    cont.appendChild(panel);
+  });
+}
+
+function toggleItem(it){
+  E[it.id].checked=!E[it.id].checked;
+  const div=document.getElementById('item-'+it.id);
+  const chk=document.getElementById('chk-'+it.id);
+  div.classList.toggle('done',E[it.id].checked);
+  chk.classList.toggle('on',E[it.id].checked);
+  if(it.tipo==='pieza'){
+    const cnt=document.getElementById('cnt-'+it.id);
+    if(cnt)cnt.style.display=E[it.id].checked?'flex':'none';
+  } else if(it.tipo==='peso'){
+    const campo=document.getElementById('campo-'+it.id);
+    if(campo)campo.style.display=E[it.id].checked?'flex':'none';
+  }
+  actualizarTabs();
+}
+
+function resetearTodo(){
+  if(!confirm('¿Limpiar toda la selección?'))return;
+  Object.keys(E).forEach(k=>{E[k].checked=false;E[k].qty=1;E[k].cant='';});
+  extrasTexto='';
+  renderPaneles();
+  actualizarTabs();
+}
+
+function irAConfirmar(){
+  const ta=document.getElementById('extras-wrap textarea');
+  // recoger extras del textarea activo
+  document.querySelectorAll('textarea').forEach(t=>{extrasTexto=t.value;});
+  const total=Object.values(E).filter(e=>e.checked).length;
+  if(total===0&&!extrasTexto.trim()){alert('No hay artículos seleccionados.');return;}
+
+  let html='';
+  AREAS.forEach(a=>{
+    const rows=[];
+    a.categorias.forEach(cat=>{
+      cat.items.filter(it=>E[it.id].checked).forEach(it=>{
+        let det='';
+        if(it.tipo==='pieza')det=`${E[it.id].qty} pz`;
+        else if(it.tipo==='peso'&&E[it.id].cant)det=`${E[it.id].cant} ${it.unidad||''}`;
+        rows.push({nombre:it.nombre,det,ant:it.ant||''});
+      });
+    });
+    if(!rows.length)return;
+    html+=`<div class="conf-area"><div class="conf-area-title">${a.nombre} · ${rows.length} artículo${rows.length>1?'s':''}</div>`;
+    rows.forEach(r=>{
+      html+=`<div class="conf-item"><div><div class="conf-iname">${r.nombre}</div>${r.ant?`<div class="conf-iant">🕐 ${r.ant}</div>`:''}</div>${r.det?`<div class="conf-idet">${r.det}</div>`:''}</div>`;
+    });
+    html+='</div>';
+  });
+  if(extrasTexto.trim())html+=`<div class="conf-area"><div class="conf-area-title">Notas / extras</div><div style="font-size:13px;color:#0f172a;padding:6px 0;white-space:pre-wrap;line-height:1.5">${extrasTexto}</div></div>`;
+  document.getElementById('conf-contenido').innerHTML=html;
+  document.getElementById('paso-revision').style.display='none';
+  document.getElementById('paso-confirmar').style.display='block';
+}
+
+function volverRevision(){
+  document.getElementById('paso-confirmar').style.display='none';
+  document.getElementById('paso-revision').style.display='block';
+}
+
+async function enviarLista(){
+  const payload={fecha:HOY.toISOString(),items:[],extras:extrasTexto};
+  AREAS.forEach(a=>a.categorias.forEach(cat=>cat.items.forEach(it=>{
+    if(!E[it.id].checked)return;
+    payload.items.push({area:a.nombre,categoria:cat.nombre,nombre:it.nombre,pres:it.pres||'',tipo:it.tipo,qty:it.tipo==='pieza'?E[it.id].qty:null,cant:it.tipo==='peso'?E[it.id].cant:null,unidad:it.unidad||null,ant:it.ant||null});
+  })));
+  const btn=document.getElementById('btn-enviar');
+  btn.disabled=true;btn.textContent='Enviando...';
+  try{
+    await fetch(SCRIPT_URL+'?data='+encodeURIComponent(JSON.stringify(payload)),{method:'GET',mode:'no-cors'});
+    document.getElementById('paso-confirmar').style.display='none';
+    document.getElementById('paso-enviado').style.display='block';
+  }catch(e){
+    btn.disabled=false;btn.textContent='Enviar al comprador';
+    alert('Error al enviar. Verifica tu conexión.');
+  }
+}
+
+function nuevaLista(){
+  Object.keys(E).forEach(k=>{E[k].checked=false;E[k].qty=1;E[k].cant='';});
+  extrasTexto='';
+  document.getElementById('paso-enviado').style.display='none';
+  document.getElementById('paso-revision').style.display='block';
+  renderTabs();renderPaneles();actualizarTabs();
+}
+
+renderTabs();renderPaneles();
+</script>
+</body>
+</html>
