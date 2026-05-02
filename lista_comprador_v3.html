@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ADXé Café — Comprador</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;color:#0f172a;font-size:15px;}
+  .hdr{background:#0f172a;padding:16px 16px 12px;position:sticky;top:0;z-index:100;}
+  .hdr-row{display:flex;align-items:flex-end;justify-content:space-between;}
+  .hdr h1{font-size:22px;font-weight:500;color:#f1f5f9;letter-spacing:-0.5px;}
+  .hdr-sub{font-size:11px;color:#64748b;margin-top:3px;}
+  .hdr-badge{background:#1e3a5f;color:#93c5fd;font-size:10px;font-weight:500;padding:5px 10px;border-radius:20px;white-space:nowrap;}
+
+  /* FILTRO TIENDAS */
+  .filtro{background:#0f172a;padding:0 14px 14px;display:flex;gap:8px;overflow-x:auto;}
+  .ftab{font-size:12px;font-weight:500;padding:6px 14px;border-radius:20px;color:#64748b;cursor:pointer;white-space:nowrap;flex-shrink:0;border:none;background:transparent;}
+  .ftab.on{background:#1e3a5f;color:#93c5fd;}
+
+  .prog-bar{background:#e2e8f0;height:3px;}
+  .prog-fill{background:#1e40af;height:3px;transition:width .4s;}
+  .prog-txt{text-align:center;font-size:11px;color:#94a3b8;padding:7px 0 3px;font-weight:500;}
+
+  .area-titulo{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;padding:12px 16px 4px;}
+  .tienda-titulo{font-size:11px;font-weight:600;color:#1e40af;padding:8px 16px 2px;background:#f8fafc;}
+
+  .item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:white;border-bottom:0.5px solid #f1f5f9;transition:background .15s;}
+  .item:first-of-type{border-top:0.5px solid #f1f5f9;}
+  .item.done{background:#f8fafc;}
+  .item.done .iname{text-decoration:line-through;color:#94a3b8;}
+  .chk{width:22px;height:22px;border-radius:50%;border:1.5px solid #cbd5e1;flex-shrink:0;cursor:pointer;transition:all .15s;background:white;display:flex;align-items:center;justify-content:center;}
+  .chk.on{background:#1e40af;border-color:#1e40af;}
+  .chk.on::after{content:'✓';color:white;font-size:11px;font-weight:700;}
+  .iinfo{flex:1;min-width:0;}
+  .iname{font-size:14px;color:#0f172a;}
+  .ipres{font-size:11px;color:#94a3b8;margin-top:1px;}
+  .idet{font-size:12px;font-weight:500;color:#1e40af;margin-top:3px;}
+  .iant{font-size:10px;color:#7c3aed;font-weight:500;margin-top:2px;}
+
+  .extras-bloque{margin:8px 16px;padding:14px 16px;background:white;border-radius:12px;border:0.5px solid #e2e8f0;}
+  .extras-bloque h3{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;margin-bottom:8px;}
+  .extras-bloque p{font-size:14px;white-space:pre-wrap;line-height:1.6;color:#0f172a;}
+
+  .footer{position:fixed;bottom:0;left:0;right:0;background:white;border-top:0.5px solid #f1f5f9;padding:12px 16px;display:flex;gap:10px;z-index:200;}
+  .btn{flex:1;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
+  .btn-sec{background:#f8fafc;color:#64748b;}
+  .btn-prim{background:#1e40af;color:white;}
+  .btn-danger{background:#fee2e2;color:#dc2626;}
+  .btn:active{opacity:.85;}
+
+  #s-vacio{padding:60px 24px;text-align:center;}
+  #s-vacio h2{font-size:20px;font-weight:500;margin-bottom:10px;}
+  #s-vacio p{color:#64748b;font-size:14px;line-height:1.6;}
+  .btn-cargar{background:#1e40af;color:white;border:none;padding:14px 32px;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;width:100%;margin-top:20px;font-family:inherit;}
+
+  #s-comprando{display:none;padding-bottom:100px;}
+  #s-listo{display:none;text-align:center;padding:80px 24px;}
+  .env-icon{font-size:56px;margin-bottom:20px;}
+  .env-title{font-size:22px;font-weight:500;color:#0f172a;margin-bottom:8px;}
+  .env-sub{color:#64748b;font-size:14px;line-height:1.6;}
+
+  .sin-resultados{padding:24px 16px;text-align:center;color:#94a3b8;font-size:13px;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-row">
+    <div><h1>Comprador</h1><div class="hdr-sub" id="hdr-sub">Cargando lista...</div></div>
+    <div class="hdr-badge">ADXé Café</div>
+  </div>
+</div>
+
+<div id="s-vacio" style="display:none">
+  <h2>Sin lista</h2>
+  <p>No hay lista disponible todavía.<br>Pide al equipo que complete la revisión.</p>
+  <button class="btn-cargar" onclick="cargarDeFirebase()">Reintentar</button>
+</div>
+
+<div id="s-comprando">
+  <div class="filtro" id="filtro-tiendas"></div>
+  <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  <div class="prog-txt" id="prog-txt">0 de 0 artículos</div>
+  <div id="lista-items"></div>
+</div>
+
+<div id="s-listo">
+  <div class="env-icon">✅</div>
+  <div class="env-title">Compra completada</div>
+  <p class="env-sub">Todos los artículos fueron palomeados.</p>
+  <button class="btn-cargar" onclick="nuevaCompra()">Nueva compra</button>
+</div>
+
+<div class="footer" id="footer-comp" style="display:none">
+  <button class="btn btn-danger" onclick="confirmarMarcarTodo()">Marcar todo</button>
+  <button class="btn btn-prim" onclick="nuevaCompra()">Nueva compra</button>
+</div>
+
+<script>
+var FIREBASE_URL='https://adxe-cafe-9d085-default-rtdb.firebaseio.com';
+var PROGRESS_KEY='adxe_comprador_progreso';
+var LISTA_KEY='adxe_comprador_lista';
+var BL=null;
+var comprados={};
+var tiendaActiva='Todas';
+
+function cargarDeFirebase(){
+  document.getElementById('hdr-sub').textContent='Cargando lista...';
+  document.getElementById('s-vacio').style.display='none';
+
+  fetch(FIREBASE_URL+'/lista.json').then(function(r){return r.json();}).then(function(data){
+    if(!data||!data.items||!data.items.length){
+      document.getElementById('hdr-sub').textContent='Sin lista disponible';
+      document.getElementById('s-vacio').style.display='block';
+      return;
+    }
+
+    // Verificar si hay progreso guardado para esta misma lista
+    var listaGuardada=null;
+    var progresoGuardado=null;
+    try{
+      var lg=localStorage.getItem(LISTA_KEY);
+      var pg=localStorage.getItem(PROGRESS_KEY);
+      if(lg)listaGuardada=JSON.parse(lg);
+      if(pg)progresoGuardado=JSON.parse(pg);
+    }catch(e){}
+
+    BL=data;
+    BL.items.forEach(function(it,i){it._idx=i;});
+
+    // Si la lista es la misma (misma fecha), restaurar progreso
+    if(listaGuardada&&listaGuardada.fecha===BL.fecha&&progresoGuardado){
+      comprados=progresoGuardado;
+    } else {
+      comprados={};
+      BL.items.forEach(function(it){comprados[it._idx]=false;});
+      // Guardar lista actual
+      try{localStorage.setItem(LISTA_KEY,JSON.stringify({fecha:BL.fecha}));}catch(e){}
+    }
+
+    var fecha=new Date(BL.fecha);
+    document.getElementById('hdr-sub').textContent='Lista del '+fecha.toLocaleDateString('es-MX');
+    document.getElementById('s-comprando').style.display='block';
+    document.getElementById('footer-comp').style.display='flex';
+    renderFiltros();
+    renderLista();
+  }).catch(function(){
+    document.getElementById('hdr-sub').textContent='Error de conexión';
+    document.getElementById('s-vacio').style.display='block';
+    document.getElementById('s-vacio').querySelector('p').textContent='No se pudo cargar. Verifica tu internet.';
+  });
+}
+
+function getTiendas(){
+  var t={'Todas':true};
+  if(!BL)return Object.keys(t);
+  BL.items.forEach(function(it){if(it.tienda)t[it.tienda]=true;});
+  return Object.keys(t);
+}
+
+function renderFiltros(){
+  var cont=document.getElementById('filtro-tiendas');
+  cont.innerHTML='';
+  var tiendas=getTiendas();
+  tiendas.forEach(function(t){
+    var btn=document.createElement('button');
+    btn.className='ftab'+(t===tiendaActiva?' on':'');
+    btn.textContent=t;
+    btn.onclick=function(){
+      tiendaActiva=t;
+      document.querySelectorAll('.ftab').forEach(function(b){b.classList.remove('on');});
+      btn.classList.add('on');
+      renderLista();
+    };
+    cont.appendChild(btn);
+  });
+}
+
+function itemsVisibles(){
+  if(!BL)return[];
+  if(tiendaActiva==='Todas')return BL.items;
+  return BL.items.filter(function(it){return it.tienda===tiendaActiva;});
+}
+
+function renderLista(){
+  var cont=document.getElementById('lista-items');
+  cont.innerHTML='';
+  var items=itemsVisibles();
+
+  if(!items.length){
+    var vacio=document.createElement('div');vacio.className='sin-resultados';
+    vacio.textContent='No hay artículos para esta tienda.';cont.appendChild(vacio);
+    actualizarProgreso();return;
+  }
+
+  // Agrupar por área
+  var areas={};
+  items.forEach(function(it){
+    if(!areas[it.area])areas[it.area]=[];
+    areas[it.area].push(it);
+  });
+
+  Object.keys(areas).forEach(function(area){
+    var tit=document.createElement('div');tit.className='area-titulo';tit.textContent=area;cont.appendChild(tit);
+    areas[area].forEach(function(it){
+      var key=it._idx;
+      var div=document.createElement('div');
+      div.className='item'+(comprados[key]?' done':'');
+      var chk=document.createElement('div');
+      chk.className='chk'+(comprados[key]?' on':'');
+      chk.onclick=function(){
+        comprados[key]=!comprados[key];
+        guardarProgreso();
+        renderLista();
+      };
+      var info=document.createElement('div');info.className='iinfo';
+      info.innerHTML='<div class="iname">'+it.nombre+'</div>';
+      if(it.pres)info.innerHTML+='<div class="ipres">'+it.pres+'</div>';
+      var det='';
+      if(it.tipo==='pieza'&&it.qty)det=it.qty+' piezas';
+      else if(it.tipo==='peso'&&it.cant)det=it.cant+' '+(it.unidad||'');
+      if(det)info.innerHTML+='<div class="idet">'+det+'</div>';
+      if(it.ant)info.innerHTML+='<div class="iant">🕐 '+it.ant+'</div>';
+      div.appendChild(chk);div.appendChild(info);cont.appendChild(div);
+    });
+  });
+
+  if(tiendaActiva==='Todas'&&BL.extras&&BL.extras.trim()){
+    var ext=document.createElement('div');ext.className='extras-bloque';
+    ext.innerHTML='<h3>Notas / extras</h3><p>'+BL.extras+'</p>';
+    cont.appendChild(ext);
+  }
+  actualizarProgreso();
+}
+
+function guardarProgreso(){
+  try{localStorage.setItem(PROGRESS_KEY,JSON.stringify(comprados));}catch(e){}
+}
+
+function actualizarProgreso(){
+  var total=BL?BL.items.length:0;
+  var hechos=Object.values(comprados).filter(Boolean).length;
+  var pct=total>0?Math.round(hechos/total*100):0;
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-txt').textContent=hechos+' de '+total+' artículos';
+  if(hechos===total&&total>0){
+    setTimeout(function(){
+      document.getElementById('s-comprando').style.display='none';
+      document.getElementById('footer-comp').style.display='none';
+      document.getElementById('s-listo').style.display='block';
+      limpiarProgreso();
+    },600);
+  }
+}
+
+function confirmarMarcarTodo(){
+  if(confirm('¿Marcar todos los artículos como comprados?')){
+    if(!BL)return;
+    BL.items.forEach(function(it){comprados[it._idx]=true;});
+    guardarProgreso();
+    renderLista();
+  }
+}
+
+function nuevaCompra(){
+  limpiarProgreso();
+  comprados={};
+  tiendaActiva='Todas';
+  document.getElementById('s-listo').style.display='none';
+  document.getElementById('s-comprando').style.display='none';
+  document.getElementById('footer-comp').style.display='none';
+  cargarDeFirebase();
+}
+
+function limpiarProgreso(){
+  try{localStorage.removeItem(PROGRESS_KEY);localStorage.removeItem(LISTA_KEY);}catch(e){}
+}
+
+// Iniciar
+cargarDeFirebase();
+</script>
+</body>
+</html>
