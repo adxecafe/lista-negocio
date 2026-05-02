@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ADXé Café — Configuración</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;color:#0f172a;font-size:15px;}
+  .hdr{background:#0f172a;padding:18px 16px 14px;display:flex;align-items:flex-end;justify-content:space-between;position:sticky;top:0;z-index:100;}
+  .hdr-left h1{font-size:22px;font-weight:500;color:#f1f5f9;letter-spacing:-0.5px;}
+  .hdr-left p{font-size:11px;color:#64748b;margin-top:3px;}
+  .hdr-badge{background:#1e3a5f;color:#93c5fd;font-size:10px;font-weight:500;padding:5px 10px;border-radius:20px;}
+  .tabs{background:#0f172a;padding:0 14px 14px;display:flex;gap:8px;overflow-x:auto;position:sticky;top:68px;z-index:90;}
+  .tab{font-size:12px;font-weight:500;padding:6px 14px;border-radius:20px;color:#64748b;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;}
+  .tab.on{background:#1e3a5f;color:#93c5fd;}
+  .panel{display:none;padding-bottom:100px;}
+  .panel.on{display:block;}
+  .sec-label{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;padding:14px 16px 6px;}
+  .item{padding:10px 16px;background:white;border-bottom:0.5px solid #f1f5f9;}
+  .item:first-of-type{border-top:0.5px solid #f1f5f9;}
+  .item-top{display:flex;align-items:center;gap:10px;}
+  .iinfo{flex:1;min-width:0;}
+  .iname{font-size:13px;color:#0f172a;font-weight:500;}
+  .ipres{font-size:11px;color:#94a3b8;margin-top:1px;}
+  .tipo-sel{display:flex;gap:4px;flex-shrink:0;}
+  .tipo-btn{padding:5px 8px;border-radius:8px;border:1.5px solid #e2e8f0;background:white;font-size:11px;font-weight:500;color:#64748b;cursor:pointer;white-space:nowrap;}
+  .tipo-btn.on-check{border-color:#1e40af;background:#eff6ff;color:#1e40af;}
+  .tipo-btn.on-pieza{border-color:#059669;background:#ecfdf5;color:#059669;}
+  .tipo-btn.on-peso{border-color:#d97706;background:#fffbeb;color:#d97706;}
+  .item-bottom{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+  .sub-sel{display:flex;align-items:center;gap:5px;}
+  .sub-sel label{font-size:10px;color:#94a3b8;font-weight:500;}
+  .sub-sel select{border:1.5px solid #e2e8f0;border-radius:8px;padding:4px 8px;font-size:11px;color:#0f172a;background:white;font-family:inherit;}
+  .footer{position:fixed;bottom:0;left:0;right:0;background:white;border-top:0.5px solid #f1f5f9;padding:12px 16px;display:flex;gap:10px;z-index:200;}
+  .btn{flex:1;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
+  .btn-sec{background:#f8fafc;color:#64748b;}
+  .btn-prim{background:#1e40af;color:white;}
+  .btn:active{opacity:.85;}
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#0f172a;color:#f1f5f9;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:300;white-space:nowrap;}
+  .toast.show{opacity:1;}
+  .leyenda{margin:12px 16px;padding:12px 14px;background:white;border-radius:12px;border:0.5px solid #e2e8f0;display:flex;gap:12px;flex-wrap:wrap;}
+  .ley-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#64748b;}
+  .ley-dot{width:8px;height:8px;border-radius:50%;}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-left"><h1>Configuración</h1><p>Tipo de control y tienda por artículo</p></div>
+  <div class="hdr-badge">ADXé Café</div>
+</div>
+<div class="tabs" id="tabs"></div>
+<div id="paneles"></div>
+<div class="footer">
+  <button class="btn btn-sec" onclick="resetConfig()">Restablecer</button>
+  <button class="btn btn-prim" onclick="guardarConfig()">Guardar configuración</button>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var STORAGE_KEY='adxe_config_v1';
+var TIENDAS=['—','Costco','Sam\'s Club','Smart&Final','La Grande','Florido','Calexico','Centro'];
+
+var AREAS=[
+  {id:"barra",nombre:"Barra",categorias:[
+    {id:"br-serv",nombre:"Servicio",items:[
+      {id:"bs01",nombre:"Leche deslactosada",pres:"Caja 12 pzas."},
+      {id:"bs02",nombre:"Leche de soya",pres:"Caja 12 pzas."},
+      {id:"bs03",nombre:"Leche de avena OATLY",pres:"Caja 6 pzas."},
+      {id:"bs04",nombre:"Leche de almendra",pres:"Caja 6 pzas."},
+      {id:"bs05",nombre:"Leche de coco",pres:"Caja 6 pzas."},
+      {id:"bs06",nombre:"Agua tónica",pres:"Caja 12 pzas."},
+      {id:"bs07",nombre:"Agua mineral",pres:"Caja 12 pzas."},
+      {id:"bs08",nombre:"Matcha",pres:"1 kg"},
+      {id:"bs09",nombre:"Cacao",pres:"Bolsa 1 kg"},
+      {id:"bs10",nombre:"Miel de agave",pres:"Paquete 2 pzas."},
+      {id:"bs11",nombre:"Miel de maple",pres:"Bote 1 lt."},
+      {id:"bs12",nombre:"Splenda sobres",pres:"Caja 200 sobres"},
+      {id:"bs13",nombre:"Stevia sobres",pres:"Caja 400 sobres"},
+      {id:"bs14",nombre:"Azúcar mascabada sobres",pres:"Caja 200 sobres"},
+    ]},
+    {id:"br-elab",nombre:"Elaboraciones",items:[
+      {id:"be01",nombre:"Azúcar",pres:"1 kg"},
+      {id:"be02",nombre:"Vaina de vainilla",pres:"Pza."},
+      {id:"be03",nombre:"Limón",pres:"Pza."},
+      {id:"be04",nombre:"Jengibre",pres:"Pza."},
+      {id:"be05",nombre:"Naranja",pres:"Pza."},
+      {id:"be06",nombre:"Romero",pres:"Bolsa 30 gr."},
+      {id:"be07",nombre:"Piloncillo",pres:"Bolsa 4 pzas."},
+      {id:"be08",nombre:"Canela en vara",pres:"Pza."},
+      {id:"be09",nombre:"Canela en polvo",pres:"100 gr"},
+      {id:"be10",nombre:"Té Chai",pres:"Caja 18 pzas."},
+      {id:"be11",nombre:"Pimienta entera",pres:"100 gr"},
+      {id:"be12",nombre:"Anís de estrella",pres:"100 gr"},
+      {id:"be13",nombre:"Nuez moscada en polvo",pres:"100 gr"},
+      {id:"be14",nombre:"Jengibre en polvo",pres:"100 gr"},
+      {id:"be15",nombre:"Clavo en polvo",pres:"100 gr"},
+      {id:"be16",nombre:"Cardamomo en polvo",pres:"100 gr"},
+      {id:"be17",nombre:"Alulosa",pres:"1 kg"},
+      {id:"be18",nombre:"Manzanas",pres:"Pza."},
+      {id:"be19",nombre:"Jamaica",pres:"100 gr"},
+      {id:"be20",nombre:"Arándanos",pres:""},
+      {id:"be21",nombre:"Blue berries deshidratados",pres:""},
+      {id:"be22",nombre:"Sal de grano",pres:""},
+      {id:"be23",nombre:"Golden Milk",pres:"250 gr"},
+      {id:"be24",nombre:"Miel de abeja",pres:"1 litro"},
+      {id:"be25",nombre:"Erlgray",pres:"100 gr"},
+    ]},
+    {id:"br-limp",nombre:"Limpieza",items:[
+      {id:"bl01",nombre:"Toalla interdoblada",pres:""},
+      {id:"bl02",nombre:"Jabón para trastes",pres:""},
+      {id:"bl03",nombre:"Esponja",pres:""},
+      {id:"bl04",nombre:"Windex",pres:""},
+      {id:"bl05",nombre:"Cafiza",pres:""},
+      {id:"bl06",nombre:"Grindz",pres:""},
+      {id:"bl07",nombre:"Bolsas de basura",pres:""},
+      {id:"bl08",nombre:"Ajax",pres:""},
+      {id:"bl09",nombre:"Papel de baño",pres:"Paquete"},
+      {id:"bl10",nombre:"Jabón para manos",pres:"2 litros"},
+    ]}
+  ]},
+  {id:"cocina",nombre:"Cocina",categorias:[
+    {id:"co-bas",nombre:"Básicos",items:[
+      {id:"cb01",nombre:"Azúcar morena",pres:"Paquete 10 kg."},
+      {id:"cb02",nombre:"Azúcar mascabada",pres:"Bolsa 1 kg."},
+      {id:"cb03",nombre:"Azúcar glass",pres:"Bolsa 500 gr."},
+      {id:"cb04",nombre:"Harina",pres:"Costal 25 kg."},
+      {id:"cb05",nombre:"Levadura",pres:"Caja"},
+      {id:"cb06",nombre:"Maicena",pres:"Caja"},
+      {id:"cb07",nombre:"Polvo para hornear",pres:"Bote"},
+      {id:"cb08",nombre:"Huevos",pres:"60 pz"},
+      {id:"cb09",nombre:"Bicarbonato",pres:"Caja 486 gr"},
+      {id:"cb10",nombre:"Sal",pres:"1 kg"},
+      {id:"cb11",nombre:"Canela en polvo",pres:"Bote"},
+      {id:"cb12",nombre:"Cocoa",pres:"Bolsa 1 kg."},
+      {id:"cb13",nombre:"Aceite Nutrioli",pres:"Paquete 3 pzas."},
+      {id:"cb14",nombre:"Extracto de vainilla",pres:"Bote 500 ml."},
+    ]},
+    {id:"co-lact",nombre:"Lácteos y cremosos",items:[
+      {id:"cl01",nombre:"Crema Lyncott",pres:"Paquete 3 pzas."},
+      {id:"cl02",nombre:"Crema ácida",pres:"Bote 1 lt."},
+      {id:"cl03",nombre:"Queso crema",pres:"Barra"},
+      {id:"cl04",nombre:"Mantequilla Loma Linda",pres:"1 kg."},
+      {id:"cl05",nombre:"Leche evaporada",pres:"Lata 360 g"},
+      {id:"cl06",nombre:"Queso parmesano",pres:"453 gr"},
+      {id:"cl07",nombre:"Queso cheddar",pres:"900 gr"},
+      {id:"cl08",nombre:"Queso mozzarella",pres:"Bolsa 2 kg"},
+    ]},
+    {id:"co-choc",nombre:"Chocolates y dulces",items:[
+      {id:"cc01",nombre:"Chispas chocolate semi amargo",pres:"2 kg"},
+      {id:"cc02",nombre:"Chocolate de leche",pres:"900 gr"},
+      {id:"cc03",nombre:"Chocolate blanco",pres:"900 gr"},
+      {id:"cc04",nombre:"Malvavisco",pres:"Bolsa"},
+      {id:"cc05",nombre:"Galleta ricanela",pres:"Caja 486 gr"},
+      {id:"cc06",nombre:"Galletas Ritz",pres:"Caja 1.6 kg"},
+      {id:"cc07",nombre:"Galleta Oreo",pres:"Caja 1.5 kg"},
+    ]},
+    {id:"co-fv",nombre:"Frutas y verduras",items:[
+      {id:"cfv01",nombre:"Zanahoria",pres:"Bolsa"},
+      {id:"cfv02",nombre:"Plátano",pres:"Mazo"},
+      {id:"cfv03",nombre:"Manzana roja",pres:"Pza."},
+      {id:"cfv04",nombre:"Manzana verde",pres:"Pza."},
+      {id:"cfv05",nombre:"Limón amarillo",pres:"Pza."},
+      {id:"cfv06",nombre:"Naranja",pres:"Pza."},
+      {id:"cfv07",nombre:"Aguacate",pres:"Pza."},
+      {id:"cfv08",nombre:"Cebolla morada",pres:"Pza."},
+      {id:"cfv09",nombre:"Rábano",pres:"Mazo"},
+      {id:"cfv10",nombre:"Papa",pres:"Pza."},
+      {id:"cfv11",nombre:"Cebollín",pres:"Mazo"},
+      {id:"cfv12",nombre:"Repollo morado",pres:"Pza."},
+      {id:"cfv13",nombre:"Cebolla amarilla",pres:"Pza."},
+      {id:"cfv14",nombre:"Zucchini",pres:"Pza."},
+      {id:"cfv15",nombre:"Tomate",pres:"Kg."},
+      {id:"cfv16",nombre:"Lechuga romana / orejona",pres:"Pza."},
+      {id:"cfv17",nombre:"Alfalfa",pres:"Caja"},
+      {id:"cfv18",nombre:"Frutos rojos congelados",pres:"Bolsa 18 kg."},
+    ]},
+    {id:"co-fs",nombre:"Frutos secos y semillas",items:[
+      {id:"cfs01",nombre:"Nuez de castilla",pres:"Bolsa"},
+      {id:"cfs02",nombre:"Ajo entero",pres:"Cabeza"},
+      {id:"cfs03",nombre:"Almendras",pres:"Bolsa"},
+      {id:"cfs04",nombre:"Cacahuate",pres:"Bolsa"},
+      {id:"cfs05",nombre:"Arándanos deshidratados",pres:"Bolsa"},
+      {id:"cfs06",nombre:"Pretzel",pres:"Bolsa"},
+      {id:"cfs07",nombre:"Chips",pres:"Bolsa"},
+    ]},
+    {id:"co-prot",nombre:"Proteínas",items:[
+      {id:"cp01",nombre:"Pechuga de pavo",pres:"Unidad"},
+      {id:"cp02",nombre:"Jamón",pres:"1 kg"},
+      {id:"cp03",nombre:"Tocino",pres:"Paquete 4"},
+    ]},
+    {id:"co-cond",nombre:"Condimentos y salsas",items:[
+      {id:"ccs01",nombre:"Crema de cacahuate",pres:"Bote 1 lt."},
+      {id:"ccs02",nombre:"Mostaza",pres:"Bote 2.9 kg"},
+      {id:"ccs03",nombre:"Mayonesa",pres:"Bote 1.6 kg"},
+      {id:"ccs04",nombre:"Chipotle",pres:"Lata"},
+      {id:"ccs05",nombre:"Chiles güeros curtidos",pres:"Bote"},
+      {id:"ccs06",nombre:"Agave",pres:"1 lt"},
+      {id:"ccs07",nombre:"Maple",pres:"Bote 1 lt."},
+      {id:"ccs08",nombre:"Puré de calabaza",pres:"Lata"},
+      {id:"ccs09",nombre:"Orégano",pres:"Bote"},
+      {id:"ccs10",nombre:"Pimienta",pres:"Bote"},
+      {id:"ccs11",nombre:"Albahaca seca",pres:"Bote"},
+      {id:"ccs12",nombre:"Ajo en polvo",pres:"Bote"},
+    ]},
+    {id:"co-pan",nombre:"Panadería y snacks",items:[
+      {id:"cpa01",nombre:"Avena en ojuelas",pres:"Caja 2.5 kg"},
+      {id:"cpa02",nombre:"Bagels",pres:"Bolsa 12 pz"},
+      {id:"cpa03",nombre:"Pan poligrano",pres:"Barra"},
+      {id:"cpa04",nombre:"Cuernitos",pres:"Caja 12 pz"},
+    ]},
+    {id:"co-ped",nombre:"Pedidos",items:[
+      {id:"ped01",nombre:"Salsa Roja",pres:""},
+      {id:"ped02",nombre:"Chimichurri",pres:""},
+      {id:"ped03",nombre:"Salsa Macha",pres:""},
+      {id:"ped04",nombre:"Pan Brioche",pres:""},
+      {id:"ped05",nombre:"Totopo",pres:"5 bolsas 500 gr"},
+    ]},
+    {id:"co-limp",nombre:"Limpieza",items:[
+      {id:"clk01",nombre:"Jabón trastes",pres:"2.6 lt"},
+      {id:"clk02",nombre:"Desengrasante",pres:"1 lt"},
+      {id:"clk03",nombre:"Cloro",pres:"10 lt"},
+      {id:"clk04",nombre:"Pinol",pres:"20 lt"},
+      {id:"clk05",nombre:"Trapos",pres:"Pza."},
+      {id:"clk06",nombre:"Esponjas",pres:"Pza."},
+    ]}
+  ]},
+  {id:"desechables",nombre:"Desechables",categorias:[
+    {id:"de-bar",nombre:"Barra",items:[
+      {id:"db01",nombre:"Vaso y tapa plástico 16 oz.",pres:"Caja 1000"},
+      {id:"db02",nombre:"Popote",pres:"Caja 500"},
+      {id:"db03",nombre:"Vaso y tapa térmico 12 oz.",pres:"Paquete 50 pz"},
+      {id:"db04",nombre:"Vaso y tapa térmico 8 oz.",pres:"Paquete 25 pz"},
+      {id:"db05",nombre:"Manga de cartón",pres:"Paquete 25 pz"},
+      {id:"db06",nombre:"Servilletas",pres:"Paquete 400 pz"},
+      {id:"db07",nombre:"Bolsas papel galletas",pres:"Paquete 100 pz"},
+      {id:"db08",nombre:"Bolsas papel kraft",pres:"Paquete 100 pz"},
+      {id:"db09",nombre:"Caja transparente postres 5x5",pres:"Suelto"},
+      {id:"db10",nombre:"Tenedores",pres:"Caja Costco"},
+      {id:"db11",nombre:"Cucharas",pres:"Caja Costco"},
+      {id:"db12",nombre:"Cuchillo",pres:"Caja Costco"},
+      {id:"db13",nombre:"Plástico filmico",pres:"Caja"},
+      {id:"db14",nombre:"Porta vasos",pres:"Paquete 50 pz"},
+      {id:"db15",nombre:"Bolsa plástico cubiertos",pres:"1 kg"},
+      {id:"db16",nombre:"Caja y tapa para cuernitos",pres:"Suelto"},
+      {id:"db17",nombre:"Trapos a lavar",pres:""},
+    ]},
+    {id:"de-coc",nombre:"Cocina",items:[
+      {id:"dc01",nombre:"Contenedor concha alimentos",pres:"Caja 200 pz"},
+      {id:"dc02",nombre:"Papel encerado cuadrado",pres:"Caja"},
+      {id:"dc03",nombre:"Bolsas de papel grande",pres:"Atado"},
+      {id:"dc04",nombre:"Plástico filmico",pres:"Caja"},
+      {id:"dc05",nombre:"Papel aluminio",pres:"Paquete 2"},
+      {id:"dc06",nombre:"Papel encerado",pres:"Paquete 2"},
+      {id:"dc07",nombre:"Bolsas para porcionar",pres:"Caja 160 pz"},
+      {id:"dc08",nombre:"Rollo de servilletas",pres:"Pza."},
+      {id:"dc09",nombre:"Palillos",pres:"Caja"},
+      {id:"dc10",nombre:"Caja para pastel 8''",pres:"Pza."},
+      {id:"dc11",nombre:"Base para pastel 8''",pres:"Pza."},
+      {id:"dc12",nombre:"Caja plástico 5x5 panques",pres:"Pza."},
+      {id:"dc13",nombre:"Bote unicel y tapa salsa",pres:"Paquete 50"},
+      {id:"dc14",nombre:"Botecito y tapa plástico condimentos",pres:"Paquete 50"},
+      {id:"dc15",nombre:"Guantes",pres:"Caja"},
+    ]}
+  ]}
+];
+
+var config={};
+
+function cargarConfig(){
+  try{var r=localStorage.getItem(STORAGE_KEY);if(r)config=JSON.parse(r);}catch(e){}
+  AREAS.forEach(function(a){a.categorias.forEach(function(c){c.items.forEach(function(it){
+    if(!config[it.id])config[it.id]={tipo:'check',unidad:'gr',tienda:''};
+  });});});
+}
+
+function guardarConfig(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(config));mostrarToast('Configuración guardada ✓');}
+  catch(e){mostrarToast('Error al guardar');}
+}
+
+function resetConfig(){
+  if(!confirm('¿Restablecer toda la configuración?'))return;
+  AREAS.forEach(function(a){a.categorias.forEach(function(c){c.items.forEach(function(it){
+    config[it.id]={tipo:'check',unidad:'gr',tienda:''};
+  });});});
+  renderPaneles();
+  mostrarToast('Configuración restablecida');
+}
+
+function mostrarToast(msg){
+  var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2000);
+}
+
+var areaActiva='barra';
+
+function renderTabs(){
+  var cont=document.getElementById('tabs');cont.innerHTML='';
+  AREAS.forEach(function(a){
+    var d=document.createElement('div');
+    d.className='tab'+(a.id===areaActiva?' on':'');
+    d.id='tab-'+a.id;d.textContent=a.nombre;
+    d.onclick=function(){
+      areaActiva=a.id;
+      document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+      d.classList.add('on');
+      document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
+      document.getElementById('panel-'+a.id).classList.add('on');
+    };
+    cont.appendChild(d);
+  });
+}
+
+function renderPaneles(){
+  var cont=document.getElementById('paneles');cont.innerHTML='';
+  AREAS.forEach(function(a){
+    var panel=document.createElement('div');
+    panel.className='panel'+(a.id===areaActiva?' on':'');
+    panel.id='panel-'+a.id;
+
+    var ley=document.createElement('div');ley.className='leyenda';
+    ley.innerHTML='<div class="ley-item"><div class="ley-dot" style="background:#1e40af"></div><span>☑ Solo marcar</span></div><div class="ley-item"><div class="ley-dot" style="background:#059669"></div><span># Piezas</span></div><div class="ley-item"><div class="ley-dot" style="background:#d97706"></div><span>≈ Cantidad</span></div>';
+    panel.appendChild(ley);
+
+    a.categorias.forEach(function(cat){
+      var sec=document.createElement('div');sec.className='sec-label';sec.textContent=cat.nombre;panel.appendChild(sec);
+      cat.items.forEach(function(it){
+        var cfg=config[it.id]||{tipo:'check',unidad:'gr',tienda:''};
+        var wrap=document.createElement('div');wrap.className='item';
+
+        // Fila superior: nombre + tipo
+        var top=document.createElement('div');top.className='item-top';
+        var info=document.createElement('div');info.className='iinfo';
+        info.innerHTML='<div class="iname">'+it.nombre+'</div>'+(it.pres?'<div class="ipres">'+it.pres+'</div>':'');
+
+        var sel=document.createElement('div');sel.className='tipo-sel';
+        var tipos=['check','pieza','peso'];
+        var labels=['☑','# pz','≈ kg'];
+        tipos.forEach(function(tipo,i){
+          var btn=document.createElement('button');
+          btn.className='tipo-btn'+(cfg.tipo===tipo?' on-'+tipo:'');
+          btn.textContent=labels[i];
+          btn.onclick=function(){
+            config[it.id]=Object.assign({},config[it.id]||{},{tipo:tipo});
+            sel.querySelectorAll('.tipo-btn').forEach(function(b){b.className='tipo-btn';});
+            btn.className='tipo-btn on-'+tipo;
+            var unSel=document.getElementById('unidad-'+it.id);
+            if(unSel)unSel.style.display=tipo==='peso'?'flex':'none';
+          };
+          sel.appendChild(btn);
+        });
+
+        top.appendChild(info);top.appendChild(sel);wrap.appendChild(top);
+
+        // Fila inferior: unidad + tienda
+        var bottom=document.createElement('div');bottom.className='item-bottom';
+
+        // Selector unidad
+        var unWrap=document.createElement('div');unWrap.className='sub-sel';
+        unWrap.id='unidad-'+it.id;
+        unWrap.style.display=cfg.tipo==='peso'?'flex':'none';
+        var unLbl=document.createElement('label');unLbl.textContent='Unidad:';
+        var unSel=document.createElement('select');
+        ['gr','kg','ml','lt','pz'].forEach(function(u){
+          var opt=document.createElement('option');opt.value=u;opt.textContent=u;
+          if((cfg.unidad||'gr')===u)opt.selected=true;
+          unSel.appendChild(opt);
+        });
+        unSel.onchange=function(ev){config[it.id]=Object.assign({},config[it.id]||{},{unidad:ev.target.value});};
+        unWrap.appendChild(unLbl);unWrap.appendChild(unSel);bottom.appendChild(unWrap);
+
+        // Selector tienda
+        var tWrap=document.createElement('div');tWrap.className='sub-sel';
+        var tLbl=document.createElement('label');tLbl.textContent='Tienda:';
+        var tSel=document.createElement('select');
+        TIENDAS.forEach(function(t){
+          var opt=document.createElement('option');opt.value=t==='—'?'':t;opt.textContent=t;
+          if((cfg.tienda||'')===(t==='—'?'':t))opt.selected=true;
+          tSel.appendChild(opt);
+        });
+        tSel.onchange=function(ev){config[it.id]=Object.assign({},config[it.id]||{},{tienda:ev.target.value});};
+        tWrap.appendChild(tLbl);tWrap.appendChild(tSel);bottom.appendChild(tWrap);
+
+        wrap.appendChild(bottom);
+        panel.appendChild(wrap);
+      });
+    });
+    cont.appendChild(panel);
+  });
+}
+
+cargarConfig();renderTabs();renderPaneles();
+</script>
+</body>
+</html>
