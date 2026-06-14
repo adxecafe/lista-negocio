@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ADXé Café — Revisión</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;color:#0f172a;font-size:15px;}
+.hdr{background:#0f172a;padding:18px 16px 14px;display:flex;align-items:flex-end;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.hdr h1{font-size:22px;font-weight:500;color:#f1f5f9;letter-spacing:-0.5px;}
+.hdr-sub{font-size:11px;color:#64748b;margin-top:3px;}
+.hdr-badge{background:#1e3a5f;color:#93c5fd;font-size:10px;font-weight:500;padding:5px 10px;border-radius:20px;}
+.tabs{background:#0f172a;padding:0 14px 14px;display:flex;gap:8px;overflow-x:auto;position:sticky;top:68px;z-index:90;}
+.tab{font-size:12px;font-weight:500;padding:6px 14px;border-radius:20px;color:#64748b;cursor:pointer;white-space:nowrap;flex-shrink:0;border:none;background:transparent;font-family:inherit;position:relative;}
+.tab.on{background:#1e3a5f;color:#93c5fd;}
+.tab .badge{position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;border-radius:10px;font-size:9px;padding:1px 5px;min-width:14px;text-align:center;display:none;}
+.tab .badge.show{display:block;}
+.panel{display:none;padding-bottom:100px;}
+.panel.on{display:block;}
+.sec-label{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;padding:14px 16px 6px;}
+.item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:white;border-bottom:0.5px solid #f1f5f9;}
+.item:first-of-type{border-top:0.5px solid #f1f5f9;}
+.item.done{background:#f8fafc;}
+.item.done .iname{text-decoration:line-through;color:#94a3b8;}
+.chk{width:22px;height:22px;border-radius:50%;border:1.5px solid #cbd5e1;flex-shrink:0;cursor:pointer;background:white;display:flex;align-items:center;justify-content:center;}
+.chk.on{background:#1e40af;border-color:#1e40af;}
+.chk.on::after{content:'✓';color:white;font-size:11px;font-weight:700;}
+.iinfo{flex:1;min-width:0;}
+.iname{font-size:14px;color:#0f172a;}
+.ipres{font-size:11px;color:#94a3b8;margin-top:1px;}
+.imin{font-size:10px;color:#f59e0b;font-weight:500;margin-top:2px;}
+.iant{font-size:10px;color:#7c3aed;font-weight:500;margin-top:2px;}
+.cnt{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.cb{width:28px;height:28px;border-radius:50%;background:#f1f5f9;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;}
+.cn{font-size:14px;font-weight:500;min-width:22px;text-align:center;}
+.campo{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.campo input{width:56px;padding:5px 6px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:500;text-align:center;color:#0f172a;background:white;font-family:inherit;}
+.campo input:focus{outline:none;border-color:#1e40af;}
+.cunit{font-size:10px;color:#94a3b8;}
+.extras-wrap{margin:8px 16px 0;}
+.extras-wrap label{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;display:block;margin-bottom:6px;}
+.extras-wrap textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 12px;font-size:13px;font-family:inherit;resize:none;min-height:72px;background:white;}
+.resumen-header{padding:20px 16px 8px;}
+.resumen-header h2{font-size:20px;font-weight:500;}
+.resumen-header p{font-size:13px;color:#64748b;margin-top:4px;}
+.resumen-nota{margin:0 16px 12px;background:#fffbeb;border:0.5px solid #fde68a;border-radius:10px;padding:10px 12px;font-size:12px;color:#92400e;}
+.resumen-sec{margin:0 16px 4px;font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;padding-top:12px;}
+.resumen-item{display:flex;align-items:center;gap:12px;padding:11px 16px;background:white;border-bottom:0.5px solid #f1f5f9;cursor:pointer;}
+.resumen-item.quitado{background:#fff1f2;}
+.resumen-item.quitado .r-nombre{text-decoration:line-through;color:#94a3b8;}
+.r-chk{width:22px;height:22px;border-radius:50%;background:#1e40af;border:1.5px solid #1e40af;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.r-chk::after{content:'✓';color:white;font-size:11px;font-weight:700;}
+.resumen-item.quitado .r-chk{background:white;border-color:#fca5a5;}
+.resumen-item.quitado .r-chk::after{content:'✕';color:#fca5a5;}
+.r-info{flex:1;}
+.r-nombre{font-size:14px;color:#0f172a;}
+.r-det{font-size:11px;color:#1e40af;font-weight:500;margin-top:1px;}
+.r-ant{font-size:10px;color:#7c3aed;font-weight:500;margin-top:1px;}
+.resumen-vacio{padding:24px 16px;text-align:center;color:#94a3b8;font-size:13px;}
+.env-wrap{text-align:center;padding:60px 24px;}
+.env-icon{font-size:56px;margin-bottom:20px;}
+.env-title{font-size:22px;font-weight:500;margin-bottom:8px;}
+.env-sub{color:#64748b;font-size:14px;line-height:1.6;}
+.footer{position:fixed;bottom:0;left:0;right:0;background:white;border-top:0.5px solid #f1f5f9;padding:12px 16px;display:flex;gap:10px;z-index:200;}
+.btn{flex:1;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
+.btn-sec{background:#f8fafc;color:#64748b;}
+.btn-prim{background:#1e40af;color:white;}
+.btn-verde{background:#059669;color:white;}
+.btn:active{opacity:.85;}
+.pb{padding-bottom:100px;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div><h1>Revisión</h1><div class="hdr-sub" id="hdr-sub"></div></div>
+  <div class="hdr-badge">ADXé Café</div>
+</div>
+
+<!-- PASO SELECCIÓN: tabs libres -->
+<div id="paso-seleccion" class="pb">
+  <div class="tabs" id="tabs-areas"></div>
+  <div id="paneles-areas"></div>
+  <div class="footer">
+    <button class="btn btn-sec" onclick="limpiarActual()">Limpiar</button>
+    <button class="btn btn-prim" onclick="irAResumen()">Revisar todo →</button>
+  </div>
+</div>
+
+<!-- PASO RESUMEN GLOBAL -->
+<div id="paso-resumen" style="display:none" class="pb">
+  <div class="resumen-header">
+    <h2>Confirma el pedido</h2>
+    <p id="res-sub"></p>
+  </div>
+  <div class="resumen-nota">Toca un artículo para quitarlo si fue seleccionado por error.</div>
+  <div id="res-items"></div>
+  <div class="footer">
+    <button class="btn btn-sec" onclick="volverSeleccion()">← Corregir</button>
+    <button class="btn btn-verde" id="btn-enviar" onclick="enviarLista()">Enviar lista ✓</button>
+  </div>
+</div>
+
+<!-- PASO ENVIADO -->
+<div id="paso-enviado" style="display:none">
+  <div class="env-wrap">
+    <div class="env-icon">✅</div>
+    <div class="env-title">Lista enviada</div>
+    <p class="env-sub">La lista fue guardada. El comprador puede cargarla ahora.</p>
+    <button class="btn btn-sec" style="margin-top:28px;width:100%;border-radius:12px;padding:13px;font-size:14px;font-family:inherit" onclick="nuevaLista()">Nueva revisión</button>
+  </div>
+</div>
+
+<script>
+var FIREBASE_URL='https://adxe-cafe-9d085-default-rtdb.firebaseio.com';
+var areaActiva='barra';
+var confirmados={};
+var extrasTexto='';
+
+var DIAS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+var MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+var HOY=new Date();
+
+const AREAS=[
+  {id:"barra",nombre:"Barra",categorias:[
+    {id:"barra-desechables",nombre:"Desechables",items:[
+      {id:"db01",nombre:"Vaso y tapa plástico 16 oz.",pres:"caja 1000",tienda:"DULCERIA",tipo:"check",min:"200pz"},
+      {id:"db02",nombre:"Popote",pres:"Caja 500",tienda:"SMART FINAL",tipo:"check",min:"media caja"},
+      {id:"db03",nombre:"Vaso y tapa térmico 12 oz.",pres:"paquete 50pz",tienda:"DULCERIA",tipo:"pieza",min:"100 pz"},
+      {id:"db04",nombre:"Vaso y tapa térmico 8 oz.",pres:"paquete 25pz",tienda:"DULCERIA",tipo:"pieza",min:"50pz"},
+      {id:"db05",nombre:"Manga de cartón",pres:"paquete 25pz",tienda:"DULCERIA",tipo:"check",min:"25pz"},
+      {id:"db06",nombre:"Servilletas",pres:"paquete 400pz",tienda:"LA GRANDE",tipo:"pieza",min:"250pz"},
+      {id:"db07",nombre:"Bolsas papel galletas",pres:"paquete de 100pz",tienda:"BODEGA",tipo:"check",min:"30 pz"},
+      {id:"db08",nombre:"Bolsas papel kraft",pres:"paquete 100pz",tienda:"BODEGA",tipo:"check",min:"20pz"},
+      {id:"db09",nombre:"Caja transparente postres 5x5",pres:"suelto",tienda:"LA GRANDE",tipo:"pieza",min:"25pz"},
+      {id:"db10",nombre:"Tenedores",pres:"caja costco",tienda:"COSTCO",tipo:"check",min:"30pz"},
+      {id:"db11",nombre:"Cucharas",pres:"caja costco",tienda:"COSTCO",tipo:"check",min:"30pz"},
+      {id:"db12",nombre:"Cuchillo",pres:"caja costco",tienda:"COSTCO",tipo:"check",min:"30pz"},
+      {id:"db13",nombre:"Plástico filmico",pres:"Caja",tienda:"COSTCO",tipo:"check",min:"1/4 de rollo"},
+      {id:"db14",nombre:"Porta vasos",pres:"paquete 50 pz",tienda:"LA GRANDE",tipo:"check",min:"15pz"},
+      {id:"db15",nombre:"Bolsa plastico cubiertos",pres:"1kg",tienda:"BODEGA",tipo:"check",min:"1/4 paquete"},
+      {id:"db16",nombre:"Caja y tapa para cuernitos",pres:"suelto",tienda:"LA GRANDE",tipo:"pieza",min:"12 pz"},
+    ]},
+    {id:"barra-servicio",nombre:"Servicio",items:[
+      {id:"bs01",nombre:"Leche deslactosada",pres:"Caja 12 pzas.",tienda:"SAMS CLUB",tipo:"pieza",min:"1 caja"},
+      {id:"bs02",nombre:"Leche de soya",pres:"Caja 12 pzas.",tienda:"COSTCO",tipo:"pieza",min:"6 piezas"},
+      {id:"bs03",nombre:"Leche de avena OATLY",pres:"Caja 6 pzas.",tienda:"COSTCO",tipo:"pieza",min:"1 caja"},
+      {id:"bs04",nombre:"Leche de almendra",pres:"Caja 6 pzas.",tienda:"SAMS CLUB",tipo:"pieza",min:"3pz"},
+      {id:"bs05",nombre:"Leche de coco",pres:"Caja 6 pzas.",tienda:"COSTCO",tipo:"pieza",min:"3pz"},
+      {id:"bs06",nombre:"Agua de Coco",pres:"Caja 6 pzas.",tienda:"COSTCO",tipo:"pieza",min:"3pz"},
+      {id:"bs07",nombre:"Matcha",pres:"1kg",tienda:"MATCHA MUCHACHA",tipo:"check",min:"250 gramos"},
+      {id:"bs08",nombre:"Cacao",pres:"Bolsa 1 kg.",tienda:"COSTCO",tipo:"check",min:"1/4 frasco vidrio"},
+      {id:"bs09",nombre:"Miel de agave",pres:"Paquete 2 pzas.",tienda:"COSTCO",tipo:"check",min:"1 pieza"},
+      {id:"bs10",nombre:"Miel de maple",pres:"Bote 1 Lt.",tienda:"COSTCO",tipo:"check",min:"1/4 bote en uso"},
+      {id:"bs11",nombre:"Splenda sobres",pres:"caja 200 sobres",tienda:"SMART FINAL",tipo:"check",min:"1/4 caja"},
+      {id:"bs12",nombre:"Stevia sobres",pres:"caja 400 sobres",tienda:"SMART FINAL",tipo:"check",min:"1/4 caja"},
+      {id:"bs13",nombre:"Azúcar mascabada sobres",pres:"caja 200 sobres",tienda:"SMART FINAL",tipo:"check",min:"1/4 caja"},
+    ]},
+    {id:"barra-elaboraciones",nombre:"Elaboraciones",items:[
+      {id:"be01",nombre:"Azúcar",pres:"1 Kg.",tienda:"LA GRANDE",tipo:"pieza",min:"2kg"},
+      {id:"be02",nombre:"Pasta de Vaina",pres:"Pza.",tienda:"COSTCO",tipo:"check",min:"1/4 bote en uso"},
+      {id:"be03",nombre:"Limón",pres:"Pza.",tienda:"LA GRANDE",tipo:"pieza",min:"3pz"},
+      {id:"be04",nombre:"Jengibre",pres:"Pza.",tienda:"LA GRANDE",tipo:"pieza"},
+      {id:"be05",nombre:"Naranja",pres:"Pza.",tienda:"LA GRANDE",tipo:"pieza"},
+      {id:"be06",nombre:"Romero",pres:"Bolsa 30 gr.",tienda:"LA GRANDE",tipo:"pieza"},
+      {id:"be07",nombre:"Piloncillo",pres:"Bolsa 4 pzas.",tienda:"LA GRANDE",tipo:"pieza"},
+      {id:"be08",nombre:"Canela en vara",pres:"Pza.",tienda:"LA GRANDE",tipo:"pieza"},
+      {id:"be09",nombre:"Canela en polvo",pres:"100gr",tienda:"COSTCO",tipo:"check"},
+      {id:"be10",nombre:"Té Chai",pres:"Caja 18 pzas.",tienda:"SMART FINAL",tipo:"pieza"},
+      {id:"be11",nombre:"Pimienta entera",pres:"100gr",tienda:"GIRASOL",tipo:"check"},
+      {id:"be12",nombre:"Anís de estrella",pres:"100gr",tienda:"GIRASOL",tipo:"check"},
+      {id:"be13",nombre:"Nuez moscada en polvo",pres:"100gr",tienda:"GIRASOL",tipo:"check"},
+      {id:"be14",nombre:"Jengibre en polvo",pres:"100gr",tienda:"GIRASOL",tipo:"check"},
+      {id:"be15",nombre:"Clavo en polvo",pres:"100gr",tienda:"GIRASOL",tipo:"check"},
+      {id:"be16",nombre:"Cardamomo en polvo",pres:"100gr",tienda:"GIRASOL",tipo:"check"},
+      {id:"be17",nombre:"Alulosa",pres:"1kg",tienda:"AMAZON",tipo:"check",min:"1/4 bolsa"},
+      {id:"be18",nombre:"Manzanas",pres:"Pza.",tienda:"LA GRANDE",tipo:"pieza"},
+      {id:"be19",nombre:"Jamaica",pres:"100gr",tienda:"COSTCO",tipo:"check"},
+      {id:"be20",nombre:"Arándanos",pres:"300gr",tienda:"COSTCO",tipo:"check"},
+      {id:"be21",nombre:"Blue berries deshidratados",pres:"300gr",tienda:"COSTCO",tipo:"check"},
+      {id:"be22",nombre:"Fleaks de sal",pres:"1kg",tienda:"CALEXICO",tipo:"check",min:"1/4 frasco"},
+      {id:"be23",nombre:"Golden Milk",pres:"250gr",tienda:"AMAZON",tipo:"check",min:"1/4 frasco"},
+      {id:"be24",nombre:"Miel de abeja",pres:"1litro",tienda:"COSTCO",tipo:"check",min:"1/4 frasco"},
+      {id:"be25",nombre:"Lavanda",pres:"Pza.",tienda:"AMAZON",tipo:"check"},
+      {id:"be26",nombre:"Erlgray",pres:"100gr",tienda:"AMAZON",tipo:"check"},
+    ]},
+    {id:"barra-limpieza",nombre:"Limpieza",items:[
+      {id:"bl01",nombre:"Toalla interdoblada",pres:"CAJA",tienda:"COSTCO",tipo:"check",min:"3 paquetes sueltos"},
+      {id:"bl02",nombre:"Jabón para trastes",pres:"1litro",tienda:"SAMS CLUB",tipo:"check"},
+      {id:"bl03",nombre:"Esponja",pres:"1pz",tienda:"COSTCO",tipo:"pieza"},
+      {id:"bl04",nombre:"Windex",pres:"1litro",tienda:"SAMS CLUB",tipo:"check"},
+      {id:"bl05",nombre:"Cafiza",pres:"bote",tienda:"AMAZON",tipo:"check"},
+      {id:"bl06",nombre:"Grindz",pres:"bote",tienda:"AMAZON",tipo:"check"},
+      {id:"bl07",nombre:"Bolsas de basura",pres:"caja",tienda:"COSTCO",tipo:"check"},
+      {id:"bl08",nombre:"Ajax",pres:"Pza.",tienda:"LA GRANDE",tipo:"check"},
+      {id:"bl09",nombre:"Papel de baño",pres:"paquete",tienda:"SAMS CLUB",tipo:"check",min:"10 rollos"},
+      {id:"bl10",nombre:"Jabón para manos",pres:"2 litros",tienda:"SAMS CLUB",tipo:"check",min:"1/4 bolsa"},
+      {id:"bl11",nombre:"Bolsas de basura Bote chico",pres:"Rollo",tienda:"CALEXICO",tipo:"check",min:"1/2 rollo"},
+    ]},
+  ]},
+  {id:"cocina",nombre:"Cocina",categorias:[
+    {id:"cocina-basicos",nombre:"Básicos",items:[
+      {id:"cb01",nombre:"Azúcar morena",pres:"Paquete 10 kg.",tienda:"COSTCO",tipo:"check",min:"5kg"},
+      {id:"cb02",nombre:"Azúcar mascabada",pres:"Bolsa 1 kg.",tienda:"COSTCO",tipo:"pieza",min:"1kg"},
+      {id:"cb03",nombre:"Azúcar glass",pres:"Bolsa 500 gr.",tienda:"CALEXICO",tipo:"pieza",min:"250gr"},
+      {id:"cb04",nombre:"Harina",pres:"Costal 25 kg.",tienda:"COSTCO",tipo:"check",min:"5kg"},
+      {id:"cb05",nombre:"Levadura",pres:"caja",tienda:"SMART FINAL",tipo:"check",min:"100gr"},
+      {id:"cb06",nombre:"Maicena",pres:"caja",tienda:"SMART FINAL",tipo:"check",min:"100gr"},
+      {id:"cb07",nombre:"Polvo para hornear",pres:"bote",tienda:"SMART FINAL",tipo:"check",min:"100gr"},
+      {id:"cb08",nombre:"Huevos",pres:"60pz",tienda:"SAMS CLUB",tipo:"check",min:"30pz"},
+      {id:"cb09",nombre:"Bicarbonato",pres:"caja 486gr",tienda:"SMART FINAL",tipo:"check",min:"100gr"},
+      {id:"cb10",nombre:"Sal",pres:"3 Kg.",tienda:"SAMS CLUB",tipo:"check",min:"100gr"},
+      {id:"cb11",nombre:"Canela en polvo",pres:"bote",tienda:"COSTCO",tipo:"check",min:"100gr"},
+      {id:"cb12",nombre:"Cocoa",pres:"Bolsa 1 kg.",tienda:"COSTCO",tipo:"check",min:"500gr"},
+      {id:"cb13",nombre:"Vinagre",pres:"1lt",tienda:"COSTCO",tipo:"check",min:"1/4 pieza"},
+      {id:"cb14",nombre:"Aceite de oliva",pres:"1lt",tienda:"COSTCO",tipo:"check",min:"1/4 litro"},
+      {id:"cb15",nombre:"Aceite Nutrioli",pres:"Paquete 3 pzas.",tienda:"COSTCO",tipo:"check",min:"1lt"},
+      {id:"cb16",nombre:"Extracto de vainilla",pres:"Bote 1 lt.",tienda:"LA GRANDE",tipo:"check",min:"100ml"},
+    ]},
+    {id:"cocina-lacteos-y-cremosos",nombre:"Lácteos y cremosos",items:[
+      {id:"cl01",nombre:"Crema Lyncott",pres:"Paquete 2 pzas.",tienda:"SAMS CLUB",tipo:"pieza",min:"1 pieza"},
+      {id:"cl02",nombre:"Crema ácida",pres:"Bote 1 lt.",tienda:"SAMS CLUB",tipo:"pieza",min:"1lt"},
+      {id:"cl03",nombre:"Queso crema",pres:"Barra",tienda:"COSTCO",tipo:"pieza",min:"1 pieza"},
+      {id:"cl04",nombre:"Margarina",pres:"1 Kg.",tienda:"SAMS CLUB",tipo:"pieza",min:"1/4 pieza"},
+      {id:"cl05",nombre:"Yogurt Sin azucar",pres:"2 lt.",tienda:"SAMS CLUB",tipo:"check",min:"1/2 litro"},
+      {id:"cl06",nombre:"Mantequilla sin sal",pres:"1 Kg.",tienda:"SAMS CLUB",tipo:"pieza",min:"1 pieza"},
+      {id:"cl07",nombre:"Leche evaporada",pres:"lata 360g",tienda:"LA GRANDE",tipo:"pieza",min:"1 pieza"},
+      {id:"cl08",nombre:"Queso parmesano",pres:"453gr",tienda:"SAMS CLUB",tipo:"check",min:"100gr"},
+      {id:"cl09",nombre:"Queso feta",pres:"500 gr",tienda:"SAMS CLUB",tipo:"check",min:"1/2 pieza"},
+      {id:"cl10",nombre:"Queso cheddar",pres:"900gr",tienda:"COSTCO",tipo:"pieza",min:"mitad de inserto"},
+      {id:"cl11",nombre:"Queso mozzarella",pres:"Bolsa 2kg",tienda:"COSTCO",tipo:"check",min:"10 porciones"},
+    ]},
+    {id:"cocina-chocolates-y-dulces",nombre:"Chocolates y dulces",items:[
+      {id:"cc01",nombre:"Chispas de chocolate semi amargo",pres:"2kg",tienda:"CALEXICO",tipo:"pieza",min:"1kg"},
+      {id:"cc02",nombre:"Chocolate de leche",pres:"900gr",tienda:"CALEXICO",tipo:"pieza",min:"500gr"},
+      {id:"cc03",nombre:"Chocolate blanco",pres:"900gr",tienda:"CALEXICO",tipo:"pieza",min:"500gr"},
+      {id:"cc04",nombre:"Malvavisco",pres:"Bolsa",tienda:"CALEXICO",tipo:"pieza",min:"mitad bolsa"},
+      {id:"cc05",nombre:"Galleta ricanela",pres:"caja 486gr",tienda:"LA GRANDE",tipo:"check",min:"200gr"},
+      {id:"cc06",nombre:"Galletas Ritz",pres:"caja 1.6kg",tienda:"SAMS CLUB",tipo:"check",min:"200gr"},
+      {id:"cc07",nombre:"Galleta Oreo",pres:"caja 1.5kg",tienda:"CALEXICO",tipo:"check",min:"200gr"},
+    ]},
+    {id:"cocina-frutas-y-verduras",nombre:"Frutas y verduras",items:[
+      {id:"cfv01",nombre:"Zanahoria",pres:"Bolsa",tienda:"LA GRANDE",tipo:"check",min:"1 bolsa"},
+      {id:"cfv02",nombre:"Plátano",pres:"Mazo 6 A 8",tienda:"LA GRANDE",tipo:"check",min:"2pz"},
+      {id:"cfv03",nombre:"Manzana roja",pres:"pza.",tienda:"LA GRANDE",tipo:"pieza"},
+      {id:"cfv04",nombre:"Manzana verde",pres:"pza.",tienda:"LA GRANDE",tipo:"pieza"},
+      {id:"cfv05",nombre:"Limón amarillo",pres:"pza.",tienda:"LA GRANDE",tipo:"pieza",min:"3 pz"},
+      {id:"cfv06",nombre:"Naranja",pres:"Pza.",tienda:"LA GRANDE",tipo:"pieza",min:"1pz"},
+      {id:"cfv07",nombre:"Aguacate",pres:"Pza.",tienda:"LA GRANDE",tipo:"pieza",min:"5pz"},
+      {id:"cfv08",nombre:"Cebolla morada",pres:"Pza.",tienda:"LA GRANDE",tipo:"pieza",min:"1/4 curtidas"},
+      {id:"cfv09",nombre:"Rábano",pres:"Mazo",tienda:"LA GRANDE",tipo:"pieza",min:"1/4 curtidas"},
+      {id:"cfv10",nombre:"Papa",pres:"Pza.",tienda:"LA GRANDE",tipo:"pieza",min:"5 porciones"},
+      {id:"cfv11",nombre:"Cebollín",pres:"Mazo",tienda:"LA GRANDE",tipo:"pieza",min:"2pza."},
+      {id:"cfv12",nombre:"Repollo morado",pres:"Pza.",tienda:"LA GRANDE",tipo:"pieza",min:"1/4 curtidas"},
+      {id:"cfv13",nombre:"Cebolla amarilla",pres:"pza.",tienda:"LA GRANDE",tipo:"pieza",min:"1pz"},
+      {id:"cfv14",nombre:"Zucchini",pres:"Pza.",tienda:"LA GRANDE",tipo:"pieza",min:"1 pza."},
+      {id:"cfv15",nombre:"Tomate",pres:"Kg.",tienda:"LA GRANDE",tipo:"pieza",min:"1/4 inserto"},
+      {id:"cfv16",nombre:"Ensalada primavera",pres:"caja",tienda:"COSTCO",tipo:"pieza",min:"1/4 caja"},
+      {id:"cfv17",nombre:"Pepino persa",pres:"Bolsa",tienda:"FERBIS",tipo:"pieza",min:"1/4 caja"},
+      {id:"cfv18",nombre:"Frutos rojos congelados",pres:"Bolsa 1.8kg.",tienda:"CALEXICO",tipo:"pieza",min:"mitad bolsa"},
+    ]},
+    {id:"cocina-frutos-secos-y-semillas",nombre:"Frutos secos y semillas",items:[
+      {id:"cfs01",nombre:"Nuez de castilla",pres:"Bolsa",tienda:"COSTCO",tipo:"check",min:"250gr"},
+      {id:"cfs02",nombre:"Ajo entero",pres:"cabeza",tienda:"LA GRANDE",tipo:"pieza",min:"1 cabeza"},
+      {id:"cfs03",nombre:"Almendra Fileteada",pres:"bolsa",tienda:"COSTCO",tipo:"check",min:"200gr"},
+      {id:"cfs04",nombre:"Cacahuate",pres:"Bolsa",tienda:"LA GRANDE",tipo:"pieza",min:"100gr"},
+      {id:"cfs05",nombre:"Arándanos deshidratados",pres:"Bolsa",tienda:"COSTCO",tipo:"check",min:"100gr"},
+      {id:"cfs06",nombre:"Fresa Liofilizada",pres:"Kg.",tienda:"GIRASOL",tipo:"peso",min:"100gr"},
+      {id:"cfs07",nombre:"Pretzel",pres:"Bolsa",tienda:"COSTCO",tipo:"check",min:"200gr"},
+      {id:"cfs08",nombre:"Chips",pres:"Bolsa",tienda:"COSTCO",tipo:"check",min:"1/2 bolsa"},
+    ]},
+    {id:"cocina-proteínas",nombre:"Proteínas",items:[
+      {id:"cp01",nombre:"Pechuga de pavo",pres:"unidad",tienda:"COSTCO",tipo:"check",min:"7 porciones"},
+      {id:"cp02",nombre:"Jamón",pres:"1kg",tienda:"SAMS CLUB",tipo:"pieza",min:"500gr"},
+      {id:"cp03",nombre:"Tocino",pres:"paquete 4",tienda:"COSTCO",tipo:"check",min:"7 porciones"},
+    ]},
+    {id:"cocina-condimentos-y-salsas",nombre:"Condimentos y salsas",items:[
+      {id:"ccs01",nombre:"Crema de cacahuate",pres:"Bote 1 lt.",tienda:"COSTCO",tipo:"check",min:"1/2 bote"},
+      {id:"ccs02",nombre:"Mostaza",pres:"bote 2.9kg",tienda:"SMART FINAL",tipo:"check",min:"1/4 bote"},
+      {id:"ccs03",nombre:"Mayonesa",pres:"bote 1.6kg",tienda:"SAMS CLUB",tipo:"check",min:"1/4 bote"},
+      {id:"ccs04",nombre:"Chipotle",pres:"lata",tienda:"LA GRANDE",tipo:"pieza",min:"1 lata"},
+      {id:"ccs05",nombre:"Chiles güeros curtidos",pres:"Bote",tienda:"LA GRANDE",tipo:"check",min:"1/4 bote"},
+      {id:"ccs06",nombre:"Agave",pres:"1lt",tienda:"COSTCO",tipo:"check",min:"200ml"},
+      {id:"ccs07",nombre:"Maple",pres:"Bote 1 lt.",tienda:"COSTCO",tipo:"check",min:"500ml"},
+      {id:"ccs08",nombre:"Pure calabaza",pres:"lata",tienda:"CALEXICO",tipo:"pieza",min:"3 latas"},
+      {id:"ccs09",nombre:"Orégano",pres:"bote",tienda:"SAMS CLUB",tipo:"check",min:"100gr"},
+      {id:"ccs10",nombre:"Pimienta",pres:"bote",tienda:"COSTCO",tipo:"check",min:"100gr"},
+      {id:"ccs11",nombre:"Albahaca seca",pres:"bote",tienda:"COSTCO",tipo:"check",min:"100gr"},
+      {id:"ccs12",nombre:"Ajo en polvo",pres:"bote",tienda:"COSTCO",tipo:"check",min:"100gr"},
+    ]},
+    {id:"cocina-panadería-y-snacks",nombre:"Panadería y snacks",items:[
+      {id:"cpa01",nombre:"Avena en ojuelas",pres:"caja 2.5kg",tienda:"SAMS CLUB",tipo:"check",min:"500gr"},
+      {id:"cpa02",nombre:"Bagels",pres:"bolsa 12 pz",tienda:"COSTCO",tipo:"pieza",min:"6 pz"},
+      {id:"cpa03",nombre:"Pan poligrano",pres:"Barra",tienda:"PANADERIA",tipo:"pieza",min:"1/2 barra"},
+      {id:"cpa04",nombre:"Hogasa",pres:"barra",tienda:"RUSTICO",tipo:"pieza",min:"1/2 barra"},
+      {id:"cpa05",nombre:"Cuernitos",pres:"caja 12pz",tienda:"COSTCO",tipo:"pieza",min:"10pz"},
+    ]},
+    {id:"cocina-desechables-cocina",nombre:"Desechables cocina",items:[
+      {id:"dc01",nombre:"Contenedor concha alimentos",pres:"caja 200pz",tienda:"DULCERIA",tipo:"check",min:"25 pz"},
+      {id:"dc02",nombre:"Papel encerado cuadrado",pres:"caja",tienda:"SMART FINAL",tipo:"check",min:"50 pliegos"},
+      {id:"dc03",nombre:"Bolsas de kraft grande",pres:"paquete 25",tienda:"DULCERIA",tipo:"pieza",min:"15 bolsas"},
+      {id:"dc04",nombre:"Plástico filmico",pres:"caja",tienda:"COSTCO",tipo:"check",min:"1/4 rollo"},
+      {id:"dc05",nombre:"Papel aluminio",pres:"paquete 2",tienda:"COSTCO",tipo:"check",min:"1/4 rollo"},
+      {id:"dc06",nombre:"Papel encerado hornear",pres:"paquete 2",tienda:"COSTCO",tipo:"check",min:"1/4 rollo"},
+      {id:"dc07",nombre:"Bolsas para porcionar",pres:"caja 160pz",tienda:"SMART FINAL",tipo:"pieza",min:"1/4 caja"},
+      {id:"dc08",nombre:"Rollo de servilletas",pres:"Pza.",tienda:"LA GRANDE",tipo:"pieza",min:"1pz"},
+      {id:"dc09",nombre:"Palillos",pres:"caja",tienda:"LA GRANDE",tipo:"check",min:"1/4 caja"},
+      {id:"dc10",nombre:"Caja para pastel 8''",pres:"Pza.",tienda:"BODEGA",tipo:"pieza",min:"por pedido"},
+      {id:"dc11",nombre:"Base para pastel 8''",pres:"Pza.",tienda:"BODEGA",tipo:"pieza",min:"por pedido"},
+      {id:"dc12",nombre:"Tape amarillo",pres:"rollo",tienda:"HOME DEPOT",tipo:"pieza",min:"1/4 rollo"},
+      {id:"dc13",nombre:"Bote unicel y tapa salsa",pres:"paquete 50",tienda:"LA GRANDE",tipo:"pieza",min:"menos de 15"},
+      {id:"dc14",nombre:"Botecito y tapa plástico condimentos",pres:"paquete 50",tienda:"LA GRANDE",tipo:"check",min:"menos de 20"},
+      {id:"dc15",nombre:"Guantes",pres:"caja",tienda:"LA GRANDE",tipo:"check",min:"1/4 caja"},
+    ]},
+    {id:"cocina-limpieza-cocina",nombre:"Limpieza cocina",items:[
+      {id:"clk01",nombre:"Jabón trastes",pres:"2.6lt",tienda:"COSTCO",tipo:"check",min:"1/4 bote"},
+      {id:"clk02",nombre:"Microdyn (desinfectante verduras)",pres:"1lt",tienda:"SAMS CLUB",tipo:"check"},
+      {id:"clk03",nombre:"Desengrasante",pres:"1lt",tienda:"LA GRANDE",tipo:"check",min:"1/4 de litro"},
+      {id:"clk04",nombre:"Cloro",pres:"10lt",tienda:"SAMS CLUB",tipo:"check",min:"1/4 bote"},
+      {id:"clk05",nombre:"Pinol",pres:"20lt",tienda:"SAMS CLUB",tipo:"check",min:"1/4 bote"},
+      {id:"clk06",nombre:"Trapos",pres:"pza.",tienda:"SMART FINAL",tipo:"check",min:"2 pzas"},
+      {id:"clk07",nombre:"Esponjas",pres:"pza.",tienda:"COSTCO",tipo:"pieza",min:"por pedido"},
+    ]},
+  ]},
+  {id:"pedidos",nombre:"Pedidos",categorias:[
+    {id:"pedidos-cat",nombre:"Pedidos y elaboraciones propias",items:[
+      {id:"ped01",nombre:"Trapos a lavar",tienda:"PEDIDO",tipo:"check",ant:"2 días de anticipación"},
+      {id:"ped02",nombre:"Agua tónica",pres:"Caja 12 pzas.",tienda:"PEDIDO",tipo:"pieza"},
+      {id:"ped03",nombre:"Agua mineral",pres:"Caja 12 pzas.",tienda:"PEDIDO",tipo:"pieza"},
+      {id:"ped04",nombre:"Salsa Roja",pres:"1lt",tienda:"PEDIDO",tipo:"peso",ant:"2 días de anticipación"},
+      {id:"ped05",nombre:"Salsa verde",pres:"1lt",tienda:"PEDIDO",tipo:"peso",ant:"2 días de anticipación"},
+      {id:"ped06",nombre:"Salsa Macha",pres:"1lt",tienda:"PEDIDO",tipo:"check",ant:"1 semana de anticipación"},
+      {id:"ped07",nombre:"Pan Brioche",pres:"pza.",tienda:"PEDIDO",tipo:"pieza",ant:"4 días de anticipación"},
+      {id:"ped08",nombre:"Totopo",pres:"5 bolsas 500gr",tienda:"LA MORENA",tipo:"check",ant:"2 días de anticipación"},
+      {id:"ped09",nombre:"Frijoles refritos",pres:"1kg",tienda:"PEDIDO",tipo:"peso",ant:"3 días de anticipación"},
+      {id:"ped10",nombre:"Birria",tienda:"PEDIDO",tipo:"peso",ant:"3 días de anticipación"},
+      {id:"ped11",nombre:"Chimichurri",pres:"batch",tienda:"ADXE",tipo:"check",ant:"1 día de anticipación"},
+    ]},
+  ]},
+];
+var E={};
+AREAS.forEach(function(a){a.categorias.forEach(function(c){c.items.forEach(function(it){
+  E[it.id]={checked:false,qty:1,cant:''};
+});});});
+
+// HEADER
+document.getElementById('hdr-sub').textContent=DIAS[HOY.getDay()]+' '+HOY.getDate()+' de '+MESES[HOY.getMonth()];
+
+function contarArea(aid){
+  var a=AREAS.find(function(x){return x.id===aid;});
+  var n=0;
+  a.categorias.forEach(function(c){c.items.forEach(function(it){if(E[it.id].checked)n++;});});
+  return n;
+}
+
+function renderTabs(){
+  var cont=document.getElementById('tabs-areas');cont.innerHTML='';
+  AREAS.forEach(function(a){
+    var btn=document.createElement('button');
+    btn.className='tab'+(a.id===areaActiva?' on':'');
+    btn.id='tab-'+a.id;
+    var n=contarArea(a.id);
+    btn.innerHTML=a.nombre+'<span class="badge'+(n>0?' show':'')+'" id="badge-'+a.id+'">'+(n>0?n:'')+'</span>';
+    btn.onclick=function(){cambiarArea(a.id);};
+    cont.appendChild(btn);
+  });
+}
+
+function cambiarArea(id){
+  areaActiva=id;
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  document.getElementById('tab-'+id).classList.add('on');
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
+  document.getElementById('panel-'+id).classList.add('on');
+  window.scrollTo(0,0);
+}
+
+function actualizarBadges(){
+  AREAS.forEach(function(a){
+    var n=contarArea(a.id);
+    var b=document.getElementById('badge-'+a.id);
+    if(b){b.textContent=n>0?n:'';b.className='badge'+(n>0?' show':'');}
+  });
+}
+
+function renderPaneles(){
+  var cont=document.getElementById('paneles-areas');cont.innerHTML='';
+  AREAS.forEach(function(a){
+    var panel=document.createElement('div');
+    panel.className='panel'+(a.id===areaActiva?' on':'');
+    panel.id='panel-'+a.id;
+    a.categorias.forEach(function(cat){
+      var sec=document.createElement('div');sec.className='sec-label';sec.textContent=cat.nombre;panel.appendChild(sec);
+      cat.items.forEach(function(it){
+        var e=E[it.id];
+        var div=document.createElement('div');div.className='item'+(e.checked?' done':'');div.id='item-'+it.id;
+        var chk=document.createElement('div');chk.className='chk'+(e.checked?' on':'');chk.id='chk-'+it.id;
+        chk.onclick=function(){toggleItem(it);};
+        var info=document.createElement('div');info.className='iinfo';
+        var nombre=document.createElement('div');nombre.className='iname';nombre.textContent=it.nombre;info.appendChild(nombre);
+        if(it.pres){var p=document.createElement('div');p.className='ipres';p.textContent=it.pres;info.appendChild(p);}
+        if(it.min){var m=document.createElement('div');m.className='imin';m.textContent='⚠ Mín: '+it.min;info.appendChild(m);}
+        if(it.ant){var an=document.createElement('div');an.className='iant';an.textContent='🕐 '+it.ant;info.appendChild(an);}
+        div.appendChild(chk);div.appendChild(info);
+        if(it.tipo==='pieza'){
+          var cnt=document.createElement('div');cnt.className='cnt';cnt.id='cnt-'+it.id;cnt.style.display=e.checked?'flex':'none';
+          var bm=document.createElement('button');bm.className='cb';bm.textContent='−';
+          bm.onclick=function(){E[it.id].qty=Math.max(1,E[it.id].qty-1);document.getElementById('cn-'+it.id).textContent=E[it.id].qty;};
+          var cn=document.createElement('span');cn.className='cn';cn.id='cn-'+it.id;cn.textContent=e.qty;
+          var bp=document.createElement('button');bp.className='cb';bp.textContent='+';
+          bp.onclick=function(){E[it.id].qty++;document.getElementById('cn-'+it.id).textContent=E[it.id].qty;};
+          cnt.appendChild(bm);cnt.appendChild(cn);cnt.appendChild(bp);div.appendChild(cnt);
+        } else if(it.tipo==='peso'){
+          var campo=document.createElement('div');campo.className='campo';campo.id='campo-'+it.id;campo.style.display=e.checked?'flex':'none';
+          var inp=document.createElement('input');inp.type='number';inp.inputMode='decimal';inp.placeholder='0';inp.value=e.cant||'';
+          inp.oninput=function(ev){E[it.id].cant=ev.target.value;};inp.onclick=function(ev){ev.stopPropagation();};
+          var un=document.createElement('span');un.className='cunit';un.textContent=it.unidad||'';
+          campo.appendChild(inp);campo.appendChild(un);div.appendChild(campo);
+        }
+        panel.appendChild(div);
+      });
+    });
+    // Notas solo en pedidos
+    if(a.id==='pedidos'){
+      var wrap=document.createElement('div');wrap.className='extras-wrap';wrap.style.marginTop='8px';
+      var lbl=document.createElement('label');lbl.textContent='Notas / artículos extra';
+      var ta=document.createElement('textarea');ta.placeholder='Insumos de temporada, pruebas, notas para el comprador...';ta.value=extrasTexto;
+      ta.oninput=function(ev){extrasTexto=ev.target.value;};
+      wrap.appendChild(lbl);wrap.appendChild(ta);panel.appendChild(wrap);
+    }
+    cont.appendChild(panel);
+  });
+}
+
+function toggleItem(it){
+  E[it.id].checked=!E[it.id].checked;
+  document.getElementById('item-'+it.id).classList.toggle('done',E[it.id].checked);
+  document.getElementById('chk-'+it.id).classList.toggle('on',E[it.id].checked);
+  if(it.tipo==='pieza'){var c=document.getElementById('cnt-'+it.id);if(c)c.style.display=E[it.id].checked?'flex':'none';}
+  else if(it.tipo==='peso'){var c2=document.getElementById('campo-'+it.id);if(c2)c2.style.display=E[it.id].checked?'flex':'none';}
+  actualizarBadges();
+}
+
+function limpiarActual(){
+  var area=AREAS.find(function(a){return a.id===areaActiva;});
+  if(!confirm('¿Limpiar selección de '+area.nombre+'?'))return;
+  area.categorias.forEach(function(cat){cat.items.forEach(function(it){E[it.id].checked=false;E[it.id].qty=1;E[it.id].cant='';});});
+  renderPaneles();renderTabs();
+}
+
+function irAResumen(){
+  document.querySelectorAll('textarea').forEach(function(t){extrasTexto=t.value;});
+  // Validar que cada área tenga al menos un artículo
+  var areasVacias=[];
+  AREAS.forEach(function(a){
+    var n=0;
+    a.categorias.forEach(function(c){c.items.forEach(function(it){if(E[it.id].checked)n++;});});
+    if(n===0)areasVacias.push(a.nombre);
+  });
+  if(areasVacias.length>0){
+    alert('Faltan artículos en:\n\n• '+areasVacias.join('\n• ')+'\n\nCada área debe tener al menos un artículo seleccionado.');
+    return;
+  }
+  var total=0;
+  AREAS.forEach(function(a){a.categorias.forEach(function(c){c.items.forEach(function(it){if(E[it.id].checked)total++;});});});
+
+  // Construir lista de confirmados
+  confirmados={};
+  AREAS.forEach(function(a){
+    var rows=[];
+    a.categorias.forEach(function(cat){
+      cat.items.filter(function(it){return E[it.id].checked;}).forEach(function(it){
+        it.catNombre=cat.nombre;rows.push({it:it,quitado:false});
+      });
+    });
+    if(rows.length)confirmados[a.id]=rows;
+  });
+
+  document.getElementById('res-sub').textContent=total+' artículo'+(total!==1?'s':'')+' seleccionado'+(total!==1?'s':'');
+  renderResumen();
+  document.getElementById('paso-seleccion').style.display='none';
+  document.getElementById('paso-resumen').style.display='block';
+  window.scrollTo(0,0);
+}
+
+function renderResumen(){
+  var cont=document.getElementById('res-items');cont.innerHTML='';
+  AREAS.forEach(function(a){
+    var rows=confirmados[a.id];
+    if(!rows||!rows.length)return;
+    // título de área
+    var atit=document.createElement('div');
+    atit.style.cssText='font-size:13px;font-weight:600;color:#0f172a;padding:14px 16px 4px;background:#f8fafc;border-bottom:0.5px solid #e2e8f0;';
+    atit.textContent=a.nombre;cont.appendChild(atit);
+    // agrupar por categoria
+    var cats={};
+    rows.forEach(function(row){if(!cats[row.it.catNombre])cats[row.it.catNombre]=[];cats[row.it.catNombre].push(row);});
+    Object.keys(cats).forEach(function(catNombre){
+      var sec=document.createElement('div');sec.className='resumen-sec';sec.textContent=catNombre;cont.appendChild(sec);
+      cats[catNombre].forEach(function(row){
+        var div=document.createElement('div');div.className='resumen-item'+(row.quitado?' quitado':'');
+        div.onclick=function(){
+          row.quitado=!row.quitado;
+          var total=0;
+          AREAS.forEach(function(a2){(confirmados[a2.id]||[]).forEach(function(r){if(!r.quitado)total++;});});
+          document.getElementById('res-sub').textContent=total+' artículo'+(total!==1?'s':'')+' confirmado'+(total!==1?'s':'');
+          renderResumen();
+        };
+        var chk=document.createElement('div');chk.className='r-chk';
+        var info=document.createElement('div');info.className='r-info';
+        var nombre=document.createElement('div');nombre.className='r-nombre';nombre.textContent=row.it.nombre;info.appendChild(nombre);
+        var det='';
+        if(row.it.tipo==='pieza')det=E[row.it.id].qty+' pz';
+        else if(row.it.tipo==='peso'&&E[row.it.id].cant)det=E[row.it.id].cant+(row.it.unidad?' '+row.it.unidad:'');
+        if(det){var d=document.createElement('div');d.className='r-det';d.textContent=det;info.appendChild(d);}
+        if(row.it.ant){var an=document.createElement('div');an.className='r-ant';an.textContent='🕐 '+row.it.ant;info.appendChild(an);}
+        div.appendChild(chk);div.appendChild(info);cont.appendChild(div);
+      });
+    });
+  });
+  if(extrasTexto.trim()){
+    var sec2=document.createElement('div');sec2.className='resumen-sec';sec2.textContent='Notas / extras';cont.appendChild(sec2);
+    var p=document.createElement('div');p.style.cssText='padding:10px 16px;font-size:13px;white-space:pre-wrap;line-height:1.5;background:white;';p.textContent=extrasTexto;cont.appendChild(p);
+  }
+}
+
+function volverSeleccion(){
+  // Aplicar quitados al estado
+  AREAS.forEach(function(a){
+    (confirmados[a.id]||[]).forEach(function(row){
+      if(row.quitado){E[row.it.id].checked=false;E[row.it.id].qty=1;E[row.it.id].cant='';}
+    });
+  });
+  confirmados={};
+  renderPaneles();renderTabs();
+  document.getElementById('paso-resumen').style.display='none';
+  document.getElementById('paso-seleccion').style.display='block';
+  window.scrollTo(0,0);
+}
+
+function construirPayload(){
+  var payload={fecha:HOY.toISOString(),items:[],extras:extrasTexto};
+  AREAS.forEach(function(a){a.categorias.forEach(function(cat){cat.items.forEach(function(it){
+    if(!E[it.id].checked)return;
+    payload.items.push({
+      area:a.nombre,categoria:cat.nombre,nombre:it.nombre,
+      pres:it.pres||'',tienda:it.tienda||'',tipo:it.tipo,
+      qty:it.tipo==='pieza'?E[it.id].qty:null,
+      cant:it.tipo==='peso'?E[it.id].cant:null,
+      unidad:it.unidad||null,ant:it.ant||null
+    });
+  });});});
+  return payload;
+}
+
+function enviarLista(){
+  var btn=document.getElementById('btn-enviar');
+  btn.disabled=true;btn.textContent='Guardando...';
+  var payload=construirPayload();
+  var fechaKey=HOY.getFullYear()+'_'+(HOY.getMonth()+1)+'_'+HOY.getDate();
+  fetch(FIREBASE_URL+'/lista.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+    .then(function(r){if(!r.ok)throw new Error('Error');
+      return fetch(FIREBASE_URL+'/historial/'+fechaKey+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    })
+    .then(function(){
+      btn.disabled=false;
+      document.getElementById('paso-resumen').style.display='none';
+      document.getElementById('paso-enviado').style.display='block';
+    })
+    .catch(function(){
+      btn.disabled=false;btn.textContent='Enviar lista ✓';
+      alert('Error al guardar. Verifica tu conexión.');
+    });
+}
+
+function nuevaLista(){
+  Object.keys(E).forEach(function(k){E[k].checked=false;E[k].qty=1;E[k].cant='';});
+  extrasTexto='';confirmados={};areaActiva='barra';
+  document.getElementById('paso-enviado').style.display='none';
+  document.getElementById('paso-seleccion').style.display='block';
+  renderTabs();renderPaneles();window.scrollTo(0,0);
+}
+
+renderTabs();renderPaneles();
+</script>
+</body>
+</html>
